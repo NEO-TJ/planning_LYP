@@ -181,10 +181,11 @@ class Plan_m extends CI_Model {
 
 	// ****************************************************** Report function *****************************************
 	// -------------------------------------------------------- Daily Target ------------------------------------------
-	public function get_daily_target($strDateStart, $strDateEnd, $lineID, $arrayJobID=[]) {
+	public function get_daily_target($strDateStart, $strDateEnd, $lineID, $arrayJobID=[], $arrayStepID=[]) {
 		$criteria ='';
 		// Create job criteria.
 		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('j.id', $arrayJobID, $criteria); }
+		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('s.id', $arrayStepID, $criteria); }
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 		
@@ -207,7 +208,7 @@ class Plan_m extends CI_Model {
 					." LEFT JOIN line nl ON ns.FK_ID_Line = nl.id"
 					." WHERE j.Delete_Flag=0 AND p.Plan_Qty_OK > 0" .$criteria
 					." AND Date_Stamp BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
-					." ORDER BY s.FK_ID_Line , p.Date_Stamp, s.Number";
+					." ORDER BY s.FK_ID_Line, j.Name, s.Number, p.Date_Stamp";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();

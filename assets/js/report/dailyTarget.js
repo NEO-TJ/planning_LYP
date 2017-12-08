@@ -25,6 +25,13 @@ function bindingMultiselectJob() {
 	$('select#jobID').multiselect({
 		header: true,
 		noneSelectedText: 'Default selected all job',
+		close: function(event, ui) { changeJob(); }
+	}).multiselectfilter();
+}
+function bindingMultiselectStep() {
+	$('select#stepID').multiselect({
+		header: true,
+		noneSelectedText: 'Default selected all step',
 	}).multiselectfilter();
 }
 
@@ -75,6 +82,45 @@ function filterJob(dsJob) {
 	
 	$('div#jobID').html(tableTagInputCaption + tableTagInputSelecter);
 	bindingMultiselectJob();
+	changeJob();
+}
+
+//******************************************** Change job mode *****************************************
+function changeJob() {
+	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; }).get();
+
+	var data = { 'jobID': arrayJobID };
+
+	// Get project table one row by ajax.
+	$.ajax({
+			url: 'planning/ajaxGetDsStepByJobID',
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function() {},
+			error: function(xhr, textStatus) {
+					swal("Error", textStatus + xhr.responseText, "error");
+			},
+			complete: function() {},
+			success: function(dsStep) {
+					filterStep(dsStep);
+			}
+	});
+}
+
+function filterStep(dsStep) {
+	var tableTagInputCaption = '<span class="input-group-btn">';
+	tableTagInputCaption += '<button class="btn btn-primary disabled" type="button">Step number : </button>';
+	tableTagInputCaption += '</span>';
+
+	var tableTagInputSelecter = '<select class="form-control multi-select" id="stepID" name="stepID[]" multiple="multiple">';
+	for (var i = 0; i < dsStep.length; i++) {
+			tableTagInputSelecter += '<option value=' + dsStep[i]['id'] + '>'
+			tableTagInputSelecter += dsStep[i]['Number'] + ' - ' + dsStep[i]['DESC'] + '</option>';
+	}
+
+	$('div#stepID').html(tableTagInputCaption + tableTagInputSelecter);
+	bindingMultiselectStep();
 }
 
 
@@ -104,13 +150,15 @@ function getReport() {
 		let strDateEnd = $('input#dateEnd').val();
 		let lineID = $('select#lineID :selected').val();
 		let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
+		let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
 		let data = {
-				'useDataPlan'	: useDataPlan,
+				'useDataPlan'		: useDataPlan,
 				'strDateStart'	: strDateStart,
-				'strDateEnd'	: strDateEnd,
-				'lineID'		: lineID,
-				'jobID'			: arrayJobID,
+				'strDateEnd'		: strDateEnd,
+				'lineID'				: lineID,
+				'jobID'					: arrayJobID,
+				'stepID'				: arrayStepID,
 		};
 
 		// Get daily target report by ajax.
