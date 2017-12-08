@@ -40,7 +40,7 @@ class Planning extends CI_Controller {
 			$totalSlotDate = $this->input->post('totalSlotDate');
 
 			$dsFullPlanning = $this->getDsFullPlan($diffStartCurrentDate, $arrayJobID, $arrayJobTypeID
-													, $arrayStepID, $totalSlotDate);
+				, $arrayStepID, $totalSlotDate);
 
 			$data = array(
 					'dsFullPlanning'		=> $dsFullPlanning,
@@ -129,11 +129,11 @@ class Planning extends CI_Controller {
 		
 		return $data;
 	}
-	
-	
-	
-	
-    // -------------------------------------------------------- Get DB to combobox ----------------------------
+
+
+
+
+	// -------------------------------------------------------- Get DB to combobox ----------------------------
 	private function getDsFullPlan($diffStartCurrentDate, $arrayJobID=[], $arrayJobTypeID=[]
 									, $arrayStepID=[], $totalSlotDate=20) {
 		$arrayJobStatusID=[1];

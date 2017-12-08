@@ -28,15 +28,14 @@ class Plan_m extends CI_Model {
 		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('t.id', $arrayStepID, $criteria); }
 		if(count($arrayJobStatusID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Status', $arrayJobStatusID, $criteria); }
 
-
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			
 			$criteria = ' HAVING '.$criteria;
 		}
 
-
-		$sqlStr = "SELECT j.id JobID, t.id StepID, s.id StockID, t.FK_ID_Line, t.FK_ID_Machine, j.FK_ID_Job_Type, j.FK_ID_Job_Status"
+		$sqlStr = "SELECT j.id JobID, t.id StepID, s.id StockID, t.FK_ID_Line, t.FK_ID_Machine"
+			.", j.FK_ID_Job_Type, j.FK_ID_Job_Status"
 			.", j.Name JobName"
 			.", IF((ISNULL(t.Next_Step_Number)) || (t.Next_Step_Number=0),'-',t.Next_Step_Number) Next_Step_Number"
 			.", CONCAT(t.Number, ' - ', t.`DESC`) NumberAndDESC"
@@ -88,7 +87,7 @@ class Plan_m extends CI_Model {
 			." WHERE j.Delete_Flag=0"
 			." GROUP BY j.id, t.id, s.id, y.id"
 			.$criteria
-			." ORDER BY JobID, StepID";
+			." ORDER BY JobName, t.Number";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
