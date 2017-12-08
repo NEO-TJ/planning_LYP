@@ -1,0 +1,11 @@
+@CHARSET "UTF-8";
+.margin-input{
+	margin-top: 4px;
+	margin-bottom: 4px;
+	text-align:left;
+}
+.expand-input{background-color:#80ff80;}
+.table-caption{
+	font-weight:bold;
+	font-size:40px;
+}

@@ -1,0 +1,40 @@
+@CHARSET "UTF-8";
+.table-header{
+	background-color: #c0c0c0;
+}
+.col-total {
+	background-color: #80ff00;
+}
+.col-dont-input{
+ 	background-color: #fde8c8;
+}
+.margin-box{
+	margin-top: 2px;
+	margin-bottom: 2px;
+	text-align:left;
+}
+.margin-input{
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+.multi-select{
+	width:100%	!important;
+}
+.btn-cancel{
+	background-color: #aaa;
+	color:white;
+}
+
+@-moz-document url-prefix() {
+    fieldset {
+        display: table-cell;
+    }
+}
+.ps-container>.ps-scrollbar-y-rail {
+	z-index: 1002;
+}
+
+.small-input-group {
+	height:25px;
+	font-size:11px;
+}

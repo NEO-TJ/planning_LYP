@@ -1,0 +1,46 @@
+<!-- Customize CSS from Bootstrap -->
+.glyphicon-lg{font-size:3em}
+.table-component tr{height:20px !important;}
+.pull-right .glyphicons{margin-top:-16px;}
+td .glyphicons{font-size:24px;}
+td .btn-upload{margin-left:3px;}
+.pull-right .glyphicons.glyphicons-circle-ok, td .glyphicons.glyphicons-circle-ok{color:#5CB85C !important}
+.pull-right .glyphicons.glyphicons-circle-remove, td .glyphicons.glyphicons-circle-remove{color:#D9534F !important}
+.tab-pane{overflow:hidden;}
+.table th{text-align:center;}
+.input-group-btn .btn, .input-group-btn .btn:hover, .input-group-btn .btn:focus {
+	width:140px;
+	text-align:left;
+	color: #555;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	cursor:default
+}
+.btn-excel{margin-left:3px;}
+.datepicker{text-align:center;}
+.table-components{width:100%;max-width: 100%;margin:8px 0;padding:4px;}
+.table-components > thead > tr > th,
+.table-components > tbody > tr > th,
+.table-components > tfoot > tr > th{
+	padding: 4px;
+	line-height: 1.42857143;
+	vertical-align: middle;
+	border-top: 1px solid #ddd;
+}
+.table-components > thead > tr > td,
+.table-components > tbody > tr > td,
+.table-components > tfoot > tr > td {
+	padding: 4px;
+	line-height: 1.42857143;
+	vertical-align: middle;
+	border-top: 1px solid #ddd;
+}
+.table-components td > div{width:100%}
+.table-components .form-control{
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+}
+.delete-elements, .add-elements{padding:3px 4px;}
+.form-control{color:#0066ff !important}
+.bg-error{background-color:#fde8c8}
