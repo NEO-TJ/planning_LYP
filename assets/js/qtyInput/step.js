@@ -25,9 +25,12 @@ function changeStep(){
 			},
 			complete: function(){
 			},
-			success: function(dsStep) {
+			success: function(data) {
+				dsStep = data.dsStep;
+				dsSubAssembly = data.dsSubAssembly;
+
 				if(dsStep.length > 0) {
-					disStepChoose();
+					disStepChoose(dsSubAssembly);
 				}
 				else {
 					swal("Error", "ไม่พบข้อมูล Job และ Step ในฐานข้อมูล กรุณาแจ้งผู้ดูแลระบบ\n" + "Not found Job and Step in database", "error");
@@ -57,8 +60,9 @@ function disStepNotChoose() {
 	$('input#qtyNG').val(0);
 	$('input#totalQtyNG').val(0);
 }
-function disStepChoose() {
+function disStepChoose(dsSubAssembly) {
 	resetQtyInputFill();
+	setSubAssemblySelectElement(dsSubAssembly);
 	
 	$('select#worker').prop('disabled', false);
 	$('input#qtyOK').prop('disabled', false);
@@ -71,6 +75,15 @@ function disStepChoose() {
 	$('input#totalQtyOK').val(0);
 	$('input#qtyNG').val(0);
 	$('input#totalQtyNG').val(0);
+}
+
+function setSubAssemblySelectElement(dataSet = []) {
+	$('select#subAssembly').empty();		// you might wanna empty it first with .empty()
+	$('select#subAssembly').append('<option value="0">Please select Sub_Assembly' + '</option>');
+
+	for(var i=0; i < dataSet.length; i++) {
+		$('select#subAssembly').append('<option value="' + dataSet[i].id + '">' + dataSet[i].Name + '</option>');
+	}
 }
 
 
