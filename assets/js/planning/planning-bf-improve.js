@@ -413,8 +413,7 @@ function getTotalColumn(diffStartCurrentDate, totalSlotDate) {
         (diffStartCurrentDate < ((totalSlotDate - 1) * (-1))) ? totalSlotDate :
         (1 - diffStartCurrentDate));
 
-    return ((totalSpanSlotDate * 3) + totalSlotDate + 9);
-    //return ((totalSpanSlotDate * 3) + totalSlotDate + 11);
+    return ((totalSpanSlotDate * 3) + totalSlotDate + 11);
 }
 
 
@@ -437,6 +436,7 @@ function genTable(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
     return true;
 }
 
+
 function genHeader(diffStartCurrentDate, totalSlotDate) {
     let htmlHeader = "";
 
@@ -449,7 +449,7 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
 
     // Header row 1
     htmlHeader += '<tr>';
-    htmlHeader += '<th class="text-center" colspan="8">';
+    htmlHeader += '<th class="text-center" colspan="10">';
     htmlHeader += '<button type="button" class="btn btn-warning text-left pull-right" id="previous-date">Previous</button>';
     htmlHeader += '</th>';
     for (let i = 0; i < totalSlotDate; i++) {
@@ -467,6 +467,8 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
     htmlHeader += '<th class="text-center" rowspan="2">Next step</th>';
     htmlHeader += '<th class="text-center" rowspan="2">Step-Description</th>';
     htmlHeader += '<th class="text-center" rowspan="2">Line</th>';
+    htmlHeader += '<th class="text-center" rowspan="2">Machine</th>';
+    htmlHeader += '<th class="text-center" rowspan="2">(Sec)</th>';
     htmlHeader += '<th class="text-center" colspan="4">Total</th>';
     for (let i = 0; i < totalSlotDate; i++) {
         htmlHeader += '<th class="text-center" colspan="' + (((parseInt(diffStartCurrentDate) + i) > 0) ? 1 : 4) +
@@ -501,9 +503,8 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
 function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
     let htmlBody = '<tbody>';
 
-    let duplicateCount = 0;
-    let iDuplicate = 0;
-    let previousStockId = 0;
+    let rowSpanSub = 0;
+    let dupNo = 0;
     let row;
     let elementDisabled = "";
     let elementDisplayDisabled = "";
@@ -516,34 +517,28 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
 
     for (let i = 0; i < dsFullPlanning.length; i++) {
         row = dsFullPlanning[i];
-
-        // Calc duplicate count.
-        if(iDuplicate >= duplicateCount) {
-            iDuplicate = 0;                                             // Reset for calculate count.
-            for(let j = (i+1); j < dsFullPlanning.length; j++) {
-                if(row['StockId'] == dsFullPlanning[j]['StockId']) {    // Current == Next?
-                    iDuplicate++;
-                } else { break; }
-            }
-            duplicateCount = iDuplicate + 1;
-            iDuplicate = 0;                                             // Reset again for run to dender.
+        if (dupNo == rowSpanSub) {
+            // Set start
+            rowSpanSub = row['duplicatePStock'];
+            dupNo = 0;
         }
 
-
         htmlBody += '<tr>';
-        if (iDuplicate == 0) {
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['JobName'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['Next_Step_Number'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['NumberAndDESC'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['LineName'] + '</td>';
+        if (dupNo == 0) {
+            htmlBody += '<td class="text-left" rowspan=' + rowSpanSub + '>' + row['JobName'] + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + rowSpanSub + '>' + row['Next_Step_Number'] + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + rowSpanSub + '>' + row['NumberAndDESC'] + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + rowSpanSub + '>' + row['LineName'] + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + rowSpanSub + '>' + row['MachineName'] + '</td>';
+            htmlBody += '<td class="text-right" rowspan=' + rowSpanSub + '>' + (row['Operation_Time'] * 60) + '</td>';
         }
 
         htmlBody += '<td class="text-left bg-success">' + row['SubAssemblyName'] + '</td>';
-        htmlBody += '<td class="text-right bg-success">' + row['StockQty'] + '</td>';
+        htmlBody += '<td class="text-right bg-success">' + row['stock'] + '</td>';
 
-        if (iDuplicate == 0) {
-            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + row['activity_Qty_OK'] + '</td>';
-            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + row['Qty_NG'] + '</td>';
+        if (dupNo == 0) {
+            htmlBody += '<td class="text-right bg-success" rowspan=' + rowSpanSub + '>' + row['activity_Qty_OK'] + '</td>';
+            htmlBody += '<td class="text-right bg-success" rowspan=' + rowSpanSub + '>' + row['Qty_NG'] + '</td>';
 
             //<!-- Date Slot -->
             oDate = getObjectDate(diffStartCurrentDate);
@@ -574,54 +569,54 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
                 }
                 oDate.addDays(+1);
 
-                //htmlBody += '<td class="text-right" rowspan=' + duplicateCount + '>' + row['LineName'] + '</td>';
+//                htmlBody += '<td class="text-right" rowspan=' + rowSpanSub + '>' + row['LineName'] + '</td>';
 
                 htmlBody += '<td class="text-center' + elementDisplayDisabled + elementStriped + bgColor + '"';
-                htmlBody += ' rowspan="' + duplicateCount + '"';
+                htmlBody += ' rowspan="' + rowSpanSub + '"';
                 htmlBody += ' id="okQtySlot' + d + '" name="okQtySlot[' + d + ']";>';
-                //htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
-                //htmlBody += ' id="okQtySlot' + d + '"';
-                //htmlBody += ' name="okQtySlot[' + d + ']";';
-                //htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                //htmlBody += ' placeholder="Plan..." value="' + row['OKQtySlot' + d] + '"' + elementDisabled + ' />';
-                ////htmlBody += row['OKQtySlot' + d];
+//                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+//                htmlBody += ' id="okQtySlot' + d + '"';
+//                htmlBody += ' name="okQtySlot[' + d + ']";';
+//                htmlBody += ' style="font-size: 15px; font-family: monospace;"';
+//                htmlBody += ' placeholder="Plan..." value="' + row['OKQtySlot' + d] + '"' + elementDisabled + ' />';
+                htmlBody += row['OKQtySlot' + d];
                 htmlBody += '</td>';
 
                 htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
-                htmlBody += ' rowspan="' + duplicateCount + '"';
+                htmlBody += ' rowspan="' + rowSpanSub + '"';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';
                 htmlBody += ' id="ngQtySlot' + d + '">';
-                ////htmlBody += row['NGQtySlot' + d];
+                htmlBody += row['NGQtySlot' + d];
                 htmlBody += '</td>';
 
                 htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
-                htmlBody += ' rowspan="' + duplicateCount + '"';
+                htmlBody += ' rowspan="' + rowSpanSub + '"';
                 htmlBody += ' id="workerQtySlot' + d + '" name="workerQtySlot[' + d + ']";>';
-                //htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
-                //htmlBody += ' id="workerQtySlot' + d + '"';
-                //htmlBody += ' name="workerQtySlot[' + d + ']";';
-                //htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                //htmlBody += ' placeholder="Machine..." value="' + row['WorkerQtySlot' + d] + '"' + elementDisabled + ' />';
-                ////htmlBody += row['WorkerQtySlot' + d];
+//                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+//                htmlBody += ' id="workerQtySlot' + d + '"';
+//                htmlBody += ' name="workerQtySlot[' + d + ']";';
+//                htmlBody += ' style="font-size: 15px; font-family: monospace;"';
+//                htmlBody += ' placeholder="Machine..." value="' + row['WorkerQtySlot' + d] + '"' + elementDisabled + ' />';
+                htmlBody += row['WorkerQtySlot' + d];
                 htmlBody += '</td>';
 
                 htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
-                htmlBody += ' rowspan="' + duplicateCount + '"';
+                htmlBody += ' rowspan="' + rowSpanSub + '"';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';
                 htmlBody += ' id="totalTimeSlot' + d + '">';
-                ////htmlBody += row['TotalTimeSlot' + d];
+                htmlBody += row['TotalTimeSlot' + d];
                 htmlBody += '</td>';
             }
 
             //<!-- Delay button -->
-            htmlBody += '<td class="text-center" rowspan="' + duplicateCount + '">';
-            htmlBody += '<button type="button" class="btn btn-danger" id="delay" value=' + row['StockId'] + '>';
+            htmlBody += '<td class="text-center" rowspan="' + rowSpanSub + '">';
+            htmlBody += '<button type="button" class="btn btn-danger" id="delay" value=' + row['StockID'] + '>';
             htmlBody += '<i class="fa fa-plus"></i>';
             htmlBody += '</button>';
             htmlBody += '</td>';
         }
         htmlBody += '</tr>';
-        iDuplicate++;
+        dupNo++;
     }
     htmlBody += '</tbody>';
 

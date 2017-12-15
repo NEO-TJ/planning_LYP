@@ -31,10 +31,60 @@ class Plan_m extends CI_Model {
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			
+			$criteria = ' AND '.$criteria;
+		}
+
+		$sqlStr = "SELECT j.id JobID, s.id StepID, k.id StockId, s.FK_ID_Line"
+			. ", j.FK_ID_Job_Type, j.FK_ID_Job_Status, j.Name JobName"
+			. ", IF((ISNULL(s.Next_Step_Number)) || (s.Next_Step_Number=0),'-',s.Next_Step_Number) Next_Step_Number"
+			. ", CONCAT(s.Number, ' - ', s.`DESC`) NumberAndDESC"
+			. ", l.Name LineName"
+			. ", IF(s.First_Step_Flag=1, b.Name, pb.Name) SubAssemblyName"
+			. ", IF(s.First_Step_Flag=1, k.Qty_OK_First_Step, pk.Qty_OK) StockQty"
+			. ", IF(ISNULL(SUM(a.Qty_OK)),0,SUM(a.Qty_OK)) activity_Qty_OK"
+			. ", k.Qty_NG"
+
+			. " FROM job j"
+			. " INNER JOIN step s ON j.FK_ID_Process = s.FK_ID_Process"
+			. " INNER JOIN stock k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
+			. " LEFT JOIN sub_assembly b ON s.FK_ID_Sub_Assembly = b.id"
+			. " LEFT JOIN line l ON s.FK_ID_Line = l.id"
+			. " LEFT JOIN activity a ON k.id = a.FK_ID_Stock"
+
+			. " LEFT JOIN step ps ON ((s.FK_ID_Process = ps.FK_ID_Process) && (s.Number = ps.Next_Step_Number))"
+			. " LEFT JOIN sub_assembly pb ON ps.FK_ID_Sub_Assembly = pb.id"
+			. " LEFT JOIN stock pk ON ((j.id = pk.FK_ID_Job) && (ps.id = pk.FK_ID_Step))"
+
+			. " WHERE j.Delete_Flag=0"
+			. $criteria
+			. " GROUP BY j.id, s.id, k.id, pk.id"
+			. " ORDER BY JobName, s.Number";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	public function get_full_plan_row1($diffStartCurrentDate=0, $arrayJobID=[], $arrayJobTypeID=[]
+		, $arrayStepID=[], $totalSlotDate=20, $arrayJobStatusID=[1]) {
+		// Prepare Date Slot.
+		$startDate = $this->gen_date_by_diff($diffStartCurrentDate);
+		
+		// Prepare Criteria.
+		$criteria ='';
+		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('j.id', $arrayJobID, $criteria); }
+		if(count($arrayJobTypeID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Type', $arrayJobTypeID, $criteria); }
+		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('t.id', $arrayStepID, $criteria); }
+		if(count($arrayJobStatusID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Status', $arrayJobStatusID, $criteria); }
+
+		if(strlen($criteria) > 4) {
+			$criteria = substr($criteria, 4, strlen($criteria) - 4);
+			
 			$criteria = ' HAVING '.$criteria;
 		}
 
-		$sqlStr = "SELECT j.id JobID, t.id StepID, s.id StockID, t.FK_ID_Line, t.FK_ID_Machine"
+		$sqlStr = "SELECT j.id JobID, t.id StepID, s.id StockId, t.FK_ID_Line, t.FK_ID_Machine"
 			.", j.FK_ID_Job_Type, j.FK_ID_Job_Status"
 			.", j.Name JobName"
 			.", IF((ISNULL(t.Next_Step_Number)) || (t.Next_Step_Number=0),'-',t.Next_Step_Number) Next_Step_Number"
@@ -541,7 +591,7 @@ class Plan_m extends CI_Model {
 
 	
 	
-    // ********************************************************** Helper **********************************************
+	// ********************************************************** Helper **********************************************
 	// _________________________________________________________ DateTime _____________________________________________
 	private function gen_date_by_diff($diffStartCurrentDate) {
 		// Prepare Date Slot.
@@ -614,7 +664,7 @@ class Plan_m extends CI_Model {
 		$strDateSlot = $startDate->format('Y-m-d');
 
 		$sqlStr = " LEFT JOIN ("
-					." SELECT sl.id StockID , DATE(al.Datetime_Stamp) DateStamp"
+					." SELECT sl.id StockId , DATE(al.Datetime_Stamp) DateStamp"
 						.", SUM(al.Qty_OK) ActualOKQty"
 						.", SUM(al.Qty_NG) ActualNGQty"
 						.", COUNT(DISTINCT al.FK_ID_Worker) ActualWorkerQty"
@@ -625,10 +675,10 @@ class Plan_m extends CI_Model {
 						." LEFT JOIN activity al ON (sl.id = al.FK_ID_Stock)"
 						." LEFT JOIN plan pl ON (sl.id = pl.FK_ID_Stock) && (pl.Date_Stamp = DATE(al.Datetime_Stamp))"
 					." WHERE jl.Delete_Flag=0"
-					." GROUP BY StockID, DateStamp"
+					." GROUP BY StockId, DateStamp"
 					." HAVING DateStamp LIKE '".$strDateSlot."%'"
 					." UNION"
-					." SELECT sl.id StockID, pl.Date_Stamp DateStamp"
+					." SELECT sl.id StockId, pl.Date_Stamp DateStamp"
 						.", SUM(al.Qty_OK) ActualOKQty"
 						.", SUM(al.Qty_NG) ActualNGQty"
 						.", COUNT(DISTINCT al.FK_ID_Worker) ActualWorkerQty"
@@ -639,9 +689,9 @@ class Plan_m extends CI_Model {
 						." LEFT JOIN plan pl ON (sl.id = pl.FK_ID_Stock) "
 						." LEFT JOIN activity al ON (sl.id = al.FK_ID_Stock) && (pl.Date_Stamp = DATE(al.Datetime_Stamp))"
 					." WHERE jl.Delete_Flag=0"
-					." GROUP BY StockID,DateStamp"
+					." GROUP BY StockId,DateStamp"
 					." HAVING DateStamp LIKE '".$strDateSlot."%'"
-				.") DateSlot".$d." ON (s.id = DateSlot".$d.".StockID)";
+				.") DateSlot".$d." ON (s.id = DateSlot".$d.".StockId)";
 
 		return $sqlStr;
 	}

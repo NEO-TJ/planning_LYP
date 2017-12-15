@@ -69,11 +69,11 @@
 			<div class="col-md-7 margin-input">							<!-- Col of DATE -->
 				<div class="input-group">
 					<span class="input-group-btn">
-						<button class="btn btn-primary disabled small-input-group" type="button">Date-Time : </button>
+						<button class="btn btn-primary disabled small-input-group" type="button">Start Date : </button>
 					</span>
 					<div class="input-group date" id='dtsStart'>
 						<input data-date-format="DD-MMM-YYYY" type="text"
-						class="small-input-group" name="dtsStart"></input>
+						class="small-input-group" name="dtsStart" />
 						<span class="input-group-addon small-input-group">
 							<span class="glyphicon glyphicon-calendar"></span>
 						</span>

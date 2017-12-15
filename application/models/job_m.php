@@ -164,7 +164,7 @@ class Job_m extends CI_Model {
 		$sqlStr = "SELECT DISTINCT(j.id), j.Name"
 				." FROM job j"
 					." INNER JOIN step t ON (j.FK_ID_Process = t.FK_ID_Process)"
-				." WHERE j.Delete_Flag=0" .$criteria
+				." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1 " .$criteria
 				." ORDER BY j.id";
 
 		$query = $this->db->query($sqlStr);

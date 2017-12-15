@@ -43,7 +43,7 @@ class Planning extends CI_Controller {
 				, $arrayStepID, $totalSlotDate);
 
 			$data = array(
-				'dsFullPlanning'		=> $dsFullPlanning,
+				'dsFullPlanning'				=> $dsFullPlanning,
 				'diffStartCurrentDate'	=> $diffStartCurrentDate
 			);
 
