@@ -29,8 +29,7 @@ class Planning extends CI_Controller {
 	// ___________________________________________________________ Search & Refresh _____________________________
 	public function ajaxGetFullDsPlanning() {
 		if(!($this->is_logged())) {exit(0);}
-		if ($this->input->server('REQUEST_METHOD') === 'POST')
-		{
+		if ($this->input->server('REQUEST_METHOD') === 'POST') {
 			$dsFullPlanning = [];
 	
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
