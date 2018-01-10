@@ -16,24 +16,26 @@ class Plan_m extends CI_Model {
 
 
 	// **************************************************** Join table function ***************************************
-	public function get_full_plan_row($diffStartCurrentDate=0, $arrayJobID=[], $arrayJobTypeID=[]
-		, $arrayStepID=[], $totalSlotDate=20, $arrayJobStatusID=[1]) {
-		// Prepare Date Slot.
-		$startDate = $this->gen_date_by_diff($diffStartCurrentDate);
-		
+	public function getFullPlanRow($diffStartCurrentDate=0, $arrayJobID=[], $arrayJobTypeID=[], $arrayStepID=[], $totalSlotDate=20) {
 		// Prepare Criteria.
 		$criteria ='';
 		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('j.id', $arrayJobID, $criteria); }
 		if(count($arrayJobTypeID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Type', $arrayJobTypeID, $criteria); }
-		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('t.id', $arrayStepID, $criteria); }
-		if(count($arrayJobStatusID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Status', $arrayJobStatusID, $criteria); }
-
+		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('k.FK_ID_Step', $arrayStepID, $criteria); }
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
-			
 			$criteria = ' AND '.$criteria;
 		}
+		$sqlWhere = " WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" . $criteria;
+		// End Prepare Criteria.
 
+		$dsData['dsMain'] = $this->getFullPlanRowMain($sqlWhere);
+		$dsData['dsSlotDate'] = $this->getFullPlanRowSlotDate($sqlWhere, $diffStartCurrentDate, $totalSlotDate);
+
+		return $dsData;
+	}
+
+	private function getFullPlanRowMain($sqlWhere) {
 		$sqlStr = "SELECT j.id JobID, s.id StepID, k.id StockId, s.FK_ID_Line"
 			. ", j.FK_ID_Job_Type, j.FK_ID_Job_Status, j.Name JobName"
 			. ", IF((ISNULL(s.Next_Step_Number)) || (s.Next_Step_Number=0),'-',s.Next_Step_Number) Next_Step_Number"
@@ -55,10 +57,93 @@ class Plan_m extends CI_Model {
 			. " LEFT JOIN sub_assembly pb ON ps.FK_ID_Sub_Assembly = pb.id"
 			. " LEFT JOIN stock pk ON ((j.id = pk.FK_ID_Job) && (ps.id = pk.FK_ID_Step))"
 
-			. " WHERE j.Delete_Flag=0"
-			. $criteria
+			. $sqlWhere
 			. " GROUP BY j.id, s.id, k.id, pk.id"
 			. " ORDER BY JobName, s.Number";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	private function getFullPlanRowSlotDate($sqlWhere, $diffStartCurrentDate=0, $totalSlotDate=20) {
+		// Prepare Date Slot.
+		$startDate = $this->gen_date_by_diff($diffStartCurrentDate);
+		$strDateStart = $startDate->format('Y-m-d');
+		$startDate->modify('+' . $totalSlotDate . ' day');
+		$strDateEnd = $startDate->format('Y-m-d');
+
+		$sqlStr = "SELECT k.id StockId , DATE(a.Datetime_Stamp) DateStamp"
+				.", SUM(a.Qty_OK) ActualOKQty"
+				.", SUM(a.Qty_NG) ActualNGQty"
+				.", COUNT(DISTINCT a.FK_ID_Worker) ActualWorkerQty"
+				.", p.Plan_Qty_OK PlanOKQty"
+				.", p.Plan_Qty_Worker PlanWorkerQty"
+				.", k.Operation_Time OperationTime"
+			." FROM stock k"
+				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." LEFT JOIN activity a ON (k.id = a.FK_ID_Stock)"
+				." LEFT JOIN plan p ON (k.id = p.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
+			. $sqlWhere
+			." AND DATE(a.Datetime_Stamp) BETWEEN '" . $strDateStart . "%' AND '" . $strDateEnd . "%'"
+			." GROUP BY StockId, DateStamp"
+		." UNION"
+			." SELECT k.id StockId, p.Date_Stamp DateStamp"
+				.", SUM(a.Qty_OK) ActualOKQty"
+				.", SUM(a.Qty_NG) ActualNGQty"
+				.", COUNT(DISTINCT a.FK_ID_Worker) ActualWorkerQty"
+				.", p.Plan_Qty_OK PlanOKQty"
+				.", p.Plan_Qty_Worker PlanWorkerQty"
+				.", k.Operation_Time OperationTime"
+			." FROM stock k"
+				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." LEFT JOIN plan p ON (k.id = p.FK_ID_Stock) "
+				." LEFT JOIN activity a ON (k.id = a.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
+			.$sqlWhere
+			." AND p.Date_Stamp BETWEEN '" . $strDateStart . "%' AND '" . $strDateEnd . "%'"
+			." GROUP BY StockId,DateStamp";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+///////////////////////////////////////////////////////////// Temp.
+	public function getFullPlanRowSlotDate1($diffStartCurrentDate=0, $arrayJobID=[], $arrayJobTypeID=[]
+		, $arrayStepID=[], $totalSlotDate=20, $arrayJobStatusID=[1]) {
+		// Prepare Date Slot.
+		$startDate = $this->gen_date_by_diff($diffStartCurrentDate);
+
+		// Prepare Criteria.
+		$criteria ='';
+		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('j.id', $arrayJobID, $criteria); }
+		if(count($arrayJobTypeID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Type', $arrayJobTypeID, $criteria); }
+		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('t.id', $arrayStepID, $criteria); }
+		if(count($arrayJobStatusID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Status', $arrayJobStatusID, $criteria); }
+
+		if(strlen($criteria) > 4) {
+			$criteria = substr($criteria, 4, strlen($criteria) - 4);
+			$criteria = ' HAVING '.$criteria;
+		}
+
+		$sqlStr = "SELECT k.id StockID , DATE(a.Datetime_Stamp) DateStamp, SUM(a.Qty_OK) ActualOKQty, SUM(a.Qty_NG) ActualNGQty"
+			. " , COUNT(DISTINCT a.FK_ID_Worker) ActualWorkerQty, p.Plan_Qty_OK PlanOKQty, p.Plan_Qty_Worker PlanWorkerQty"
+			. " FROM stock k"
+			. " INNER JOIN job j ON k.FK_ID_Job = j.id"
+			. " LEFT JOIN activity a ON (k.id = a.FK_ID_Stock)"
+			. " LEFT JOIN plan p ON (k.id = p.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
+			. " WHERE j.Delete_Flag=0 GROUP BY StockID, DateStamp"
+			. " HAVING DateStamp BETWEEN '2016-12-09%' AND '2017-12-19%'"
+			. " UNION"
+			. " SELECT k.id StockID, p.Date_Stamp DateStamp, SUM(a.Qty_OK) ActualOKQty, SUM(a.Qty_NG) ActualNGQty"
+			. " , COUNT(DISTINCT a.FK_ID_Worker) ActualWorkerQty, p.Plan_Qty_OK PlanOKQty, p.Plan_Qty_Worker PlanWorkerQty"
+			. " FROM stock k"
+			. " INNER JOIN job j ON k.FK_ID_Job = j.id"
+			. " LEFT JOIN plan p ON (k.id = p.FK_ID_Stock)"
+			. " LEFT JOIN activity a ON (k.id = a.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
+			. " WHERE j.Delete_Flag=0 GROUP BY StockID, DateStamp"
+			. " HAVING DateStamp BETWEEN '2016-12-09%' AND '2017-12-19%'";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
@@ -144,6 +229,8 @@ class Plan_m extends CI_Model {
 		
 		return $result;
 	}
+///////////////////////////////////////////////////////////// Temp.
+
 
 
 	// ********************************************************* Save data ********************************************
@@ -632,7 +719,7 @@ class Plan_m extends CI_Model {
 				", IF(ISNULL(DateSlot".$d.".PlanOKQty),'',DateSlot".$d.".PlanOKQty) OKQtySlot".$d
 				.", '-' NGQtySlot".$d
 				.", IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'',DateSlot".$d.".PlanWorkerQty) WorkerQtySlot".$d
-				.", IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'-',(DateSlot".$d.".PlanWorkerQty*s.Operation_Time)) TotalTimeSlot".$d;
+				.", IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'-',(DateSlot".$d.".PlanWorkerQty*k.Operation_Time)) TotalTimeSlot".$d;
 		}
 		else {
 			$sqlStr =
@@ -642,8 +729,8 @@ class Plan_m extends CI_Model {
 				.", CONCAT(IF(ISNULL(DateSlot".$d.".ActualWorkerQty),'-',DateSlot".$d.".ActualWorkerQty),'/'"
 					.",IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'-',DateSlot".$d.".PlanWorkerQty)) WorkerQtySlot".$d
 				.", IF((ISNULL(DateSlot".$d.".ActualWorkerQty))"
-					.",(IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'-',(DateSlot".$d.".PlanWorkerQty*s.Operation_Time)))"
-				.",(DateSlot".$d.".ActualWorkerQty*s.Operation_Time)) TotalTimeSlot".$d;
+					.",(IF(ISNULL(DateSlot".$d.".PlanWorkerQty),'-',(DateSlot".$d.".PlanWorkerQty*k.Operation_Time)))"
+				.",(DateSlot".$d.".ActualWorkerQty*k.Operation_Time)) TotalTimeSlot".$d;
 		}
 
 		return $sqlStr;

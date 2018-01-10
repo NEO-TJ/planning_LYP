@@ -22,7 +22,8 @@
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/planning/';
+$config['base_url'] = ($_SERVER['SERVER_PORT'] == 443 ? 'https' : 'http') . "://" 
+  . $_SERVER['SERVER_NAME'] . "/planning/";
 
 /*
 |--------------------------------------------------------------------------

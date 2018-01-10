@@ -138,8 +138,7 @@ class Planning extends CI_Controller {
 		, $arrayStepID=[], $totalSlotDate=20) {
 		$arrayJobStatusID=[1];
 		$this->load->model('plan_m');
-		$dsFullPlanning = $this->plan_m->get_full_plan_row($diffStartCurrentDate, $arrayJobID
-														, $arrayJobTypeID, $arrayStepID, $totalSlotDate);
+		$dsFullPlanning = $this->plan_m->getFullPlanRow($diffStartCurrentDate, $arrayJobID, $arrayJobTypeID, $arrayStepID, $totalSlotDate);
 
 		return $dsFullPlanning;
 	}

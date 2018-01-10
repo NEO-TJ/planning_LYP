@@ -103,7 +103,6 @@
 </div>
 
 
-
 <div class="row">
 	<div id="divPlanning" class="col-md-12">
 	</div>

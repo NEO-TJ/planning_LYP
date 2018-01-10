@@ -64,11 +64,11 @@ $(document).on('keydown', 'input', function(e) {
 
 $(document).on('change', 'input[name^="okQtySlot"]', function(e) {
     let index = $(this).prop('name').match(/\[(.*?)\]/)[1];
-    saveOKQtyPlan($(this), (index - 1));
+    saveOKQtyPlan($(this), index);
 });
 $(document).on('change', 'input[name^="workerQtySlot"]', function(e) {
     let index = $(this).prop('name').match(/\[(.*?)\]/)[1];
-    saveWorkerQtyPlan($(this), (index - 1));
+    saveWorkerQtyPlan($(this), index);
 });
 
 
@@ -413,8 +413,7 @@ function getTotalColumn(diffStartCurrentDate, totalSlotDate) {
         (diffStartCurrentDate < ((totalSlotDate - 1) * (-1))) ? totalSlotDate :
         (1 - diffStartCurrentDate));
 
-    return ((totalSpanSlotDate * 3) + totalSlotDate + 9);
-    //return ((totalSpanSlotDate * 3) + totalSlotDate + 11);
+    return ((totalSpanSlotDate * 2) + (totalSlotDate * 2) + 9);           // 9 is fix column span.
 }
 
 
@@ -433,18 +432,18 @@ function genTable(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
     tableHtml.push('</table>');
     document.getElementById("divPlanning").innerHTML = tableHtml.join('');
 
-    $('#headerPage').prop('title', "Total Record : " + dsFullPlanning.length);
+    $('#headerPage').prop('title', "Total Record : " + dsFullPlanning.dsMain.length);
     return true;
 }
 
 function genHeader(diffStartCurrentDate, totalSlotDate) {
     let htmlHeader = "";
 
-    let totalCol = getTotalColumn(diffStartCurrentDate, totalSlotDate);
+    let totalColumn = getTotalColumn(diffStartCurrentDate, totalSlotDate);
     // Header row 0
     htmlHeader += '<thead class="table-header">';
     htmlHeader += '<tr>';
-    htmlHeader += '<th id="tableHeader" class="text-center" colspan="' + totalCol + '"><h4><b>Planning</b></h4></th>';
+    htmlHeader += '<th id="tableHeader" class="text-center" colspan="' + totalColumn + '"><h4><b>Planning</b></h4></th>';
     htmlHeader += '</tr>';
 
     // Header row 1
@@ -454,7 +453,7 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
     htmlHeader += '</th>';
     for (let i = 0; i < totalSlotDate; i++) {
         htmlHeader += '<th id="slot-' + (i + 1) + '" class="text-center" colspan="' +
-            (((parseInt(diffStartCurrentDate) + i) > 0) ? 1 : 4) + '">' + (i + 1) + '</th>';
+            (((parseInt(diffStartCurrentDate) + i) > 0) ? 2 : 4) + '">' + (i + 1) + '</th>';
     }
     htmlHeader += '<th class="text-right">';
     htmlHeader += '<button type="button" class="btn btn-warning pull-right" id="next-date">Next</button>';
@@ -469,7 +468,7 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
     htmlHeader += '<th class="text-center" rowspan="2">Line</th>';
     htmlHeader += '<th class="text-center" colspan="4">Total</th>';
     for (let i = 0; i < totalSlotDate; i++) {
-        htmlHeader += '<th class="text-center" colspan="' + (((parseInt(diffStartCurrentDate) + i) > 0) ? 1 : 4) +
+        htmlHeader += '<th class="text-center" colspan="' + (((parseInt(diffStartCurrentDate) + i) > 0) ? 2 : 4) +
             '" id="date-slot-' + (i + 1) + '">';
         htmlHeader += genDateSlotCaption(parseInt(diffStartCurrentDate) + i);
         htmlHeader += '</th>';
@@ -488,7 +487,7 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
         elementHidden = (((parseInt(diffStartCurrentDate) + i) > 0) ? ' hidden' : '');
         htmlHeader += '<th class="text-center">...Plan...</th>';
         htmlHeader += '<th class="text-center' + elementHidden + '" id="ngQtySlotH' + (i + 1) + '">NG</th>';
-        htmlHeader += '<th class="text-center' + elementHidden + '" id="workerQtySlotH' + (i + 1) + '">Worker No.</th>';
+        htmlHeader += '<th class="text-center" id="workerQtySlotH' + (i + 1) + '">Worker No.</th>';
         htmlHeader += '<th class="text-center' + elementHidden + '" id="totalTimeSlotH' + (i + 1) + '">Time</th>';
     }
     htmlHeader += '</tr>';
@@ -504,121 +503,134 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
     let duplicateCount = 0;
     let iDuplicate = 0;
     let previousStockId = 0;
-    let row;
-    let elementDisabled = "";
-    let elementDisplayDisabled = "";
-    let elementHidden = "";
-    let elementStriped = "";
-    let striped = false;
+    let rowMain;
+    let rowSlotDate;
+    let dsSlotDate;
 
-    let oDate = null;
-    let bgColor = "";
+    let okQty;
+    let ngQty;
+    let workerQty;
+    let totalTime;
+    let rSlotDateAttr = getSlotDateAttr(diffStartCurrentDate, totalSlotDate);
 
-    for (let i = 0; i < dsFullPlanning.length; i++) {
-        row = dsFullPlanning[i];
+    let dsPlanningMain = dsFullPlanning.dsMain;
+    let dsPlanningSlotDate = dsFullPlanning.dsSlotDate;
 
-        // Calc duplicate count.
+    for (let i = 0; i < dsPlanningMain.length; i++) {
+        rowMain = dsPlanningMain[i];
+        dsSlotDate = $.grep(dsPlanningSlotDate, function(e){ return e.StockId === rowMain.StockId; });
+
+    // Calc duplicate count.
         if(iDuplicate >= duplicateCount) {
             iDuplicate = 0;                                             // Reset for calculate count.
-            for(let j = (i+1); j < dsFullPlanning.length; j++) {
-                if(row['StockId'] == dsFullPlanning[j]['StockId']) {    // Current == Next?
+            for(let j = (i+1); j < dsPlanningMain.length; j++) {
+                if(rowMain.StockId == dsPlanningMain[j].StockId) {    // Current == Next?
                     iDuplicate++;
                 } else { break; }
             }
             duplicateCount = iDuplicate + 1;
             iDuplicate = 0;                                             // Reset again for run to dender.
         }
+    // End Calc duplicate count.
 
 
+    // Render main data.
         htmlBody += '<tr>';
         if (iDuplicate == 0) {
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['JobName'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['Next_Step_Number'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['NumberAndDESC'] + '</td>';
-            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + row['LineName'] + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.JobName + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.Next_Step_Number + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.NumberAndDESC + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.LineName + '</td>';
         }
 
-        htmlBody += '<td class="text-left bg-success">' + row['SubAssemblyName'] + '</td>';
-        htmlBody += '<td class="text-right bg-success">' + row['StockQty'] + '</td>';
+        htmlBody += '<td class="text-left bg-success">' + rowMain.SubAssemblyName + '</td>';
+        htmlBody += '<td class="text-right bg-success">' + rowMain.StockQty + '</td>';
 
         if (iDuplicate == 0) {
-            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + row['activity_Qty_OK'] + '</td>';
-            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + row['Qty_NG'] + '</td>';
+            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + rowMain.activity_Qty_OK + '</td>';
+            htmlBody += '<td class="text-right bg-success" rowspan=' + duplicateCount + '>' + rowMain.Qty_NG + '</td>';
+    // End render main data.
 
-            //<!-- Date Slot -->
-            oDate = getObjectDate(diffStartCurrentDate);
-            striped = false;
-            for (let d = 1; d < (totalSlotDate + 1); d++) {
-                // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Set planning mode & striped $$$$$$$$$$$$$$$$$
-                if ((parseInt(diffStartCurrentDate) + d) > 1) {
-                    elementDisabled = '';
-                    elementDisplayDisabled = '';
-                    elementHidden = ' hidden';
-                    elementStriped = (striped ? " warning" : "");
-                    attrHidden = ' style="display: none !important; overflow: hidden;"';
-                    striped = !striped;
-                } else {
-                    elementDisabled = ' readonly';
-                    elementDisplayDisabled = ' bg-error';
-                    elementHidden = '';
-                    elementStriped = '';
-                    attrHidden = '';
+    //Render slot date data.
+            for (let iSD = 0; iSD < totalSlotDate; iSD++) {
+                // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Set data of slot date
+                okQty = "";
+                ngQty = "-";
+                workerQty = "";
+                totalTime = "";
+                if(dsSlotDate.length > 0) {
+                    dsSubSlotDate = $.grep(dsSlotDate, function(e){ return e.DateStamp === rSlotDateAttr[iSD].strDate; });
+                    if(dsSubSlotDate.length > 0) {
+                        rowSlotDate = dsSubSlotDate[0];
+                        if((parseInt(diffStartCurrentDate) + iSD) > 0) {
+                            okQty = (jQuery.isEmptyObject(rowSlotDate.PlanOKQty) ? "" : rowSlotDate.PlanOKQty);
+                            ngQty = "-";
+                            workerQty = (jQuery.isEmptyObject(rowSlotDate.PlanWorkerQty) ? "" : rowSlotDate.PlanWorkerQty);
+                            totalTime = (jQuery.isEmptyObject(rowSlotDate.PlanWorkerQty) ? "-" 
+                                : rowSlotDate.PlanWorkerQty * rowSlotDate.OperationTime);
+                        } else {
+                            okQty = (jQuery.isEmptyObject(rowSlotDate.ActualOKQty) ? "-" : rowSlotDate.ActualOKQty)
+                                + "/" + (jQuery.isEmptyObject(rowSlotDate.PlanOKQty) ? "-" : rowSlotDate.PlanOKQty);
+                            ngQty = (jQuery.isEmptyObject(rowSlotDate.ActualNGQty) ? "-" : rowSlotDate.ActualNGQty);
+                            workerQty = (jQuery.isEmptyObject(rowSlotDate.ActualWorkerQty) ? "-" : rowSlotDate.ActualWorkerQty)
+                                + "/" + (jQuery.isEmptyObject(rowSlotDate.PlanWorkerQty) ? "-" : rowSlotDate.PlanWorkerQty);
+                            totalTime = (jQuery.isEmptyObject(rowSlotDate.ActualWorkerQty)
+                                ? ( (jQuery.isEmptyObject(rowSlotDate.PlanWorkerQty) ? "-" : rowSlotDate.PlanWorkerQty * rowSlotDate.OperationTime) )
+                                : rowSlotDate.ActualWorkerQty * rowSlotDate.OperationTime);
+                        }
+                    }
                 }
 
-                // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Set holiday on planning mode $$$$$$$$$$$$$$$$$
-                if (oDate.getDay() == 0) {
-                    bgColor = " bg-primary";
-                    elementStriped = "";
-                } else {
-                    bgColor = "";
-                }
-                oDate.addDays(+1);
-
-                //htmlBody += '<td class="text-right" rowspan=' + duplicateCount + '>' + row['LineName'] + '</td>';
-
-                htmlBody += '<td class="text-center' + elementDisplayDisabled + elementStriped + bgColor + '"';
+                htmlBody += '<td class="text-center' + rSlotDateAttr[iSD].elementDisplayDisabled
+                htmlBody += rSlotDateAttr[iSD].elementStriped + rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
-                htmlBody += ' id="okQtySlot' + d + '" name="okQtySlot[' + d + ']";>';
-                //htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
-                //htmlBody += ' id="okQtySlot' + d + '"';
-                //htmlBody += ' name="okQtySlot[' + d + ']";';
-                //htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                //htmlBody += ' placeholder="Plan..." value="' + row['OKQtySlot' + d] + '"' + elementDisabled + ' />';
-                ////htmlBody += row['OKQtySlot' + d];
+                htmlBody += ' id="okQtySlot' + iSD + '" name="okQtySlot[' + iSD + ']";>';
+                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+                htmlBody += ' id="okQtySlot' + iSD + '"';
+                htmlBody += ' name="okQtySlot[' + iSD + ']";';
+                htmlBody += ' style="font-size: 15px; font-family: monospace;"';
+                htmlBody += ' placeholder="Plan..." value="' + okQty + '"'
+                htmlBody += rSlotDateAttr[iSD].elementDisabled + ' />';
+                //htmlBody += okQty;
                 htmlBody += '</td>';
 
-                htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
+                htmlBody += '<td class="text-center' + rSlotDateAttr[iSD].elementDisplayDisabled
+                htmlBody += rSlotDateAttr[iSD].elementHidden + rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                htmlBody += ' id="ngQtySlot' + d + '">';
-                ////htmlBody += row['NGQtySlot' + d];
+                htmlBody += ' id="ngQtySlot' + iSD + '">';
+                htmlBody += ngQty;
                 htmlBody += '</td>';
 
-                htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
+                htmlBody += '<td class="text-center' + rSlotDateAttr[iSD].elementDisplayDisabled
+                htmlBody += rSlotDateAttr[iSD].elementStriped + rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
-                htmlBody += ' id="workerQtySlot' + d + '" name="workerQtySlot[' + d + ']";>';
-                //htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
-                //htmlBody += ' id="workerQtySlot' + d + '"';
-                //htmlBody += ' name="workerQtySlot[' + d + ']";';
-                //htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                //htmlBody += ' placeholder="Machine..." value="' + row['WorkerQtySlot' + d] + '"' + elementDisabled + ' />';
-                ////htmlBody += row['WorkerQtySlot' + d];
+                htmlBody += ' id="workerQtySlot' + iSD + '" name="workerQtySlot[' + iSD + ']";>';
+                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+                htmlBody += ' id="workerQtySlot' + iSD + '"';
+                htmlBody += ' name="workerQtySlot[' + iSD + ']";';
+                htmlBody += ' style="font-size: 15px; font-family: monospace;"';
+                htmlBody += ' placeholder="Machine..." value="' + workerQty + '"' 
+                htmlBody += rSlotDateAttr[iSD].elementDisabled + ' />';
+                //htmlBody += workerQty;
                 htmlBody += '</td>';
 
-                htmlBody += '<td class="text-center' + elementDisplayDisabled + elementHidden + bgColor + '"';
+                htmlBody += '<td class="text-center' + rSlotDateAttr[iSD].elementDisplayDisabled
+                htmlBody += rSlotDateAttr[iSD].elementHidden + rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';
-                htmlBody += ' id="totalTimeSlot' + d + '">';
-                ////htmlBody += row['TotalTimeSlot' + d];
+                htmlBody += ' id="totalTimeSlot' + iSD + '">';
+                htmlBody += totalTime;
                 htmlBody += '</td>';
             }
 
             //<!-- Delay button -->
             htmlBody += '<td class="text-center" rowspan="' + duplicateCount + '">';
-            htmlBody += '<button type="button" class="btn btn-danger" id="delay" value=' + row['StockId'] + '>';
+            htmlBody += '<button type="button" class="btn btn-danger" id="delay" value=' + rowMain.StockId + '>';
             htmlBody += '<i class="fa fa-plus"></i>';
             htmlBody += '</button>';
             htmlBody += '</td>';
+    //Render slot date data.
         }
         htmlBody += '</tr>';
         iDuplicate++;
@@ -643,4 +655,60 @@ function getObjectDate(diffStartCurrentDate) {
     let oDate = new Date().addDays(diffStartCurrentDate);
 
     return oDate;
+}
+function getSlotDateAttr(diffStartCurrentDate, totalSlotDate) {
+    let oDate = getObjectDate(diffStartCurrentDate);
+    let striped = false;
+    let strDate = '';
+
+    let elementDisabled = '';
+    let elementDisplayDisabled = '';
+    let elementHidden = ' hidden';
+    let elementStriped = (striped ? " warning" : "");
+    //let attrHidden = ' style="display: none !important; overflow: hidden;"';
+    let bgColor = "";
+    let rSlotDateAttr = new Array();
+
+    for (let i = 0; i < totalSlotDate; i++) {
+        strDate = oDate.toISOString().slice(0,10);
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Set planning mode & striped
+        if ((parseInt(diffStartCurrentDate) + i) > 0) {
+            elementDisabled = '';
+            elementDisplayDisabled = '';
+            elementHidden = ' hidden';
+            elementStriped = (striped ? " warning" : "");
+            //attrHidden' = ' style="display: none !important; overflow: hidden;"';
+            striped = !striped;
+        } else {
+            elementDisabled = ' readonly';
+            elementDisplayDisabled = ' bg-error';
+            elementHidden = '';
+            elementStriped = '';
+            //attrHidden' = '';
+        }
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ End Set planning mode & striped
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Set holiday on planning mode
+        if (oDate.getDay() == 0) {
+            bgColor = " bg-primary";
+            elementStriped = "" ;
+        } else {
+            bgColor = "";
+        }
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ End Set holiday on planning mode
+
+        rSlotDateAttr[i] = {
+                'strDate' : strDate,
+                'elementDisabled' : elementDisabled,
+                'elementDisplayDisabled' : elementDisplayDisabled,
+                'elementHidden' : elementHidden,
+                'elementStriped' : elementStriped,
+                //'attrHidden' : attrHidden,
+                'bgColor' : bgColor,
+        }
+        oDate.addDays(+1);
+    }
+
+    return rSlotDateAttr;
 }

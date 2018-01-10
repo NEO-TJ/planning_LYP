@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Job_m extends CI_Model {
-	// Private Property
+// Private Property
 	var $table_name = "job";
 	var $col_id = "id";
 	var $col_name = "Name";
@@ -14,6 +14,7 @@ class Job_m extends CI_Model {
 	var $col_job_type_id = "FK_ID_Job_Type";
 	var $col_job_status_id = "FK_ID_Job_Status";
 	var $col_delete_flag = "Delete_Flag";
+// End Private Property
 	
 	/**
     * Responsable for auto load the database
@@ -33,10 +34,10 @@ class Job_m extends CI_Model {
 		// Create job criteria.
     	$this->load->model('plan_m');
 		if(count($arrayJobID) > 0) { $criteria = $this->plan_m->createCriteriaIN('j.id', $arrayJobID, $criteria); }
-		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('s.id', $arrayStepID, $criteria); }
+		if(count($arrayStepID) > 0) { $criteria = $this->plan_m->createCriteriaIN('s.id', $arrayStepID, $criteria); }
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
-		
+
 			$criteria = ' AND '.$criteria;
 		}
 		// Create line criteria.
