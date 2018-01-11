@@ -30,10 +30,7 @@ $(document).ready(function() {
 
 });
 //------------------------------------------------- Search ---------------------------------------------
-$('button#search').click(function(e) {
-    displayFullPlanningTable();
-    uiChanged = false;
-});
+$('button#search').click(function(e) { submitDisplay(); });
 
 //-------------------------------------------- Change Start Date ---------------------------------------
 $("#dtsStart").on("dp.change", function(e) {
@@ -41,9 +38,12 @@ $("#dtsStart").on("dp.change", function(e) {
     let dtsStartDate = e.date;
     let dDiff = Math.round(((dtsStartDate) - curDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    $('input#diffStartCurrentDate').val(dDiff)
+    $('input#diffStartCurrentDate').val(dDiff);
+    uiChanged = true;
 });
 
+//------------------------------------------- Change date slot qty -------------------------------------
+$("select#dayOfPlan").on("change", function(e) { uiChanged = true; });
 
 
 //----------------------------------------------- Shift Date -------------------------------------------
@@ -57,9 +57,7 @@ $(document).on('click', 'button#previous-date', function(e) {
 });
 
 // --------------------------------------------- Plan input --------------------------------------------
-$(document).on('keydown', 'input', function(e) {
-    numericFilter(e, this, false);
-});
+$(document).on('keydown', 'input', function(e) { numericFilter(e, this, false); });
 
 
 $(document).on('change', 'input[name^="okQtySlot"]', function(e) {
@@ -168,7 +166,7 @@ function bindingMultiselect(elementID, captionName) {
 
 //************************************************ Method **********************************************
 //------------------------------------------------- AJAX -----------------------------------------------
-//________________________________________________ Search ______________________________________________
+//__________________________________________ Get planning data _________________________________________
 function displayFullPlanningTable() {
     let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
     let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; }).get();
@@ -203,6 +201,8 @@ function displayFullPlanningTable() {
             genTable(dsFullPlanning, diffStartCurrentDate, totalSlotDate);
             $('input#diffStartCurrentDate').val(diffStartCurrentDate);
             freezeTableHeader();
+
+            uiChanged = false;
         }
     });
 }
@@ -370,12 +370,7 @@ function filterStep(dsStep) {
 
 //************************************************ Method **********************************************
 //------------------------------------------------ Normal ----------------------------------------------
-function submitDisplay() {
-    if (uiChanged) {
-        uiChanged = false;
-    }
-    displayFullPlanningTable();
-}
+function submitDisplay() { displayFullPlanningTable(); }
 //_________________________________________________ Date _______________________________________________
 function nextDate() {
     let diffStartCurrentDate = parseInt($('input#diffStartCurrentDate').val(), 10);
