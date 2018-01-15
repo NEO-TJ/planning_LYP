@@ -34,16 +34,15 @@
 		</div>
 		
 		<div class="col-md-11 margin-input">
-			<div class="input-group">
+			<div class="input-group" id="userLineID">
 				<span class="input-group-btn">
 					<button class="btn btn-primary disabled" type="button">Line : </button>
 				</span>
-				<select class="form-control" id="lineID" name="FK_ID_Line">
-					<option value="0" selected>Please select line</option>
+				<select class="form-control multi-select input-require-multi-select"
+				id="userLineID" name="FK_ID_Line[]" multiple="multiple">
 					<?php 
-						$i=1;
 						foreach($dsLine as $row) {
-							$selected = (($dsInput['FK_ID_Line'] == $i++) ? ' selected' : '');
+							$selected = (in_array($row['id'], $dsInputLineId) ? ' selected' : '');
 							echo '<option value='.$row['id'].$selected.'>'.$row['Name'].'</option>';
 						}
 					?>

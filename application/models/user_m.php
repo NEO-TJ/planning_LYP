@@ -1,7 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class User_m extends CI_Model
-{
+class User_m extends CI_Model {
 	// Private Property
 	var $table_name = "user";
 	var $col_id = "id";
@@ -12,8 +11,7 @@ class User_m extends CI_Model
 	var $col_level = "Level";
 	var $col_status = "Status";
 	
-	public function __construct()
-    {
+	public function __construct() {
         parent::__construct();
     }
 
@@ -22,10 +20,12 @@ class User_m extends CI_Model
 
 
     // **************************************************** Manual *************************************
-    public function saveAllStatus($id, $data)
-    {
-    	$result = false;
+    public function saveAllStatus($id, $data) {
+		$result = false;
 
+		asort($data['FK_ID_Line']);
+		$sLineId = implode(',', $data['FK_ID_Line']);
+		$data['FK_ID_Line'] = $sLineId;
     	// check in database
     	$exist = $this->get_row_by_id($id);
     	$ce = count($exist);
@@ -38,21 +38,21 @@ class User_m extends CI_Model
 
 
     // **************************************************** Join table function ***************************************
-    public function get_full_user($arrUserID=[])
-    {
+    public function get_full_user($arrUserID=[]) {
     	// Prepare Criteria.
-    	$criteria ='';
-    	if(count($arrUserID) > 0) { $criteria = $this->createCriteriaIN('u.id', $arrUserID, $criteria); }
+		$criteria ='';
+		$this->load->model('plan_m');
+    	if(count($arrUserID) > 0) { $criteria = $this->plan_m->createCriteriaIN('u.id', $arrUserID, $criteria); }
     	if(strlen($criteria) > 4) {
     		$criteria = substr($criteria, 4, strlen($criteria) - 4);
     
     		$criteria = ' WHERE '.$criteria;
     	}
     
-		$sqlStr = "SELECT u.id, u.Name, u.User_ID, l.Name Line"
+		$sqlStr = "SELECT u.id, u.Name, u.User_ID"
 					.", CASE WHEN u.level=1 THEN 'Admin' WHEN u.level=2 THEN 'Superviser/Engineer' ELSE 'Staff' END as Level"
 	    			.", CASE WHEN u.Status=0 THEN 'Active' ELSE 'Terminate' END as Status"
-	    			." FROM user as u LEFT JOIN Line as l ON u.FK_ID_Line = l.id"
+	    			." FROM user as u"
    					.$criteria
    					." ORDER BY u.Level, u.Status, u.Name";
 	    	
@@ -61,8 +61,7 @@ class User_m extends CI_Model
     	
     	return $result;
     }
-    public function get_template()
-    {
+    public function get_template() {
 		$result = [
 				$this->col_id		=> 0,
 				$this->col_name		=> '',
@@ -79,8 +78,7 @@ class User_m extends CI_Model
     
     
     
-    public function validate()
-    {
+    public function validate() {
         $query = $this->db->get_where('user'
 	        				,array(
 		                        'User_ID =' => $this->input->post('userID')
@@ -94,14 +92,12 @@ class User_m extends CI_Model
         }
     }
     
-    public function findAll()
-    {
+    public function findAll() {
         $query = $this->db->order_by('id','ASC')->get_where('user',array('Status !=' => '1'))->result();
         return $query;
     }
     
-    public function save($data)
-    {
+    public function save($data) {
         // check in database
         $exist = $this->db->get_where('user',array('id =' => $data['id'],'Status !=' => '1'))->result();
         
@@ -118,8 +114,7 @@ class User_m extends CI_Model
             return true;
         }
     }
-    public function get_row_active_status($id=0, $arrWhere=[])
-    {
+    public function get_row_active_status($id=0, $arrWhere=[]) {
     	$this->db->select('*');
     	$this->db->from($this->table_name);
     	$this->db->where($this->col_status, 0);
@@ -133,7 +128,7 @@ class User_m extends CI_Model
     
     	return $query->result_array();
     }
-    
+	
     
     // ****************************************************** Normal function *****************************************
     /**
@@ -141,8 +136,7 @@ class User_m extends CI_Model
      * @param int $product_id
      * @return array
      */
-    public function get_row_by_id($id=0, $arrWhere=[])
-    {
+    public function get_row_by_id($id=0, $arrWhere=[]) {
     	$this->db->select('*');
     	$this->db->from($this->table_name);
     	$this->db->where($this->col_id, $id);
@@ -166,8 +160,7 @@ class User_m extends CI_Model
     * @return array
     */
     public function get_row($search_string=null, $order='Name', $order_type='Asc'
-    		, $limit_start=null, $limit_end=null)
-    {
+		, $limit_start=null, $limit_end=null) {
 	    
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -202,8 +195,7 @@ class User_m extends CI_Model
     * @param int $order
     * @return int
     */
-    function count_row($search_string=null, $order=null)
-    {
+    function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 		if($search_string){
@@ -223,8 +215,7 @@ class User_m extends CI_Model
     * @param array $data - associative array with data to store
     * @return boolean 
     */
-    function insert_row($data)
-    {
+    function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 	    return $insert;
 	}
@@ -234,8 +225,7 @@ class User_m extends CI_Model
     * @param array $data - associative array with data to store
     * @return boolean
     */
-    function update_row($id, $data)
-    {
+    function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
 		$report = array();
@@ -253,7 +243,7 @@ class User_m extends CI_Model
     * @param int $id - customer id
     * @return boolean
     */
-	function delete_row($id){
+	function delete_row($id) {
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);
 		

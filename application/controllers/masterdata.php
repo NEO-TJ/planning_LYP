@@ -153,62 +153,68 @@ class Masterdata extends CI_Controller {
     	if($dataType == 1) {
     		$this->load->model('customer_m');
     		$dataset = $this->customer_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->customer_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->customer_m->get_template());
     	}
     	else if($dataType == 2) {
     		$this->load->model('line_m');
     		$dataset = $this->line_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->line_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->line_m->get_template());
 		}
     	else if($dataType == 3) {
     		$result['dsLine'] = $this->getDsLine(0);
 
     		$this->load->model('machine_m');
     		$dataset = $this->machine_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->machine_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->machine_m->get_template());
     	}
     	else if($dataType == 4) {
     		$this->load->model('subAssembly_m');
     		$dataset = $this->subAssembly_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->subAssembly_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->subAssembly_m->get_template());
     	}
     	else if($dataType == 5) {
     		$this->load->model('defect_m');
     		$dataset = $this->defect_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->defect_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->defect_m->get_template());
     	}
     	else if($dataType == 6) {
     		$result['dsUnit'] = $this->getDsUnit(0);
 
     		$this->load->model('rm_m');
     		$dataset = $this->rm_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->rm_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->rm_m->get_template());
     	}
     	else if($dataType == 7) {
     		$this->load->model('unit_m');
     		$dataset = $this->unit_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->unit_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->unit_m->get_template());
     	}
 		else if($dataType == 8) {
     		$this->load->model('jobType_m');
     		$dataset = $this->jobType_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->jobType_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->jobType_m->get_template());
 		}
 		else if($dataType == 9) {
     		$this->load->model('jobStatus_m');
     		$dataset = $this->jobStatus_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->jobStatus_m->get_template());
+    	  $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->jobStatus_m->get_template());
 		}
     	else if($dataType == 0) {
-    		$result['dsLine'] = $this->getDsLine(0);
+				$result['dsLine'] = $this->getDsLine(0);
 
     		$this->load->model('user_m');
-    		$dataset = $this->user_m->get_row_by_id($rowID);
-    	    $result['dsInput'] = ((count($dataset) > 0) ? $dataset[0] : $this->user_m->get_template());
+				$dataset = $this->user_m->get_row_by_id($rowID);
+				if(count($dataset) > 0) {
+					$result['dsInput'] = $dataset[0];
+					$result['dsInputLineId'] = explode(',', $dataset[0]['FK_ID_Line']);
+				} else {
+					$result['dsInput'] = $this->user_m->get_template();
+					$result['dsInputLineId'] = array();
+				}
     	}
     	 
     	return $result;
-    }
+		}
     
 
     // --------------------------------------------------------- Save input mode ---------------------------------

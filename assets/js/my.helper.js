@@ -11,7 +11,7 @@ function numericFilter(e, obj, isDecimal) {
 	}
 	else if ([e.keyCode||e.which] == 190) {										//this is to allow decimal point
 		if(isDecimal == true) {
-			var val = obj.value;
+			let val = obj.value;
 			
 			if(val.indexOf(".") > -1) {
 				e.preventDefault();
@@ -31,11 +31,11 @@ function isEmpty(str) {
 	return typeof str == 'string' && !str.trim() || typeof str == 'undefined' || str === null;
 }
 //------------------------------------- Check input element variable -----------------------------------
-function validateFillSelectElement(obj){
-	var result = false;
-	var val = obj.find(':selected').val();
+function validateFillInputElement(obj, allowZero){
+	let result = false;
+	let val = obj.val();
 	
-	if(val == 0) {
+	if(isEmpty(val)) {
 		obj.addClass('bg-error');
 	}
 	else{
@@ -45,16 +45,31 @@ function validateFillSelectElement(obj){
 	
 	return result;
 }
-function validateFillInputElement(obj, allowZero){
-	var result = false;
-	var val = obj.val();
+function validateFillSelectElement(obj){
+	let result = false;
+	let val = obj.find(':selected').val();
 	
-	if(isEmpty(val)) {
-		obj.addClass('bg-error');
-	}
-	else{
+	if(val > 0) {
 		obj.removeClass('bg-error');
 		result = true;
+	}
+	else{
+		obj.addClass('bg-error');
+	}
+	
+	return result;
+}
+function validateFillMultiSelectElement(obj){
+	let result = false;
+	let objId = obj.prop('id');
+	let val = obj.find(':selected').val();
+	
+	if(val > 0) {
+		$("div#" + objId).removeClass('bg-error');
+		result = true;
+	}
+	else{
+		$("div#" + objId).addClass('bg-error');
 	}
 	
 	return result;
