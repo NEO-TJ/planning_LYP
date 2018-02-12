@@ -1,15 +1,15 @@
 // ************************************************ Event **********************************************
 //------------------------------------------------- Step -----------------------------------------------
-$('table#lastActivity').on("click", ".delete-elements", deleteActivity);
+$('table#actRecoveryNG').on("click", ".delete-elements", deleteActivity);
 
 
 // ********************************************** Method ***********************************************
 //----------------------------------------------- Delete -----------------------------------------------
 function deleteActivity(){
-	var currentTr = $(this).closest("tr");
-	var activityID = currentTr.find('button#activityID').val();
-	var stockID = currentTr.find('input#stockID').val();
-	var qtyNG = currentTr.find('td:nth-child(6)').html();
+	let currentTr = $(this).closest("tr");
+	let activityID = currentTr.find('button#activityID').val();
+	let stockID = currentTr.find('input#stockID').val();
+	let qtyNG = currentTr.find('td:nth-child(7)').html();
 	qtyNG = (isEmpty(qtyNG) ? 0 : qtyNG);
 
 	if(validateID(activityID, stockID)) {
@@ -18,17 +18,19 @@ function deleteActivity(){
 		showDialog(dltValidate);
 	}
 }
+
 function ajaxDeleteActivity(activityID, stockID, qtyNG){
+	let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
 	if(validateID(activityID, stockID)) {
-		var data = {
-				'activityID': activityID,
-				'stockID': stockID,
-				'qtyNG': qtyNG,
-				};
+		let data = {
+			'activityID': activityID,
+			'stockID': stockID,
+			'qtyNG': qtyNG,
+		};
 
 		// Get process table one row by ajax.
 		$.ajax({
-			url: 'recoveryNG/ajaxDeleteActivity',
+			url: baseUrl + 'recoveryNG/ajaxDeleteActivity',
 			type: 'post',
 			data: data,
 			beforeSend: function(){
@@ -53,7 +55,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 						confirmButtonText: "Done",
 						confirmButtonClass: "btn btn-success",
 					}).then(function(){
-						window.location.href="recoveryNG"
+						window.location.href="activityRecoveryNG"
 					});
 				}
 				else if(result == 1) {

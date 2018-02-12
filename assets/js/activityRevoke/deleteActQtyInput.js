@@ -1,16 +1,16 @@
 // ************************************************ Event **********************************************
 //------------------------------------------------- Step -----------------------------------------------
-$('table#lastActivity').on("click", ".delete-elements", deleteActivity);
+$('table#actQtyInput').on("click", ".delete-elements", deleteActivity);
 
 
 // ********************************************** Method ***********************************************
 //----------------------------------------------- Delete -----------------------------------------------
 function deleteActivity(){
-	var currentTr = $(this).closest("tr");
-	var activityID = currentTr.find('button#activityID').val();
-	var stockID = currentTr.find('input#stockID').val();
-	var qtyOK = currentTr.find('td:nth-child(6)').html();
-	var qtyNG = currentTr.find('td:nth-child(7)').html();
+	let currentTr = $(this).closest("tr");
+	let activityID = currentTr.find('button#activityID').val();
+	let stockID = currentTr.find('input#stockID').val();
+	let qtyOK = currentTr.find('td:nth-child(7)').html();
+	let qtyNG = currentTr.find('td:nth-child(8)').html();
 	qtyOK = (isEmpty(qtyOK) ? 0 : qtyOK);
 	qtyNG = (isEmpty(qtyNG) ? 0 : qtyNG);
 
@@ -20,18 +20,20 @@ function deleteActivity(){
 		showDialog(dltValidate);
 	}
 }
+
 function ajaxDeleteActivity(activityID, stockID, qtyOK, qtyNG){
+	let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
 	if(validateID(activityID, stockID)) {
-		var data = {
-				'activityID': activityID,
-				'stockID': stockID,
-				'qtyOK': qtyOK,
-				'qtyNG': qtyNG,
-				};
+		let data = {
+			'activityID': activityID,
+			'stockID': stockID,
+			'qtyOK': qtyOK,
+			'qtyNG': qtyNG,
+		};
 
 		// Get process table one row by ajax.
 		$.ajax({
-			url: 'qtyInput/ajaxDeleteActivity',
+			url: baseUrl + 'qtyInput/ajaxDeleteActivity',
 			type: 'post',
 			data: data,
 			beforeSend: function(){
@@ -56,10 +58,9 @@ function ajaxDeleteActivity(activityID, stockID, qtyOK, qtyNG){
 						confirmButtonText: "Done",
 						confirmButtonClass: "btn btn-success",
 					}).then(function(){
-						window.location.href="qtyInput"
+						window.location.href="activityQtyInput"
 					});
-				}
-				else if(result == 1) {
+				} else if(result == 1) {
 					swal({
 						title: "Warning!",
 						text: 'Can not delete,<span class="text-info"> Not enough Stock!</span><p>' 
@@ -67,8 +68,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyOK, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else if(result == 2) {
+				} else if(result == 2) {
 					swal({
 						title: "Warning!",
 						text: 'Modify<span class="text-info"> Stock </span> Not complete...!<p>' 
@@ -76,8 +76,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyOK, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else if(result == 3) {
+				} else if(result == 3) {
 					swal({
 						title: "Warning!",
 						text: 'Delete<span class="text-info"> Activity </span> Not complete...!<p>' 
@@ -85,8 +84,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyOK, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else{
+				} else{
 					swal({
 						title: "Warning!",
 						text: 'Delete<span class="text-info"> activity and modify stock </span> Not complete...!<p>' 

@@ -23,7 +23,6 @@
 			echo js_asset('recoveryNG/recoveryNG.js');
 			echo js_asset('recoveryNG/job.js');
 			echo js_asset('recoveryNG/step.js');
-			echo js_asset('recoveryNG/lastActivity.js');
 		?>
 	</body>
 </html>

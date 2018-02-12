@@ -236,7 +236,7 @@ class Step_m extends CI_Model {
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
-    															 
+
 		return $result;
 	}
 	public function get_previous_full_stock($jobID=0, $stepNumber=0) {

@@ -106,8 +106,6 @@ class QtyInput extends CI_Controller {
 		$data['dsWorker'] = $this->getDsWorker(0);
 		//$data['dsSubAssembly'] = $this->getDsSubAssembly(0);
 		$data['dsDefect'] = $this->getDsDefect(0);
-		
-		$data['dsFullActivity'] = $this->getDsLastFullActivity(1000);
 
 		return $data;
 	}
@@ -166,20 +164,6 @@ class QtyInput extends CI_Controller {
 		$dsDefect = (($id == 0) ? $this->defect_m->get_row() : $this->defect_m->get_row_by_id($id));
 
 		return $dsDefect;
-	}
-
-
-
-
-
-
-	// -------------------------------------- Initial Last activity table ------------------------------
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Last activity Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	private function getDsLastFullActivity($rowNumber) {
-		$this->load->model('activity_m');
-		$dsFullActivity = $this->activity_m->get_last_full_activity($rowNumber);
-	
-		return $dsFullActivity;
 	}
 // ***************************************** End Get function **************************************
 
@@ -363,12 +347,13 @@ class QtyInput extends CI_Controller {
 				
 			$dsFullStock = $this->getDsFullStock($jobID, $stepID);
 			if(count($dsFullStock) > 0) {
-			$result = $this->updateUndoStock($jobID, $stepID, $qtyOK, $qtyNG, $dsFullStock, $activityID);
+				$result = $this->updateUndoStock($jobID, $stepID, $qtyOK, $qtyNG, $dsFullStock, $activityID);
 			}
 		}
 		
 		return $result;
 	}
+
 	private function updateUndoStock($jobID, $stepID, $qtyOK, $qtyNG, $dsFullStock, $activityID) {
 		$result = 4;
 		$this->load->model('stock_m');
@@ -418,7 +403,7 @@ class QtyInput extends CI_Controller {
 
 		return $result;
 	}
-// ***************************************** End Retrive function **************************************
+// *************************************** End Retrive function **************************************
 
 
 

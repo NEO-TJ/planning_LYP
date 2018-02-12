@@ -44,12 +44,20 @@
         	?>>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Input Mode<b class="caret"></b></a>
           <ul class="dropdown-menu">
-	        <li <?php if($this->uri->segment(1) == 'qtyInput'){echo 'class="active"';}?>>
-	          <a href="<?php echo base_url(); ?>qtyInput">Quantity Input</a>
-	        </li>
-	        <li <?php if($this->uri->segment(1) == 'recoveryNG'){echo 'class="active"';}?>>
-	          <a href="<?php echo base_url(); ?>recoveryNG">Recovery NG</a>
-	        </li>
+            <li <?php if($this->uri->segment(1) == 'qtyInput'){echo 'class="active"';}?>>
+              <a href="<?php echo base_url(); ?>qtyInput">Quantity Input</a>
+            </li>
+            <li <?php if($this->uri->segment(1) == 'recoveryNG'){echo 'class="active"';}?>>
+              <a href="<?php echo base_url(); ?>recoveryNG">Recovery NG</a>
+              <hr>
+            </li>
+
+            <li <?php if($this->uri->segment(2) == 'activityQtyInput'){echo 'class="active"';}?>>
+              <a href="<?php echo base_url(); ?>activityRevoke\activityQtyInput">Activity-Quantity Input</a>
+            </li>
+            <li <?php if($this->uri->segment(1) == 'activityRecoveryNG'){echo 'class="active"';}?>>
+              <a href="<?php echo base_url(); ?>activityRevoke\activityRecoveryNG">Activity-Recovery NG</a>
+            </li>
           </ul>
         </li>
         
