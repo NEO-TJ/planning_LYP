@@ -55,7 +55,7 @@
             <li <?php if($this->uri->segment(2) == 'activityQtyInput'){echo 'class="active"';}?>>
               <a href="<?php echo base_url(); ?>activityRevoke\activityQtyInput">Activity-Quantity Input</a>
             </li>
-            <li <?php if($this->uri->segment(1) == 'activityRecoveryNG'){echo 'class="active"';}?>>
+            <li <?php if($this->uri->segment(2) == 'activityRecoveryNG'){echo 'class="active"';}?>>
               <a href="<?php echo base_url(); ?>activityRevoke\activityRecoveryNG">Activity-Recovery NG</a>
             </li>
           </ul>
