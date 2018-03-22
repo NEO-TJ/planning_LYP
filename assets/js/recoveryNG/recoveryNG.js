@@ -65,21 +65,21 @@ $('form#formRecoveryNG button#resetAllStep').click(function(e) {
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveAll(){
-	var jobID = $('select#job :selected').val();
-	var dateTimeStamp = $('input#dateTimeStamp').val();
-	var workerID = $('select#worker :selected').val();
-	var sourceStepID = $('select#sourceStep :selected').val();
-	var destinationStepID = $('select#destinationStep :selected').val();
-	var qtyNGSend = $('input#qtyNGSend').val();
+	let jobID = $('select#job :selected').val();
+	let dateTimeStamp = $('input#dateTimeStamp').val();
+	let workerID = $('select#worker :selected').val();
+	let sourceStepID = $('select#sourceStep :selected').val();
+	let destinationStepID = $('select#destinationStep :selected').val();
+	let qtyNGSend = $('input#qtyNGSend').val();
 
-	var data = {
-				'jobID': 				jobID,
-				'dateTimeStamp':		dateTimeStamp,
-				'workerID': 			workerID,
-				'sourceStepID': 		sourceStepID,
-				'destinationStepID': 	destinationStepID,
-				'qtyNGSend': 			qtyNGSend,
-				};
+	let data = {
+		'jobID'							: jobID,
+		'dateTimeStamp'			: dateTimeStamp,
+		'workerID'					: workerID,
+		'sourceStepID'			: sourceStepID,
+		'destinationStepID'	: destinationStepID,
+		'qtyNGSend'					: qtyNGSend,
+	};
 
 	// Get process table one row by ajax.
 	$.ajax({
@@ -156,16 +156,16 @@ function saveAll(){
 }
 //********************************************** Validation *******************************************
 function validateRequireFill(){
-	var result = false;
+	let result = false;
 	
-	var resultJobID = false;
-	var resultDateTimeStamp = false;
-	var resultWorker = false;
-	var resultSourceQtyNG = false;
-	var resultDestinationQtyOK = false;
-	var resultQtyNGSend = false;
+	let resultJobID = false;
+	let resultDateTimeStamp = false;
+	let resultWorker = false;
+	let resultSourceQtyNG = false;
+	let resultDestinationQtyOK = false;
+	let resultQtyNGSend = false;
 	
-	var qtyNGSend = $('input#qtyNGSend').val();
+	let qtyNGSend = $('input#qtyNGSend').val();
 	
 	// Check job id selected?
 	resultJobID = validateFillSelectElement($('select#job'));
@@ -176,7 +176,7 @@ function validateRequireFill(){
 	// Check Source Step id selected?
 	resultSourceQtyNG = validateFillSelectElement($('select#sourceStep'));
 	// Check Destination Step id selected?
-	resultDestinationQtyOK = validateFillSelectElement($('select#destinationStep'));
+//	resultDestinationQtyOK = validateFillSelectElement($('select#destinationStep'));
 	// Check Quantity NG for send require has input?
 	resultQtyNGSend = validateFillInputElement($('input#qtyNGSend'));
 	
@@ -186,16 +186,16 @@ function validateRequireFill(){
 	return result;
 }
 function validateEnoughStock() {
-	var sourceQtyNG = parseInt($('input#sourceQtyNG').val());
-	var qtyNGSend = parseInt($('input#qtyNGSend').val());
+	let sourceQtyNG = parseInt($('input#sourceQtyNG').val());
+	let qtyNGSend = parseInt($('input#qtyNGSend').val());
 	
 	return ( ((sourceQtyNG < qtyNGSend) || (qtyNGSend < 1)) ? false : true);
 }
 function validateDateTimeStamp(){
-    var result = false;
+    let result = false;
 
     if($('input#dateTimeStamp').length) {
-        var dateTimeStamp = $('input#dateTimeStamp').val();
+        let dateTimeStamp = $('input#dateTimeStamp').val();
         if(isEmpty(dateTimeStamp)) {
         	swal("Warning", "Please check your 'DateTime Stamp'.","warning");
         }
@@ -219,10 +219,9 @@ function validateDateTimeStamp(){
 
 //************************************************** Tool ****************************************************
 //******************************************** Reset input fill **********************************************
-function resetRecoveryNGPage(jobID, sourceStepID, destinationStepID){
+function resetRecoveryNGPage(jobID, sourceStepID){
 	if(isEmpty(jobID)) { jobID = 0; }
 	if(isEmpty(sourceStepID)) { sourceStepID = 0; }
-	if(isEmpty(destinationStepID)) { destinationStepID = 0; }
 
 	$('select').val(0);
 	
@@ -232,9 +231,5 @@ function resetRecoveryNGPage(jobID, sourceStepID, destinationStepID){
 	if(sourceStepID != 0) {
 		$('select#sourceStep').val(sourceStepID);
 		$('select#sourceStep').trigger('change');
-	}
-	if(destinationStepID != 0) {
-		$('select#destinationStep').val(destinationStepID);
-		$('select#destinationStep').trigger('change');
 	}
 }

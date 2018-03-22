@@ -13,10 +13,6 @@ class Step_m extends CI_Model {
 	var $col_next_step_number = "Next_Step_Number";
 	var $col_first_step_flag = "First_Step_Flag";
 	
-	/**
-    * Responsable for auto load the database
-    * @return void
-	*/
 	public function __construct() {
 		parent::__construct();
 	}
@@ -154,18 +150,6 @@ class Step_m extends CI_Model {
 
 
 
-
-
-
-
-
-
-
-	/**
-     * Get Full step include job & time operate by his is
-     * @param int $jobID, $projectID
-     * @return array
-	*/
 	public function getFullStep_have_stock($jobID=0, $processID=0) {
 		$sqlStr = "SELECT s.id, s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC" 
 			.", s.FK_ID_Line, s.FK_ID_Machine, s.FK_ID_Sub_Assembly, s.NB_Sub, k.Operation_Time"
@@ -225,6 +209,7 @@ class Step_m extends CI_Model {
 
 		return $query->result_array();
 	}
+	// --------------------------------------------------------- minimal data stock.
 	public function get_full_stock($jobID=0, $stepID=0) {
 		$sqlStr = "SELECT k.id, s.Number, s.Next_Step_Number, s.First_Step_Flag, s.NB_Sub"
 			.", k.Qty_OK_First_Step, k.Qty_OK, k.Qty_NG"
@@ -253,16 +238,60 @@ class Step_m extends CI_Model {
 
 		return $result;
 	}
+	// --------------------------------------------------------- medium data stock.
+	public function getFullStockNumberDescSubAss($jobID=0, $stepID=0) {
+		$sqlStr = "SELECT s.id as stepId, sb.Name as subAssamblyName, k.Qty_NG, s.NB_Sub as nbSub"
+			." FROM job as j"
+			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
+			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
+			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
+			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
+			." ORDER BY j.id, s.Number";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+	public function getFullStockNumberDesc($jobID=0, $stepID=0) {
+		$sqlStr = "SELECT k.id as stockId, s.id as stepId"
+			.", CONCAT(s.Number, ' - ', s.`" . $this->col_desc . "`) as stepDesc"
+			.", sb.Name as subAssamblyName, s.NB_Sub as nbSub"
+			.", k.Qty_OK_First_Step as qtyStock"
+			." FROM job as j"
+			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
+			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
+			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
+			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
+			." ORDER BY j.id, s.Number";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+	public function getPreviousFullStockNumberDesc($jobID=0, $stepNumber=0) {
+		$sqlStr = "SELECT k.id as stockId, s.id as stepId"
+			.", CONCAT(s.Number, ' - ', s.`" . $this->col_desc . "`) as stepDesc"
+			.", sb.Name as subAssamblyName, s.NB_Sub as nbSub"
+			.", k.Qty_OK as qtyStock"
+			." FROM job as j"
+			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
+			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
+			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
+			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.Next_Step_Number = ".$stepNumber."))"
+			." ORDER BY j.id, s.Number";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
 
 
 
 
 	// ****************************************************** Normal function *****************************************
-	/**
-    * Get product by his is
-    * @param int $product_id 
-    * @return array
-	*/
 	public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -277,16 +306,6 @@ class Step_m extends CI_Model {
 		return $query->result_array(); 
 	}    
 
-	/**
-    * Fetch project data from the database
-    * possibility to mix search, filter and order
-    * @param string $search_string 
-    * @param strong $order
-    * @param string $order_type 
-    * @param int $limit_start
-    * @param int $limit_end
-    * @return array
-	*/
 	public function get_row($search_string=null, $order=null, $order_type='Asc', $limit_start=null, $limit_end=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -315,12 +334,6 @@ class Step_m extends CI_Model {
 		return $query->result_array(); 	
 	}
 
-	/**
-    * Count the number of rows
-    * @param int $search_string
-    * @param int $order
-    * @return int
-	*/
 	function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -336,22 +349,12 @@ class Step_m extends CI_Model {
 		return $query->num_rows();        
 	}
 
-	/**
-    * Store the new item into the database
-    * @param array $data - associative array with data to store
-    * @return boolean 
-	*/
 	function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 		return $this->db->insert_id();
 		//return $insert;
 	}
 
-	/**
-    * Update project
-    * @param array $data - associative array with data to store
-    * @return boolean
-	*/
 	function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
@@ -365,11 +368,6 @@ class Step_m extends CI_Model {
 		}
 	}
 
-	/**
-    * Delete project
-    * @param int $id - project id
-    * @return boolean
-	*/
 	function delete_row($id){
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);
@@ -378,11 +376,6 @@ class Step_m extends CI_Model {
 	}
 	
 	
-	/**
-    * Delete step
-    * @param int $processID, $arrStepID - process id and array step id
-    * @return boolean
-	*/
 	function delete_not_in($processID, $arrStepID){
 		$this->db->where($this->col_process_id, $processID);
 		$this->db->where_not_in($this->col_id, $arrStepID);

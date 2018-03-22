@@ -33,7 +33,7 @@ class RecoveryNG extends CI_Controller {
 			$qtyNGSend = $this->input->post('qtyNGSend');
 
 			$result = $this->fullRecoveryNG($jobID, $dateTimeStamp, $workerID, $sourceStepID
-											, $destinationStepID, $qtyNGSend);
+				, $destinationStepID, $qtyNGSend);
 		}
 
 		echo $result;    	
@@ -61,55 +61,34 @@ class RecoveryNG extends CI_Controller {
 	public function ajaxGetDsFullStock() {
 		if(!($this->is_logged())) {exit(0);}
 		if ($this->input->server('REQUEST_METHOD') === 'POST') {
-			$dsFullStock = array();
-			$dsResult = array();
+			$dsBothStock = array();
+			$dsSourceStepStock = array();
+			$dsDestStepStock = array();
 	
 			$jobID = $this->input->post('jobID');
 			$stepID = $this->input->post('stepID');
-			$onlyNG = ($this->input->post('onlyNG') == 0);
 			
 			$dsStep = $this->getDsStep($stepID);
 			if(count($dsStep) > 0) {
-				if($onlyNG){
-					// Only NG ====> Get current NG.
-					$dsFullStock = $this->getDsCurrentFullStock($jobID, $stepID);
-					if(count($dsFullStock) > 0) {
-						$dsResult = array(
-							'FK_ID_Step'	=> $stepID,
-							'Qty_NG'		=> $dsFullStock[0]['Qty_NG'],
-							'Qty_Stock'		=> 0,
-						);
-					}
+				// Source Step ====> Get current NG.
+				$dsSourceStepStock = $this->getDsCurrentStepDescSubAssStock($jobID, $stepID);
+
+				// Destination Step.
+				if($dsStep[0]['First_Step_Flag'] == 1) {
+					// ====> Get (Current or First) Stock.
+					$dsDestStepStock = $this->getDsCurrentStepDescStock($jobID, $stepID);
 				} else {
-					// Only Stock ====> Get (Current or First) Stock.
-					if($dsStep[0]['First_Step_Flag'] == 1) {
-						$dsFullStock = $this->getDsCurrentFullStock($jobID, $stepID);
-						if(count($dsFullStock) > 0) {
-							$dsResult = array(
-								'FK_ID_Step'	=> $stepID,
-								'Qty_NG'		=> 0,
-								'Qty_Stock'		=> $dsFullStock[0]['Qty_OK_First_Step'],
-							);
-						}
-					} else {
-						$dsFullStock = $this->getDsPreviousFullStock($jobID, $dsStep[0]['Number']);
-						if(count($dsFullStock) > 0) {
-							$stockQty = "";
-							foreach($dsFullStock as $row){
-								$stockQty .= $row['Qty_OK']." | ";
-							}
-							$dsResult = array(
-								'FK_ID_Step'	=> $stepID,
-								'Qty_NG'		=> 0,
-								'Qty_Stock'		=> substr($stockQty, 0, -3),
-							);
-						}
-					}
+					// ====> Get (Previous Step) Stock.
+					$dsDestStepStock = $this->getDsPreviousStepDescStock($jobID, $dsStep[0]['Number']);
 				}
 			}
 
-			$dsFullStock = [$dsResult];
-			echo json_encode($dsFullStock);
+			$dsBothStock = [
+				'dsSourceStepStock' => $dsSourceStepStock,
+				'dsDestStepStock' 	=> $dsDestStepStock,
+			];
+
+			echo json_encode($dsBothStock);
 		}
 	}
 
@@ -150,7 +129,7 @@ class RecoveryNG extends CI_Controller {
 			$dsDestinationStock = $this->getDsStock($jobID, $destinationStepID);
 			if(($resultEnoughStock) && (count($dsDestinationStock) > 0)) {
 				$resultUpdateStock = $this->updateStock($dsSourceFullStock[0], $dsDestinationStock[0]
-														, $qtyNGSend, $workerID, $dateTimeStamp);
+					, $qtyNGSend, $workerID, $dateTimeStamp);
 			}
 		}
 
@@ -182,13 +161,13 @@ class RecoveryNG extends CI_Controller {
 				$destinationStockData[0]['Qty_OK_First_Step'] = $rowDestinationStock['Qty_OK_First_Step'] + $qtyNGSend;
 			} else {
 				$dsDestinationStock = $this->getDsPreviousFullStock(
-																		$rowDestinationStock['FK_ID_Job'], $dsDestinationStep[0]['Number']);
+					$rowDestinationStock['FK_ID_Job'], $dsDestinationStep[0]['Number']);
 				if(count($dsDestinationStock) > 0) {
 					$i = 0;
 					foreach($dsDestinationStock as $row){
 						$destinationStockData[$i]['DestinationStockID'] = $row['id'];
 						$destinationStockData[$i++]['Qty_OK'] = $row['Qty_OK']
-																				+ (($qtyNGSend * $row['NB_Sub']) / $rowSourceFullStock['NB_Sub']);
+							+ (($qtyNGSend * $row['NB_Sub']) / $rowSourceFullStock['NB_Sub']);
 					}
 				}
 			}
@@ -350,7 +329,7 @@ class RecoveryNG extends CI_Controller {
 
 		return $dsStep;
 	}
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Step Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Step Stock Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	private function getDsCurrentFullStock($jobID, $stepID) {
 		$this->load->model('step_m');
 		$dsFullStock = $this->step_m->get_full_stock($jobID, $stepID);
@@ -360,7 +339,26 @@ class RecoveryNG extends CI_Controller {
 	private function getDsPreviousFullStock($jobID, $stepNumber) {
 		$this->load->model('step_m');
 		$dsPreviousFullStock = $this->step_m->get_previous_full_stock($jobID, $stepNumber);
-			
+
+		return $dsPreviousFullStock;
+	}
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Step-Desc Stock Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%
+	private function getDsCurrentStepDescSubAssStock($jobID, $stepID) {
+		$this->load->model('step_m');
+		$dsFullStock = $this->step_m->getFullStockNumberDescSubAss($jobID, $stepID);
+
+		return $dsFullStock;
+	}
+	private function getDsCurrentStepDescStock($jobID, $stepID) {
+		$this->load->model('step_m');
+		$dsFullStock = $this->step_m->getFullStockNumberDesc($jobID, $stepID);
+
+		return $dsFullStock;
+	}
+	private function getDsPreviousStepDescStock($jobID, $stepNumber) {
+		$this->load->model('step_m');
+		$dsPreviousFullStock = $this->step_m->getPreviousFullStockNumberDesc($jobID, $stepNumber);
+
 		return $dsPreviousFullStock;
 	}
 

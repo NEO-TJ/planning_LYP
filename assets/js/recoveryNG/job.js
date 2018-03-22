@@ -10,13 +10,13 @@ $('select#job').change(function() {
 //------------------------------------------------- Mode ----------------------------------------------
 //******************************************** Change job mode ****************************************
 function changeJob(){
-	var jobID = $('select#job :selected').val();
+	let jobID = $('select#job :selected').val();
 	
 	if(jobID == 0){
 		disJobNotChoose();
 	}
 	else {
-		var data = {'jobID': jobID};
+		let data = {'jobID': jobID};
 
 		// Get project table one row by ajax.
 		$.ajax({
@@ -51,23 +51,17 @@ function changeJob(){
 //******************************************** Set Display Flow ****************************************
 //------------------------------------------------- Job ------------------------------------------------
 function disJobNotChoose() {
-	disStepFix([], 0)
+	disStepFix([], 0);
 }
 //------------------------------------------------- step -----------------------------------------------
 function disStepFix(dataSet, id) {
 	bindingStepSelectElement('#sourceStep', dataSet);
-	bindingStepSelectElement('#destinationStep', dataSet);
-	
 	setSelectElementDisplayMode('#sourceStep', true, id);
-	setSelectElementDisplayMode('#destinationStep', true, id);
 }
 
 function disStepFree(dataSet) {
 	bindingStepSelectElement('#sourceStep', dataSet);
-	bindingStepSelectElement('#destinationStep', dataSet);
-	
 	setSelectElementDisplayMode('#sourceStep', false, 0);
-	setSelectElementDisplayMode('#destinationStep', false, 0);
 }
 
 
@@ -75,8 +69,9 @@ function bindingStepSelectElement(element, dataSet) {
 	$('select'+element).empty();
 	$('select'+element).append('<option value="0">Please select step' + '</option>');
 
-	for(var i=0; i < dataSet.length; i++) {
-		$('select'+element).append('<option value="' + dataSet[i].id + '">' + dataSet[i].Number + ' - ' + dataSet[i].DESC + '</option>');
+	for(let i=0; i < dataSet.length; i++) {
+		$('select'+element).append('<option value="' + dataSet[i].id + '">'
+		+ dataSet[i].Number + ' - ' + dataSet[i].DESC + '</option>');
 	}
 }
 function setSelectElementDisplayMode(element, mode, id) {

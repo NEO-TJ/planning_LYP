@@ -1,6 +1,8 @@
-@CHARSET "UTF-8";
 .margin-input{
 	margin-top: 4px;
 	margin-bottom: 4px;
 	text-align:left;
 }
+.textLeft{text-align:left;}
+.textRight{text-align:right;}
+.textCenter{text-align:center;}
