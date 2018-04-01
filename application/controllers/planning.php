@@ -50,7 +50,7 @@ class Planning extends CI_Controller {
 		}
 	}
 
-    //_____________________________________________________________ OK Qty Plan save ____________________________
+  //_____________________________________________________________ OK Qty Plan save ____________________________
 	public function ajaxSaveOKQtyPlan() {
 		if(!($this->is_logged())) {exit(0);}
 		if ($this->input->server('REQUEST_METHOD') === 'POST')

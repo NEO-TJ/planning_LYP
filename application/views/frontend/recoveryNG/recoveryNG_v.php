@@ -157,18 +157,43 @@
 									<!-- *************************************************************** Step destination Table ******************** -->
 										<div class="row">												<!-- Row of Source -->
 											<div class="col-md-12">
+												<caption>Destination Step</caption>
+												<select class="form-control text-center textLeft" name="destinationStep" id="destinationStep">
+													<option value=0 selected>Please select destination step-description...</option>
+												</select>
+												<br>
 												<table class="table table-sm table-bordered table-condensed"
 													. " table-components table-responsive" id="destinationStepTable">
-												<caption>Destination Step</caption>
 													<thead class="bg-primary">
 														<tr>
 															<th class="text-center" width="2%" rowspan="1"></th>
-															<th class="text-center" width="63%" rowspan="1">Destination Step</th>
+															<th class="text-center" width="63%" rowspan="1">Destination Stock</th>
 															<th class="text-center" width="27%" rowspan="1">Sub assembly</th>
 															<th class="text-center" width="8%" rowspan="1">Receive NG</th>
 														</tr>
 													</thead>
 													<tbody>
+														<tr>
+															<td class="text-center td-group">
+																<input type="radio" class="form-control td-group" id="destinationCheck"
+																type="text" name="destinationCheck[]" value=0  />
+															</td>
+															<td class="text-center td-group">
+																<input class="form-control text-center textLeft" id="destinationStock"
+																type="text" name="destinationStock[]" value="" disabled>
+															</td>
+															<td class="text-center td-group">
+																<input class="form-control text-center textLeft" id="destinationSubAssembly"
+																type="text" name="destinationSubAssembly[]" value="" disabled>
+															</td>
+															<td class="text-center td-group">
+																<input class="form-control text-center textRight" id="receiveNgQty"
+																type="number" name="receiveNgQty[]" value="" disabled>
+
+																<input class="form-control text-center textRight hidden" id="destinationNbSub"
+																type="number" name="destinationNbSub[]" value=1>
+															</td>
+														</tr>
 													</tbody>
 												</table>
 											</div>

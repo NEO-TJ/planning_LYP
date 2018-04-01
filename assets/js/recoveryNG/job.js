@@ -37,6 +37,7 @@ function changeJob(){
 				} else {
 					disStepFree(dsStep);
 				}
+				$('select#destinationStep').prop('disabled', true);
 			}
 		});
 	}
@@ -52,16 +53,25 @@ function changeJob(){
 //------------------------------------------------- Job ------------------------------------------------
 function disJobNotChoose() {
 	disStepFix([], 0);
+	$('select#destinationStep').prop('disabled', true);
 }
 //------------------------------------------------- step -----------------------------------------------
 function disStepFix(dataSet, id) {
+	// Source step.
 	bindingStepSelectElement('#sourceStep', dataSet);
 	setSelectElementDisplayMode('#sourceStep', true, id);
+	// Destination step.
+	bindingStepSelectElement('#destinationStep', dataSet);
+	setSelectElementDisplayMode('#destinationStep', true, id);
 }
 
 function disStepFree(dataSet) {
+	// Source step.
 	bindingStepSelectElement('#sourceStep', dataSet);
 	setSelectElementDisplayMode('#sourceStep', false, 0);
+	// Destination step.
+	bindingStepSelectElement('#destinationStep', dataSet);
+	setSelectElementDisplayMode('#destinationStep', false, 0);
 }
 
 

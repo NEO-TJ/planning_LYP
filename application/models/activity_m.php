@@ -10,6 +10,8 @@ class Activity_m extends CI_Model {
 	var $col_qty_ng = "Qty_NG";
 	var $col_defect_id = "FK_ID_Defect";
 	var $col_user_id = "FK_ID_User";
+	var $col_activity_source = "FK_ID_Activity_Source";
+	var $col_qty_revoke_ng = "Qty_Revoke_NG";
 // End Private Property	
 
 	public function __construct() {
@@ -86,7 +88,7 @@ class Activity_m extends CI_Model {
 
 
 	public function get_full_recovery_NG_destination($activitySourceID) {
-		$sqlStr = "SELECT s.id stockID, s.Qty_OK stockOK, a.Qty_OK activityOK"
+		$sqlStr = "SELECT s.id stockID, s.Qty_OK stockOK, a.Qty_OK activityOK, a.Qty_Revoke_NG revokeQty"
 				.", s.Qty_OK_First_Step firstStepStock, s.FK_ID_Job jobID, s.FK_ID_Step stepID"
 			." FROM activity a"
 				." INNER JOIN stock s ON a.FK_ID_Stock=s.id"

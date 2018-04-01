@@ -29,9 +29,9 @@ function showDialog($type){
 	}else if($type == dltValidate) {
 		swal("Warning", "Please check your input key.","warning");
 	}else if($type == dltValidateEnoughStock) {
-		swal("Warning", "Please check your 'Total NG stock' and 'Qty NG to send'\n"
-				+ "'Total NG stock' much more 'Qty NG to send' or 'Qty NG to send' much more zero."
-				,"warning");
+		swal("Warning"
+			, "You can not send NG qty more than total Qty NG : " + parseInt($('input#sourceQtyNG').val())
+			,"warning");
 	}
 }
 
@@ -49,7 +49,7 @@ $('form#formRecoveryNG').submit(function(e) {
 	
 	if(validateRequireFill()) {
 		if(validateEnoughStock()) {
-			saveAll();			
+			saveAll();
 		} else {
 			showDialog(dltValidateEnoughStock);
 		}
@@ -69,16 +69,20 @@ function saveAll(){
 	let dateTimeStamp = $('input#dateTimeStamp').val();
 	let workerID = $('select#worker :selected').val();
 	let sourceStepID = $('select#sourceStep :selected').val();
-	let destinationStepID = $('select#destinationStep :selected').val();
 	let qtyNGSend = $('input#qtyNGSend').val();
+	let dsDestinationStep = getDataDestinationTable();
+	let firstStepStock = ( ((dsDestinationStep.length == 1) 
+		&& ($('select#destinationStep :selected').val() == dsDestinationStep[0]['stepId'])) 
+		? 1 : 0);
 
 	let data = {
 		'jobID'							: jobID,
 		'dateTimeStamp'			: dateTimeStamp,
 		'workerID'					: workerID,
 		'sourceStepID'			: sourceStepID,
-		'destinationStepID'	: destinationStepID,
 		'qtyNGSend'					: qtyNGSend,
+		'dsDestinationStep'	: dsDestinationStep,
+		'firstStepStock'		: firstStepStock,
 	};
 
 	// Get process table one row by ajax.
@@ -154,6 +158,27 @@ function saveAll(){
 		}
 	});
 }
+
+function getDataDestinationTable() {
+	let dsDestinationStep = Array();
+	let i = 0;
+
+	$('table#destinationStepTable input:checked').each(function() {
+		let curTr = $(this).closest("tr");
+
+		let destinationStep = {
+			'stepId'				: curTr.find('input#destinationCheck').val(),
+			'receiveNgQty' 	: curTr.find('input#receiveNgQty').val(),
+		};
+		dsDestinationStep.push(destinationStep);
+	});
+
+	return dsDestinationStep;
+}
+
+
+
+
 //********************************************** Validation *******************************************
 function validateRequireFill(){
 	let result = false;
@@ -175,43 +200,67 @@ function validateRequireFill(){
 	resultWorker = validateFillSelectElement($('select#worker'));
 	// Check Source Step id selected?
 	resultSourceQtyNG = validateFillSelectElement($('select#sourceStep'));
-	// Check Destination Step id selected?
-//	resultDestinationQtyOK = validateFillSelectElement($('select#destinationStep'));
 	// Check Quantity NG for send require has input?
 	resultQtyNGSend = validateFillInputElement($('input#qtyNGSend'));
-	
+	if($('input#qtyNGSend').val() > 0) {
+		$('input#qtyNGSend').removeClass('bg-error');
+		resultQtyNGSend &= true;
+	} else {
+		$('input#qtyNGSend').addClass('bg-error');
+		resultQtyNGSend = false;
+	}
+	// Check Destination Step id selected?
+	resultDestinationQtyOK = validateStepDestinationTable();
 	
 	result = (resultJobID && resultDateTimeStamp && resultWorker && resultSourceQtyNG
 				&& resultDestinationQtyOK && resultQtyNGSend);
 	return result;
 }
+function validateDateTimeStamp(){
+	let result = false;
+
+	if($('input#dateTimeStamp').length) {
+		let dateTimeStamp = $('input#dateTimeStamp').val();
+		if(isEmpty(dateTimeStamp)) {
+			swal("Warning", "Please check your 'DateTime Stamp'.","warning");
+		} else {
+			if(moment(dateTimeStamp, 'DD-MMM-YYYY HH:mm') > moment()) {
+				swal("Warning", "Can't choose future DateTime.\n Please check your 'DateTime Stamp'.","warning");
+				$('input#dateTimeStamp').val(moment().format('DD-MMM-YYYY HH:mm'))
+			} else { result = true; }
+		}
+	} else {result = true;}
+
+	return result;
+}
+function validateStepDestinationTable() {
+	let valid = 0;
+	let nonvalid = 0;
+	let receiveNgQty = 0;
+
+	$('table#destinationStepTable input:radio').each(function() {
+		if(this.checked) {
+			receiveNgQty = ($(this).closest("tr").find('input#receiveNgQty').val() == "")
+			? 0 : $(this).closest("tr").find('input#receiveNgQty').val();
+
+			if(receiveNgQty > 0) {
+				$(this).closest("tr").find('input#receiveNgQty').removeClass('bg-error');
+				valid++;
+			} else {
+				$(this).closest("tr").find('input#receiveNgQty').addClass('bg-error');
+				nonvalid++;
+			}
+		}
+	});
+
+	return ((nonvalid == 0) && (valid > 0));
+}
+
 function validateEnoughStock() {
 	let sourceQtyNG = parseInt($('input#sourceQtyNG').val());
 	let qtyNGSend = parseInt($('input#qtyNGSend').val());
 	
 	return ( ((sourceQtyNG < qtyNGSend) || (qtyNGSend < 1)) ? false : true);
-}
-function validateDateTimeStamp(){
-    let result = false;
-
-    if($('input#dateTimeStamp').length) {
-        let dateTimeStamp = $('input#dateTimeStamp').val();
-        if(isEmpty(dateTimeStamp)) {
-        	swal("Warning", "Please check your 'DateTime Stamp'.","warning");
-        }
-        else {
-            if(moment(dateTimeStamp, 'DD-MMM-YYYY HH:mm') > moment()) {
-            	swal("Warning", "Can't choose future DateTime.\n Please check your 'DateTime Stamp'.","warning");
-            	$('input#dateTimeStamp').val(moment().format('DD-MMM-YYYY HH:mm'))
-            }
-            else {
-            	result = true;
-            }
-        }
-    }
-    else {result = true;}
-	
-	return result;
 }
 
 

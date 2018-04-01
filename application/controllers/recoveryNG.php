@@ -29,14 +29,15 @@ class RecoveryNG extends CI_Controller {
 			$dateTimeStamp = $this->input->post('dateTimeStamp');
 			$workerID = $this->input->post('workerID');
 			$sourceStepID = $this->input->post('sourceStepID');
-			$destinationStepID = $this->input->post('destinationStepID');
 			$qtyNGSend = $this->input->post('qtyNGSend');
+			$dsDestinationStep = $this->input->post('dsDestinationStep');
+			$firstStepStock = ($this->input->post('firstStepStock') == 1) ? true : false;
 
-			$result = $this->fullRecoveryNG($jobID, $dateTimeStamp, $workerID, $sourceStepID
-				, $destinationStepID, $qtyNGSend);
+			$result = $this->recoveryNG($jobID, $dateTimeStamp, $workerID
+				, $sourceStepID, $qtyNGSend, $dsDestinationStep, $firstStepStock);
 		}
 
-		echo $result;    	
+		echo $result;
 	}
 
 	// ------------------------------------------- Get data set ----------------------------------------
@@ -58,43 +59,42 @@ class RecoveryNG extends CI_Controller {
 		}
 	}
 
-	public function ajaxGetDsFullStock() {
+	public function ajaxGetDsFullSourceStock() {
 		if(!($this->is_logged())) {exit(0);}
 		if ($this->input->server('REQUEST_METHOD') === 'POST') {
-			$dsBothStock = array();
-			$dsSourceStepStock = array();
-			$dsDestStepStock = array();
-	
+			$jobID = $this->input->post('jobID');
+			$stepID = $this->input->post('stepID');
+			$dsSourceStepStock = $this->getDsCurrentStepDescSubAssStock($jobID, $stepID);
+
+			echo json_encode($dsSourceStepStock);
+		}
+	}
+	public function ajaxGetDsFullDestinationStock() {
+		if(!($this->is_logged())) {exit(0);}
+		if ($this->input->server('REQUEST_METHOD') === 'POST') {
 			$jobID = $this->input->post('jobID');
 			$stepID = $this->input->post('stepID');
 			
+			$dsDestinationStepStock = array();
 			$dsStep = $this->getDsStep($stepID);
 			if(count($dsStep) > 0) {
-				// Source Step ====> Get current NG.
-				$dsSourceStepStock = $this->getDsCurrentStepDescSubAssStock($jobID, $stepID);
-
 				// Destination Step.
 				if($dsStep[0]['First_Step_Flag'] == 1) {
 					// ====> Get (Current or First) Stock.
-					$dsDestStepStock = $this->getDsCurrentStepDescStock($jobID, $stepID);
+					$dsDestinationStepStock = $this->getDsCurrentStepDescStock($jobID, $stepID);
 				} else {
 					// ====> Get (Previous Step) Stock.
-					$dsDestStepStock = $this->getDsPreviousStepDescStock($jobID, $dsStep[0]['Number']);
+					$dsDestinationStepStock = $this->getDsPreviousStepDescStock($jobID, $dsStep[0]['Number']);
 				}
 			}
 
-			$dsBothStock = [
-				'dsSourceStepStock' => $dsSourceStepStock,
-				'dsDestStepStock' 	=> $dsDestStepStock,
-			];
-
-			echo json_encode($dsBothStock);
+			echo json_encode($dsDestinationStepStock);
 		}
 	}
 
 
 	// -------------------------------- Modify stock and Delete Activity -------------------------------
-	public function ajaxDeleteActivity(){
+	public function ajaxUndoReturnNg(){
 		if(!($this->is_logged())) {exit(0);}
 		$result = 4;
 
@@ -109,15 +109,16 @@ class RecoveryNG extends CI_Controller {
 
 		echo $result;
 	}
-// ****************************************** End AJAX function ****************************************
+// ****************************************** End AJAX function **************************************
 
 
 
-// ***************************************** Retrive function **************************************
-	// ************************************* Receive input quantity ************************************
-	private function fullRecoveryNG($jobID, $dateTimeStamp, $workerID, $sourceStepID, $destinationStepID, $qtyNGSend) {
+// ***************************************** Retrive function ****************************************
+////////////////////////////////////////////// Recovery NG ///////////////////////////////////////////
+	private function recoveryNG($jobID, $dateTimeStamp, $workerID
+	, $sourceStepID, $qtyNGSend, $dsDestinationStep, $firstStepStock) {
 		$result = 4;
-	
+
 		$resultEnoughStock = false;
 		$resultUpdateStock = false;
 
@@ -126,80 +127,117 @@ class RecoveryNG extends CI_Controller {
 			// Check enough stock.
 			$resultEnoughStock = $this->checkEnoughStock($dsSourceFullStock[0], $qtyNGSend);
 
-			$dsDestinationStock = $this->getDsStock($jobID, $destinationStepID);
-			if(($resultEnoughStock) && (count($dsDestinationStock) > 0)) {
-				$resultUpdateStock = $this->updateStock($dsSourceFullStock[0], $dsDestinationStock[0]
-					, $qtyNGSend, $workerID, $dateTimeStamp);
+			// Prepare main data
+			$dataMain = $this->prepareDataMain($dateTimeStamp, $workerID);
+			// Prepare source data
+			$dataSourceStock = $this->prepareDataSourceStock($dsSourceFullStock[0], $qtyNGSend);
+			// Prepare destination stock data
+			$dataDestinationStock = $this->prepareDataDestinationStock($dsDestinationStep, $jobID, $firstStepStock);
+
+			if(($resultEnoughStock) && (count($dataDestinationStock) > 0)) {
+				$resultUpdateStock = $this->updateStock($dataMain, $dataSourceStock, $dataDestinationStock);
 			}
 		}
 
-		// --------- Set return result 
+		// --------- Set return result
 		$result = $this->setResult($resultEnoughStock, $resultUpdateStock);
 	
 		return $result;
 	}
 	
-	// -------------------------------------------- Modify stock ---------------------------------------
-	private function updateStock($rowSourceFullStock, $rowDestinationStock, $qtyNGSend, $workerID, $dateTimeStamp) {
-		$result = false;
-		$this->load->model('stock_m');
-	
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Prepare Data !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// DateTimeStamp.
-		$strDateTimeStamp = DateTime::createFromFormat('j-M-Y H:i', $dateTimeStamp)->format('Y-m-d H:i:s');
-			
-		// Source : Decrease Total NG stock.
-		$sourceStockID = $rowSourceFullStock['id'];
-		$sourceStockData['Qty_NG'] = $rowSourceFullStock['Qty_NG'] - $qtyNGSend;
-		
-		// Destination : Increase OK stock(If first step => increase that, If not increase previous step).
-		$destinationStockData = array();
-		$dsDestinationStep = $this->getDsStep($rowDestinationStock['FK_ID_Step']);
-		if(count($dsDestinationStep) > 0) {
-			if($dsDestinationStep[0]['First_Step_Flag'] == 1) {			// Not write log for first step.
-				$destinationStockData[0]['DestinationStockID'] = $rowDestinationStock['id'];
-				$destinationStockData[0]['Qty_OK_First_Step'] = $rowDestinationStock['Qty_OK_First_Step'] + $qtyNGSend;
-			} else {
-				$dsDestinationStock = $this->getDsPreviousFullStock(
-					$rowDestinationStock['FK_ID_Job'], $dsDestinationStep[0]['Number']);
-				if(count($dsDestinationStock) > 0) {
-					$i = 0;
-					foreach($dsDestinationStock as $row){
-						$destinationStockData[$i]['DestinationStockID'] = $row['id'];
-						$destinationStockData[$i++]['Qty_OK'] = $row['Qty_OK']
-							+ (($qtyNGSend * $row['NB_Sub']) / $rowSourceFullStock['NB_Sub']);
-					}
-				}
-			}
-		}
-
-
-		// Insert activity data for cut NG.
-		$i=0;
-		$dataActivity[$i]['Datetime_Stamp'] = $strDateTimeStamp;
-		$dataActivity[$i]['FK_ID_Stock'] = $sourceStockID;
-		$dataActivity[$i]['FK_ID_Worker'] = $workerID;
-		$dataActivity[$i]['FK_ID_User'] = $this->session->userdata('id');
-		$dataActivity[$i]['Qty_NG'] = (0 - $qtyNGSend);
-
-		$i++;
-		// Insert activity data for know destination stepID.
-		$dataActivity[$i]['Datetime_Stamp'] = $strDateTimeStamp;
-		$dataActivity[$i]['FK_ID_Stock'] = $rowDestinationStock['id'];
-		$dataActivity[$i]['FK_ID_Worker'] = $workerID;
-		$dataActivity[$i]['FK_ID_User'] = $this->session->userdata('id');
-		// --------- Update Database
-		$result = $this->stock_m->transaction_update_NG_stock($sourceStockID, $sourceStockData
-															, $destinationStockData, $dataActivity);
-
-		return $result;
-	}
 	// ----------------------------------------- Check enough stock ------------------------------------
 	private function checkEnoughStock($rowSourceFullStock, $qtyNGSend) {
 		$result = ( (($rowSourceFullStock['Qty_NG'] < $qtyNGSend) || ($qtyNGSend == 0)) ? false : true );
 	
 		return $result;
 	}
+	
+	// ____________________________________________ Prepare data _______________________________________
+	// ----------------------------------------- Prepare main data -------------------------------------
+	private function prepareDataMain($dateTimeStamp, $workerID) {
+		$result = array(
+			"datetimeStamp"	=> DateTime::createFromFormat('j-M-Y H:i', $dateTimeStamp)->format('Y-m-d H:i:s'),
+			"workerId"			=> $workerID,
+		);
+
+		return $result;
+	}
+	// ------------------------------------- Prepare source stock data ---------------------------------
+	private function prepareDataSourceStock($rowSourceFullStock, $qtyNGSend) {
+		$result = array(
+			"sourceStockID"		=> $rowSourceFullStock['id'],
+			"qtyNGSend"				=> $qtyNGSend,
+			"sourceStockData"	=> array("Qty_NG" => ($rowSourceFullStock['Qty_NG'] - $qtyNGSend)),
+		);
+
+		return $result;
+	}
+	// ------------------------------------ Prepare destination stock data -----------------------------
+	private function prepareDataDestinationStock($dsDestinationStep, $jobID, $firstStepStock) {
+		$rStepId = array_column($dsDestinationStep, 'stepId');
+		$rReceiveNgQty = array_column($dsDestinationStep, 'receiveNgQty');
+		$combineIdReceiveNgQty = array_combine($rStepId, $rReceiveNgQty);
+
+		$this->load->model('stock_m');
+		$dsDestinationStock = $this->stock_m->getRowByJobAndMultiStepId($jobID, $rStepId);
+		$stockType = (($firstStepStock) ? $this->stock_m->col_qty_ok_first_step : $this->stock_m->col_qty_ok);
+		$i = 0;
+		foreach ($dsDestinationStock as $value) {
+			$dataDestinationStock[$i] = array(
+				"DestinationStockID"	=> $value[$this->stock_m->col_id],
+				$stockType	=> $value[$stockType] + $combineIdReceiveNgQty[$value[$this->stock_m->col_step_id]],
+			);
+
+			$dataDestinationStockActivity[$i] = array(
+				"DestinationStockID"	=> $value[$this->stock_m->col_id],
+				"ReceiveNgQty"				=> $combineIdReceiveNgQty[$value[$this->stock_m->col_step_id]] * (($firstStepStock) ? -1 : 1),
+			);
+
+			$i++;
+		}
+
+		$rResult = array(
+			"dataDestinationStock"					=> $dataDestinationStock,
+			"dataDestinationStockActivity"	=> $dataDestinationStockActivity
+		);
+
+		return $rResult;
+	}
+	// __________________________________________ End Prepare data _____________________________________
+
+	// -------------------------------------------- Modify stock ---------------------------------------
+	private function updateStock($dataMain, $dataSourceStock, $dataDestinationStock) {
+		$result = false;
+		$this->load->model('stock_m');
+	
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Prepare Data !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// Insert activity data for cut NG.
+		$i=0;
+		$dataActivity[$i]['Datetime_Stamp'] = $dataMain["datetimeStamp"];
+		$dataActivity[$i]['FK_ID_Stock'] = $dataSourceStock["sourceStockID"];
+		$dataActivity[$i]['FK_ID_Worker'] = $dataMain["workerId"];
+		$dataActivity[$i]['FK_ID_User'] = $this->session->userdata('id');
+		$dataActivity[$i]['Qty_NG'] = (0 - $dataSourceStock["qtyNGSend"]);
+
+		foreach ($dataDestinationStock["dataDestinationStockActivity"] as $value) {
+			$i++;
+			// Insert activity data for know destination stepID.
+			$dataActivity[$i]['Datetime_Stamp'] = $dataMain["datetimeStamp"];
+			$dataActivity[$i]['FK_ID_Stock'] = $value["DestinationStockID"];
+			$dataActivity[$i]['FK_ID_Worker'] = $dataMain["workerId"];
+			$dataActivity[$i]['FK_ID_User'] = $this->session->userdata('id');
+			$dataActivity[$i]['Qty_Revoke_NG'] = $value["ReceiveNgQty"];
+		}
+
+		// --------- Update Database
+		$result = $this->stock_m->transaction_update_NG_stock($dataSourceStock['sourceStockID']
+			, $dataSourceStock['sourceStockData']
+			, $dataDestinationStock["dataDestinationStock"]
+			, $dataActivity);
+
+		return $result;
+	}
+	
 	// ------------------------------------- Set result receive input quantity -------------------------
 	private function setResult($resultEnoughStock=false, $resultUpdateStock=false) {
 		$result = 4;
@@ -216,77 +254,133 @@ class RecoveryNG extends CI_Controller {
 
 		return $result;
 	}
+//////////////////////////////////////////// End Recovery NG /////////////////////////////////////////
 
 
 
-	// ********************************** Modify stock and delete activity *****************************
+///////////////////////////////////////////// Undo Recovery NG ///////////////////////////////////////
 	private function undoFullRecoveryNG($activityID, $stockID, $qtyNGSend) {
 		$result = 4;
 			
 		$this->load->model('stock_m');
 		$dsSourceStock = $this->stock_m->get_row_by_id($stockID);       // Get Source stock for recovery(+) NG.
 		if(count($dsSourceStock) > 0) {                                 // Have stock in DB.
-			$this->load->model('activity_m');
-			$dsDestinationStock = $this->activity_m->get_full_recovery_NG_destination($activityID); // Get Destination stock (OK or First).
+			// Prepare undo source data
+			$dataSourceStock = $this->prepareDataUndoSourceStock($dsSourceStock[0], $qtyNGSend);
+			// Prepare destination stock data
+			$rDataDestinationStock = $this->prepareDataUndoDestinationStock($activityID, $dsSourceStock[0], $qtyNGSend);
+			$dataSourceStock = (($rDataDestinationStock["dataSourceStock"] == null) 
+				? $dataSourceStock : $rDataDestinationStock["dataSourceStock"]);
+			$dataDestinationStock = $rDataDestinationStock["dataDestinationStock"];
 
-			$result = $this->updateUndoRecoveryNGStock($dsSourceStock[0], $dsDestinationStock, $qtyNGSend, $activityID);
+			$result = $this->updateUndoRecoveryNGStock($dataSourceStock, $dataDestinationStock, $activityID);
 		}
 
 		return $result;
 	}
-
-	private function updateUndoRecoveryNGStock($rowSourceStock, $dsDestinationActivityStock, $qtyNGSend, $activityID) {
-		$result = 4;
-		$this->load->model('stock_m');
 	
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Prepare Data !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// StockID.
-		$sourceStockID = $rowSourceStock['id'];
-		// Prepare source stock data.
-		$dataSourceStock['Qty_NG'] = $rowSourceStock['Qty_NG'] + $qtyNGSend;
-		
-		// Prepare destination stock data.
-		$dataDestinationStock = [];
-		if(count($dsDestinationActivityStock) > 0) {
-			$rowDestinationActivityStock = $dsDestinationActivityStock[0];
-			// Destination : Decrease OK stock(If first step => decrease that, If not decrease previous step).
-			$dsDestinationStep = $this->getDsStep($rowDestinationActivityStock['stepID']);
-			if (count($dsDestinationStep) > 0) {
-				$rowDestinationStep = $dsDestinationStep[0];
-				if ($rowDestinationStep['First_Step_Flag'] == 1) {            // Check for first step.
-					$dataDestinationStock[0]['id'] = $rowDestinationActivityStock['stockID'];
-					$dataDestinationStock[0]['Qty_OK_First_Step'] = $rowDestinationActivityStock['firstStepStock'] - $qtyNGSend;
-					$result = 1;
+	// ____________________________________________ Prepare data _______________________________________
+	// ------------------------------------- Prepare source stock data ---------------------------------
+	private function prepareDataUndoSourceStock($rowSourceStock, $qtyNGSend) {
+		$result = array(
+			"sourceStockID"		=> $rowSourceStock['id'],
+			"sourceStockData"	=> array("Qty_NG" => ($rowSourceStock['Qty_NG'] + $qtyNGSend)),
+		);
+
+		return $result;
+	}
+	// ------------------------------------ Prepare destination stock data -----------------------------
+	private function prepareDataUndoDestinationStock($activityID, $rowSourceStock, $qtyNGSend) {
+		$dataSourceStock = null;
+		$this->load->model('activity_m');
+		$dsDestinationStock = $this->activity_m->get_full_recovery_NG_destination($activityID); // Get Destination stock (OK or First).
+
+		if(count($dsDestinationStock) > 0) {
+			$i = 0;
+			foreach ($dsDestinationStock as $value) {
+				if($value["revokeQty"] > 0) {
+					// Normal stock.
+					$dataDestinationStock[$i] = array(
+						$this->stock_m->col_id			=> $value["stockID"],
+						$this->stock_m->col_qty_ok	=> $value["stockOK"] - $value["revokeQty"],
+					);
+				} else if ($value["revokeQty"] < 0) {
+					// First stock.
+					$dataDestinationStock[$i] = array(
+						$this->stock_m->col_id								=> $value["stockID"],
+						$this->stock_m->col_qty_ok_first_step	=> $value["firstStepStock"] + $value["revokeQty"],
+					);
 				} else {
-					$dsDestinationStock = $this->getDsPreviousFullStock(
-																	$rowDestinationActivityStock['jobID'], $rowDestinationStep['Number']);
-					if (count($dsDestinationStock) > 0) {
-						$i = 0;
-						foreach ($dsDestinationStock as $row) {
-							$dataDestinationStock[$i]['id'] = $row['id'];
-							$dataDestinationStock[$i++]['Qty_OK'] = $row['Qty_OK'] - (($qtyNGSend * $row['NB_Sub']) / $rowDestinationStep['NB_Sub']);
+					// Old version of activity return ng.
+					$dataDestinationStockTmp = prepareDataUndoDestinationStockOldversion2($dsDestinationStock, $qtyNGSend, $i);
+					if(count($dataDestinationStockTmp) > 0) {
+						foreach($dataDestinationStockTmp as $valueTmp) {
+							$dataDestinationStock[$i++] = $valueTmp;
 						}
-						$result = 1;
+						$i--;
+					}
+				}
+
+				$i++;
+			}
+		} else {
+			// Old version 1 : Decrease qty_ok_first_step_stock
+			$dataSourceStock = prepareDataUndoDestinationStockOldversion1($rowSourceStock, $qtyNGSend);
+			$result = (($dataSourceStock < 0) ? 4 : 3);
+		}
+
+		$rResult = array(
+			"dataDestinationStock"					=> $dataDestinationStock,
+			"dataSourceStock"								=> $dataSourceStock,
+		);
+
+		return $rResult;
+	}
+	private function prepareDataUndoDestinationStockOldversion1($rowSourceStock, $qtyNGSend) {
+		$dataSourceStock['Qty_OK_First_Step'] = $rowSourceStock['Qty_OK_First_Step'] - $qtyNGSend;
+
+		return $dataSourceStock;
+	}
+	private function prepareDataUndoDestinationStockOldversion2($dsDestinationActivityStock, $qtyNGSend, $i) {
+		$rowDestinationActivityStock = $dsDestinationActivityStock[0];
+		// Destination : Decrease OK stock(If first step => decrease that, If not decrease previous step).
+		$dsDestinationStep = $this->getDsStep($rowDestinationActivityStock['stepID']);
+		if (count($dsDestinationStep) > 0) {
+			$rowDestinationStep = $dsDestinationStep[0];
+			if ($rowDestinationStep['First_Step_Flag'] == 1) {            // Check for first step.
+				$dataDestinationStock[$i]['id'] = $rowDestinationActivityStock['stockID'];
+				$dataDestinationStock[$i]['Qty_OK_First_Step'] = $rowDestinationActivityStock['firstStepStock'] - $qtyNGSend;
+			} else {
+				$dsDestinationStock = $this->getDsPreviousFullStock(
+					$rowDestinationActivityStock['jobID']
+					, $rowDestinationStep['Number']);
+				if (count($dsDestinationStock) > 0) {
+					foreach ($dsDestinationStock as $row) {
+						$dataDestinationStock[$i]['id'] = $row['id'];
+						$dataDestinationStock[$i++]['Qty_OK'] = $row['Qty_OK'] - (($qtyNGSend * $row['NB_Sub']) / $rowDestinationStep['NB_Sub']);
 					}
 				}
 			}
-		} else {
-			// Old version : Decrease qty_ok_first_step_stock
-			$dataSourceStock['Qty_OK_First_Step'] = $rowSourceStock['Qty_OK_First_Step'] - $qtyNGSend;
-			$result = (($dataSourceStock['Qty_OK_First_Step'] < 0) ? 4 : 3);
 		}
 
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Update Database !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// Updata database.
-		if($result != 4) {
-			$result = (($this->stock_m->transaction_update_undo_NG_stock(
-					$sourceStockID, $dataSourceStock, $dataDestinationStock, $activityID))
-					? 0 : 4);
-		}
+		return $dataDestinationStock;
+	}
+	// __________________________________________ End Prepare data _____________________________________
+
+	private function updateUndoRecoveryNGStock($dataSourceStock, $dataDestinationStock, $activityID) {
+		$result = (($this->stock_m->transaction_update_undo_NG_stock(
+			$dataSourceStock["sourceStockID"], $dataSourceStock["sourceStockData"]
+			, $dataDestinationStock, $activityID))
+			? 0 : 4);
 
 		return $result;
 	}
+/////////////////////////////////////////// End Undo Recovery NG /////////////////////////////////////
 // *************************************** End Retrive function **************************************
+
+
+
+
 
 
 
@@ -349,6 +443,7 @@ class RecoveryNG extends CI_Controller {
 
 		return $dsFullStock;
 	}
+
 	private function getDsCurrentStepDescStock($jobID, $stepID) {
 		$this->load->model('step_m');
 		$dsFullStock = $this->step_m->getFullStockNumberDesc($jobID, $stepID);
@@ -360,16 +455,6 @@ class RecoveryNG extends CI_Controller {
 		$dsPreviousFullStock = $this->step_m->getPreviousFullStockNumberDesc($jobID, $stepNumber);
 
 		return $dsPreviousFullStock;
-	}
-
-
-	// ------------------------------------------ Get DB to drilldown ----------------------------------
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Stock Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	private function getDsStock($jobID, $stepID) {
-		$this->load->model('stock_m');
-		$dsStock = $this->stock_m->get_row_by_job_and_step_id($jobID, $stepID);
-
-		return $dsStock;
 	}
 // ***************************************** End Get function **************************************
 

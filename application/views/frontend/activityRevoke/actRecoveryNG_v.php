@@ -71,8 +71,8 @@
 		<div class="row">													<!-- Row of Last activity Recovery NG -->
 			<div class="col-md-12">
 				<?php echo form_open(base_url(), array("id" => "formLastActivityRecoveryNG")); ?>
-				<table id="actRecoveryNG"
-				class="table table-bordered table-components table-condensed table-hover table-striped table-responsive">
+				<table id="actRecoveryNG" class="table table-bordered table-components "
+				."table-condensed table-hover table-striped table-responsive">
 					<thead class="bg-info">
 						<tr>
 							<th class="text-center table-caption bg-info" id="activityCaption" colspan="10">

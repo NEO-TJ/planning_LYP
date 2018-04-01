@@ -1,11 +1,11 @@
 // ************************************************ Event **********************************************
 //------------------------------------------------- Step -----------------------------------------------
-$('table#actRecoveryNG').on("click", ".delete-elements", deleteActivity);
+$('table#actRecoveryNG').on("click", ".delete-elements", undoReturnNg);
 
 
 // ********************************************** Method ***********************************************
 //----------------------------------------------- Delete -----------------------------------------------
-function deleteActivity(){
+function undoReturnNg(){
 	let currentTr = $(this).closest("tr");
 	let activityID = currentTr.find('button#activityID').val();
 	let stockID = currentTr.find('input#stockID').val();
@@ -13,13 +13,13 @@ function deleteActivity(){
 	qtyNG = (isEmpty(qtyNG) ? 0 : qtyNG);
 
 	if(validateID(activityID, stockID)) {
-		ajaxDeleteActivity(activityID, stockID, qtyNG);
+		ajaxUndoReturnNg(activityID, stockID, qtyNG);
 	} else {
 		showDialog(dltValidate);
 	}
 }
 
-function ajaxDeleteActivity(activityID, stockID, qtyNG){
+function ajaxUndoReturnNg(activityID, stockID, qtyNG){
 	let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
 	if(validateID(activityID, stockID)) {
 		let data = {
@@ -30,7 +30,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 
 		// Get process table one row by ajax.
 		$.ajax({
-			url: baseUrl + 'recoveryNG/ajaxDeleteActivity',
+			url: baseUrl + 'recoveryNG/ajaxUndoReturnNg',
 			type: 'post',
 			data: data,
 			beforeSend: function(){
@@ -57,8 +57,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 					}).then(function(){
 						window.location.href="activityRecoveryNG"
 					});
-				}
-				else if(result == 1) {
+				} else if(result == 1) {
 					swal({
 						title: "Warning!",
 						text: 'Can not delete,<span class="text-info"> Not enough Stock!</span><p>' 
@@ -66,8 +65,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else if(result == 2) {
+				} else if(result == 2) {
 					swal({
 						title: "Warning!",
 						text: 'Modify<span class="text-info"> Stock </span> Not complete...!<p>' 
@@ -75,8 +73,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else if(result == 3) {
+				} else if(result == 3) {
 					swal({
 						title: "Warning!",
 						text: 'Delete<span class="text-info"> Activity </span> Not complete...!<p>' 
@@ -84,8 +81,7 @@ function ajaxDeleteActivity(activityID, stockID, qtyNG){
 						type: "error",
 						confirmButtonColor: "#DD6B55"
 					});
-				}
-				else{
+				} else{
 					swal({
 						title: "Warning!",
 						text: 'Delete<span class="text-info"> activity and modify stock </span> Not complete...!<p>' 

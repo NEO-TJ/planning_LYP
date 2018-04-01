@@ -64,6 +64,17 @@ class Stock_m extends CI_Model {
 		return $query->result_array(); 
 	}
 
+  public function getRowByJobAndMultiStepId($jobID, $rStepId=[]) {
+		$this->db->select('*');
+		$this->db->from($this->table_name);
+		$this->db->where($this->col_job_id, $jobID);
+		$this->db->where_in($this->col_step_id, $rStepId);
+
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+
 
 	public function count_row_by_job_and_step_id($jobID=0, $stepID=0) {
 		$this->db->select('*');
