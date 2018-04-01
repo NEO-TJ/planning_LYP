@@ -1,10 +1,6 @@
 <?php
 class Planning extends CI_Controller {
 
-	/**
-	* Responsable for auto load the model
-	* @return void
-	*/
 	public function __construct() {
 		parent::__construct();
 
@@ -33,13 +29,14 @@ class Planning extends CI_Controller {
 			$dsFullPlanning = [];
 	
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
-			$arrayJobTypeID = $this->getPostArrayHelper($this->input->post('jobTypeID'));
 			$arrayStepID = $this->getPostArrayHelper($this->input->post('stepID'));
+			$arrayLineID = $this->getPostArrayHelper($this->input->post('lineID'));
+			$arrayJobTypeID = $this->getPostArrayHelper($this->input->post('jobTypeID'));
 			$diffStartCurrentDate = $this->input->post('diffStartCurrentDate');
 			$totalSlotDate = $this->input->post('totalSlotDate');
 
-			$dsFullPlanning = $this->getDsFullPlan($diffStartCurrentDate, $arrayJobID, $arrayJobTypeID
-				, $arrayStepID, $totalSlotDate);
+			$dsFullPlanning = $this->getDsFullPlan($diffStartCurrentDate, $arrayJobID, $arrayStepID
+			, $arrayLineID, $arrayJobTypeID, $totalSlotDate);
 
 			$data = array(
 				'dsFullPlanning'				=> $dsFullPlanning,
@@ -111,6 +108,23 @@ class Planning extends CI_Controller {
 			echo json_encode($dsStep);
 		}
 	}
+	//_____________________________________________________ Get Step and Line by Job ID __________________________
+	public function ajaxGetDsStepLineByJobID() {
+		if(!($this->is_logged())) {exit(0);}
+		if ($this->input->server('REQUEST_METHOD') === 'POST')
+		{
+			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
+
+			$dsStep = $this->getDsStepJobOpenAndJobID($arrayJobID);
+			$dsLine = $this->getDsLineJobOpenAndJobID($arrayJobID);
+			$rResult = array(
+				"dsStep"	=> $dsStep,
+				"dsLine"	=> $dsLine
+			);
+	
+			echo json_encode($rResult);
+		}
+	}
 
 
 
@@ -125,6 +139,7 @@ class Planning extends CI_Controller {
 		$data['dsJob'] = $this->getDsJobStatusOpen(0);
 		$data['dsJobType'] = $this->getDsJobType(0);
 		$data['dsStep'] = $this->getDsStepJobOpen();
+		$data['dsLine'] = $this->getDsLineJobOpen();
 		
 		return $data;
 	}
@@ -133,11 +148,12 @@ class Planning extends CI_Controller {
 
 
 	// -------------------------------------------------------- Get DB to combobox ----------------------------
-	private function getDsFullPlan($diffStartCurrentDate, $arrayJobID=[], $arrayJobTypeID=[]
-		, $arrayStepID=[], $totalSlotDate=20) {
+	private function getDsFullPlan($diffStartCurrentDate, $arrayJobID=[], $arrayStepID=[]
+	, $arrayLineID=[], $arrayJobTypeID=[], $totalSlotDate=20) {
 		$arrayJobStatusID=[1];
 		$this->load->model('plan_m');
-		$dsFullPlanning = $this->plan_m->getFullPlanRow($diffStartCurrentDate, $arrayJobID, $arrayJobTypeID, $arrayStepID, $totalSlotDate);
+		$dsFullPlanning = $this->plan_m->getFullPlanRow($diffStartCurrentDate, $arrayJobID, $arrayStepID
+		, $arrayLineID, $arrayJobTypeID, $totalSlotDate);
 
 		return $dsFullPlanning;
 	}
@@ -162,11 +178,23 @@ class Planning extends CI_Controller {
 
 		return $dsResult;
 	}
+	private function getDsLineJobOpen() {
+		$this->load->model('line_m');
+		$dsResult = $this->line_m->getLine_Job_Open();
+
+		return $dsResult;
+	}
 
 
 	private function getDsStepJobOpenAndJobID($arrayJobID=[]) {
 		$this->load->model('step_m');
 		$dsResult = $this->step_m->getStep_Job_Open_Job_ID($arrayJobID);
+	
+		return $dsResult;
+	}
+	private function getDsLineJobOpenAndJobID($arrayJobID=[]) {
+		$this->load->model('line_m');
+		$dsResult = $this->line_m->getLine_Job_Open_Job_ID($arrayJobID);
 	
 		return $dsResult;
 	}

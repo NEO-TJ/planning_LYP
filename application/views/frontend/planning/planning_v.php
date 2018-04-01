@@ -25,13 +25,13 @@
 	</div>
 
 	<div class="col-md-5 margin-input">
-		<div class="input-group">
+		<div class="input-group" id="lineID">
 			<span class="input-group-btn">
-				<button class="btn btn-primary disabled" type="button">Job type : </button>
+				<button class="btn btn-primary disabled" type="button">Line : </button>
 			</span>
-			<select class="form-control multi-select" id="jobTypeID" name="jobTypeID[]" multiple="multiple">
+			<select class="form-control multi-select" id="lineID" name="lineID[]" multiple="multiple">
 				<?php 
-					foreach($dsJobType as $row) {
+					foreach($dsLine as $row) {
 						echo '<option value='.$row['id'].'>'.$row['Name'].'</option>';
 					}
 				?>
@@ -41,7 +41,7 @@
 
 
 
-	<div class="col-md-11 margin-input">
+	<div class="col-md-7 margin-input">
 		<div class="input-group" id="stepID">
 			<span class="input-group-btn">
 				<button class="btn btn-primary disabled" type="button">Step number : </button>
@@ -50,6 +50,21 @@
 				<?php 
 					foreach($dsStep as $row) {
 						echo '<option value='.$row['id'].'>'.$row['Number'].' - '.$row['DESC'].'</option>';
+					}
+				?>
+			</select>
+		</div>
+	</div>
+
+	<div class="col-md-4 margin-input">
+		<div class="input-group">
+			<span class="input-group-btn">
+				<button class="btn btn-primary disabled" type="button">Job type : </button>
+			</span>
+			<select class="form-control multi-select" id="jobTypeID" name="jobTypeID[]" multiple="multiple">
+				<?php 
+					foreach($dsJobType as $row) {
+						echo '<option value='.$row['id'].'>'.$row['Name'].'</option>';
 					}
 				?>
 			</select>

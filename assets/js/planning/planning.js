@@ -16,6 +16,7 @@ $(document).ready(function() {
 
     bindingMultiselect('jobTypeID', 'job type');
     bindingMultiselect('stepID', 'step');
+    bindingMultiselect('lineID', 'line');
 
     // DateTimePicker.
     $('#dtsStart').datetimepicker({
@@ -170,15 +171,17 @@ function bindingMultiselect(elementID, captionName) {
 function displayFullPlanningTable() {
     let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
     let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; }).get();
-    let arrayJobTypeID = $('select#jobTypeID').multiselect("getChecked").map(function() { return this.value; }).get();
     let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; }).get();
+    let arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; }).get();
+    let arrayJobTypeID = $('select#jobTypeID').multiselect("getChecked").map(function() { return this.value; }).get();
     let diffStartCurrentDate = parseInt($('input#diffStartCurrentDate').val(), 10);
     let totalSlotDate = parseInt($('select#dayOfPlan :selected').val());
 
     let data = {
         'jobID': arrayJobID,
-        'jobTypeID': arrayJobTypeID,
         'stepID': arrayStepID,
+        'lineID': arrayLineID,
+        'jobTypeID': arrayJobTypeID,
         'diffStartCurrentDate': diffStartCurrentDate,
         'totalSlotDate': totalSlotDate,
     };
@@ -330,7 +333,7 @@ function changeJob() {
 
     // Get project table one row by ajax.
     $.ajax({
-        url: 'planning/ajaxGetDsStepByJobID',
+        url: 'planning/ajaxGetDsStepLineByJobID',
         type: 'post',
         data: data,
         dataType: 'json',
@@ -339,8 +342,9 @@ function changeJob() {
             swal("Error", textStatus + xhr.responseText, "error");
         },
         complete: function() {},
-        success: function(dsStep) {
-            filterStep(dsStep);
+        success: function(rResult) {
+            filterStep(rResult.dsStep);
+            filterLine(rResult.dsLine);
         }
     });
 }
@@ -358,6 +362,21 @@ function filterStep(dsStep) {
 
     $('div#stepID').html(tableTagInputCaption + tableTagInputSelecter);
     bindingMultiselect('stepID', 'step');
+}
+
+function filterLine(dsLine) {
+    let tableTagInputCaption = '<span class="input-group-btn">';
+    tableTagInputCaption += '<button class="btn btn-primary disabled" type="button">Line : </button>';
+    tableTagInputCaption += '</span>';
+
+    let tableTagInputSelecter = '<select class="form-control multi-select" id="lineID" name="lineID[]" multiple="multiple">';
+    for (let i = 0; i < dsLine.length; i++) {
+        tableTagInputSelecter += '<option value=' + dsLine[i]['id'] + '>'
+        tableTagInputSelecter += dsLine[i]['Name'] + '</option>';
+    }
+
+    $('div#lineID').html(tableTagInputCaption + tableTagInputSelecter);
+    bindingMultiselect('lineID', 'line');
 }
 
 

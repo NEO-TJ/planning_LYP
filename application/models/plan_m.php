@@ -16,12 +16,14 @@ class Plan_m extends CI_Model {
 
 
 	// **************************************************** Join table function ***************************************
-	public function getFullPlanRow($diffStartCurrentDate=0, $arrayJobID=[], $arrayJobTypeID=[], $arrayStepID=[], $totalSlotDate=20) {
+	public function getFullPlanRow($diffStartCurrentDate=0, $arrayJobID=[], $arrayStepID=[]
+	, $arrayLineID=[], $arrayJobTypeID=[], $totalSlotDate=20) {
 		// Prepare Criteria.
 		$criteria ='';
 		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('j.id', $arrayJobID, $criteria); }
-		if(count($arrayJobTypeID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Type', $arrayJobTypeID, $criteria); }
 		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('k.FK_ID_Step', $arrayStepID, $criteria); }
+		if(count($arrayLineID) > 0) { $criteria = $this->createCriteriaIN('s.FK_ID_Line', $arrayLineID, $criteria); }
+		if(count($arrayJobTypeID) > 0) { $criteria = $this->createCriteriaIN('j.FK_ID_Job_Type', $arrayJobTypeID, $criteria); }
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			$criteria = ' AND '.$criteria;
@@ -83,6 +85,7 @@ class Plan_m extends CI_Model {
 				.", k.Operation_Time OperationTime"
 			." FROM stock k"
 				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN activity a ON (k.id = a.FK_ID_Stock)"
 				." LEFT JOIN plan p ON (k.id = p.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
 			. $sqlWhere
@@ -98,6 +101,7 @@ class Plan_m extends CI_Model {
 				.", k.Operation_Time OperationTime"
 			." FROM stock k"
 				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN plan p ON (k.id = p.FK_ID_Stock) "
 				." LEFT JOIN activity a ON (k.id = a.FK_ID_Stock) && (p.Date_Stamp = DATE(a.Datetime_Stamp))"
 			.$sqlWhere
@@ -434,11 +438,6 @@ class Plan_m extends CI_Model {
 
 
 	// ****************************************************** Normal function *****************************************
-	/**
-		* Get project by his is
-		* @param int $project_id 
-		* @return array
-	*/
 	public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -451,16 +450,6 @@ class Plan_m extends CI_Model {
 		return $query->result_array();
 	}
 
-	/**
-		* Fetch project data from the database
-		* possibility to mix search, filter and order
-		* @param string $search_string 
-		* @param strong $order
-		* @param string $order_type 
-		* @param int $limit_start
-		* @param int $limit_end
-		* @return array
-	*/
 	public function get_row($search_string=null, $order=null, $order_type='Asc', $limit_start=null, $limit_end=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -489,12 +478,6 @@ class Plan_m extends CI_Model {
 		return $query->result_array(); 	
 	}
 
-	/**
-		* Count the number of rows
-		* @param int $search_string
-		* @param int $order
-		* @return int
-	*/
 	function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -512,21 +495,11 @@ class Plan_m extends CI_Model {
 
 
 	// -------------------------------------------------------- Manipulate --------------------------------------------
-	/**
-		* Store the new item into the database
-		* @param array $data - associative array with data to store
-		* @return boolean 
-	*/
 	function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 		return $insert;
 	}
 
-	/**
-    * Update project
-    * @param array $data - associative array with data to store
-    * @return boolean
-	*/
 	function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
@@ -540,11 +513,6 @@ class Plan_m extends CI_Model {
 		}
 	}
 
-	/**
-    * Delete project
-    * @param int $id - project id
-    * @return boolean
-	*/
 	function delete_row($id){
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);
