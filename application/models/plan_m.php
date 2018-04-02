@@ -269,9 +269,10 @@ class Plan_m extends CI_Model {
 							." INNER JOIN job jl ON kl.FK_ID_Job = jl.id"
 							." INNER JOIN step sl ON kl.FK_ID_Step = sl.id"
 							." LEFT JOIN activity al ON (kl.id = al.FK_ID_Stock)"
-						." WHERE DATE(al.Datetime_Stamp) IS NOT NULL"
-							." AND jl.Delete_Flag=0" .$criteria
-						." GROUP BY sl.FK_ID_Line"
+						." WHERE DATE(al.Datetime_Stamp) IS NOT NULL"." AND jl.Delete_Flag=0"
+							." AND al.FK_ID_Activity_Source IS NULL"
+							." AND al.Qty_OK > 0" .$criteria
+						." GROUP BY sl.FK_ID_Line, DATE(al.Datetime_Stamp)"
 						." UNION"
 						." SELECT sl.FK_ID_Line lineID, pl.Date_Stamp dateStamp"
 							.", 0 actualOKQty"
@@ -280,9 +281,9 @@ class Plan_m extends CI_Model {
 							." INNER JOIN job jl ON kl.FK_ID_Job = jl.id"
 							." INNER JOIN step sl ON kl.FK_ID_Step = sl.id"
 							." LEFT JOIN plan pl ON (kl.id = pl.FK_ID_Stock)"
-						." WHERE pl.Date_Stamp IS NOT NULL"
-							." AND jl.Delete_Flag=0" .$criteria
-						." GROUP BY sl.FK_ID_Line"
+						." WHERE pl.Date_Stamp IS NOT NULL"." AND jl.Delete_Flag=0"
+							." AND pl.Plan_Qty_OK > 0" .$criteria
+						." GROUP BY sl.FK_ID_Line, dateStamp"
 					.") ac ON (s.FK_ID_Line = ac.lineID)"
 				." WHERE ac.dateStamp IS NOT NULL AND j.Delete_Flag=0"
 				." GROUP BY ac.lineID, ac.dateStamp"
