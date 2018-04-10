@@ -8,13 +8,13 @@ $(document).ready(function() {
 //************************************************ Method **********************************************
 //------------------------------------------------- AJAX -----------------------------------------------
 function getReport() {
-	var strDateStart = $('input#dateStart').val();
-	var strDateEnd = $('input#dateEnd').val();
-	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
-	var arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
-	var arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	let strDateStart = $('input#dateStart').val();
+	let strDateEnd = $('input#dateEnd').val();
+	let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	let arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
-	var data = {
+	let data = {
 			'strDateStart': strDateStart,
 			'strDateEnd': strDateEnd,
 			'jobID' : arrayJobID,
@@ -46,7 +46,7 @@ function getReport() {
 
 //--------------------------------------------- Generate Html ------------------------------------------
 function genLineGroup(lineName) {
-	var htmlReport;
+	let htmlReport;
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left" rowspan="1" colspan="4">';
@@ -58,10 +58,10 @@ function genLineGroup(lineName) {
 	
 	return htmlReport;
 }
-function genSummary(totalPlanQty, totalActualQty) {
-	var htmlReport;
-	var totalAchievementQty = ( totalActualQty / 
-							( ((totalPlanQty == 0) && (totalActualQty > 0)) ? 100 : totalPlanQty) ) * 100;
+function genSummary(totalPlanOkQty, totalActualOkQty) {
+	let htmlReport;
+	let totalAchievementQty = ( totalActualOkQty / 
+							( ((totalPlanOkQty == 0) && (totalActualOkQty > 0)) ? 100 : totalPlanOkQty) ) * 100;
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left"></td>';
@@ -69,7 +69,7 @@ function genSummary(totalPlanQty, totalActualQty) {
 	htmlReport +='<td class="text-right border-report">';
 	htmlReport +='<h5><u><mark><strong><em>';
 	htmlReport +='<abbr title="Total Qty Plan">';
-	htmlReport +=totalPlanQty.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+	htmlReport +=totalPlanOkQty.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 	htmlReport +='</abbr>';
 	htmlReport +='</em></strong></mark></u><h5>';
 	htmlReport +='</td>';
@@ -77,7 +77,7 @@ function genSummary(totalPlanQty, totalActualQty) {
 	htmlReport +='<td class="text-right border-report">';
 	htmlReport +='<h5><u><mark><strong><em>';
 	htmlReport +='<abbr title="Total Qty OK">';
-	htmlReport +=totalActualQty.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+	htmlReport +=totalActualOkQty.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 	htmlReport +='</abbr>';
 	htmlReport +='</em></strong></mark></u><h5>';
 	htmlReport +='</td>';
@@ -96,35 +96,35 @@ function genSummary(totalPlanQty, totalActualQty) {
 	return htmlReport;
 }
 function genData(row) {
-	var htmlReport;
+	let htmlReport;
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['dateStamp'] + '</td>';
-	htmlReport +='<td class="text-right">' + row['planQtyOK'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
-	htmlReport +='<td class="text-right">' + row['actualQtyOK'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
-	htmlReport +='<td class="text-right">' + parseFloat(row['achievementQtyOK'])
+	htmlReport +='<td class="text-right">' + row['planOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
+	htmlReport +='<td class="text-right">' + row['actualOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
+	htmlReport +='<td class="text-right">' + parseFloat(row['achievementOkQty'])
 					.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '  %</td>';
 	htmlReport +='</tr>';
 	
 	return htmlReport;
 }
 function genReport(dsAchievement) {
-	var htmlReport = "";
+	let htmlReport = "";
 	
-	var r = 0;
-	var totalPlanQty = 0;
-	var totalActualQty = 0;
-	var lineName = " (TJ Start) ";
+	let r = 0;
+	let totalPlanOkQty = 0;
+	let totalActualOkQty = 0;
+	let lineName = " (TJ Start) ";
 	
-	var row;
-	for(var i=0; i<dsAchievement.length; i++)
+	let row;
+	for(let i=0; i<dsAchievement.length; i++)
 	{
 		row = dsAchievement[i];
 		
 		if(lineName != row['lineName']) {
 			if(lineName != " (TJ Start) ") {
 				//Summary.
-				htmlReport += genSummary(totalPlanQty, totalActualQty);
+				htmlReport += genSummary(totalPlanOkQty, totalActualOkQty);
 				r++;
 			}
 			//Line Group.
@@ -134,20 +134,20 @@ function genReport(dsAchievement) {
 				r += 3;
 			}
 			htmlReport += genLineGroup(lineName);
-			totalPlanQty = 0;
-			totalActualQty = 0;
+			totalPlanOkQty = 0;
+			totalActualOkQty = 0;
 			r++;
 		}
 		//Data.
 		htmlReport += genData(row);
-		totalPlanQty = parseInt(totalPlanQty) + parseInt(row['planQtyOK']);
-		totalActualQty = parseInt(totalActualQty) + parseInt(row['actualQtyOK']);
+		totalPlanOkQty = parseInt(totalPlanOkQty) + parseInt(row['planOkQty']);
+		totalActualOkQty = parseInt(totalActualOkQty) + parseInt(row['actualOkQty']);
 		r++;
 	}
 
 	if(r > 0) {
 		//Summary.
-		htmlReport += genSummary(totalPlanQty, totalActualQty);
+		htmlReport += genSummary(totalPlanOkQty, totalActualOkQty);
 		r++;
 	}
 	

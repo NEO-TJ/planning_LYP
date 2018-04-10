@@ -84,15 +84,49 @@ class AchievementReport extends CI_Controller {
 
 
 	// -------------------------------------------------------- Get DB to combobox ----------------------------
-	private function getDsAchievement($strDateStart, $strDateEnd, $arrayLineID=[]
-	, $arrayJobID=[], $arrayStepID=[]) {
+	private function getDsAchievement($strDateStart, $strDateEnd, $arrayLineID=[], $arrayJobID=[], $arrayStepID=[]) {
 		$this->load->model('plan_m');
-		$dsAchievement = $this->plan_m->get_achievement($strDateStart, $strDateEnd
-		, $arrayLineID, $arrayJobID, $arrayStepID);
+		$dsResult = $this->plan_m->getDsAchievement($strDateStart, $strDateEnd, $arrayLineID, $arrayJobID, $arrayStepID);
+
+		// Calc achievement.
+		$rMyId = array_column($dsResult["dsActivityOk"], 'myId');
+		$i=0;
+		foreach($dsResult["dsPlanOk"] as $row) {
+			$key = array_search($row["myId"], $rMyId);
+			if($key > 0) {
+				$result[$row["myId"]] = array("key" => $key, "value" => $dsResult["dsActivityOk"][$key]["actualOkQty"], "i" => $i);
+				
+				$dsResult["dsPlanOk"][$i]["actualOkQty"] = $dsResult["dsActivityOk"][$key]["actualOkQty"];
+				$dsResult["dsPlanOk"][$i]["achievementOkQty"] = $dsResult["dsActivityOk"][$key]["actualOkQty"]
+					/ (
+						(($dsResult["dsPlanOk"][$i]["planOkQty"] == 0)
+						? (($dsResult["dsActivityOk"][$key]["actualOkQty"] > 0) ? 100 :1)
+						: $dsResult["dsPlanOk"][$i]["planOkQty"])
+					) * 100;
+				unset($dsResult["dsActivityOk"][$key]);
+			}
+			$i++;
+		}
+		$dsAchievement = array_merge($dsResult["dsPlanOk"], $dsResult["dsActivityOk"]);
+
+		// Sort rows achievement.
+		$sortArray = array();
+		foreach($dsAchievement as $rowPlanOk) {
+			foreach($rowPlanOk as $key=>$value) {
+				if(!isset($sortArray[$key])) {
+					$sortArray[$key] = array();
+				}
+				$sortArray[$key][] = $value;
+			}
+		}
+		if( (count($sortArray) > 0) && (count($dsAchievement) > 0) ) {
+			$orderby = "myId";
+			array_multisort($sortArray[$orderby], SORT_ASC, $dsAchievement);
+		}
 
 		return $dsAchievement;
 	}
-    
+
 
 	private function getDsJob($id) {
 		$this->load->model('job_m');

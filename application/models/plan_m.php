@@ -236,59 +236,61 @@ class Plan_m extends CI_Model {
 	}
 
 	// -------------------------------------------------------- Achievement -------------------------------------------
-	public function get_achievement($strDateStart, $strDateEnd, $arrayLineID=[]
-		, $arrayJobID=[], $arrayStepID=[]) {
+	public function getDsAchievement($strDateStart, $strDateEnd, $arrayLineID=[], $arrayJobID=[], $arrayStepID=[]) {
 		// Create criteria query.
 		$criteria ='';
-		if(count($arrayLineID) > 0) { $criteria = $this->createCriteriaIN('sl.FK_ID_Line', $arrayLineID, $criteria); }
-		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('kl.FK_ID_Job', $arrayJobID, $criteria); }
-		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('kl.FK_ID_Step', $arrayStepID, $criteria); }
+		if(count($arrayLineID) > 0) { $criteria = $this->createCriteriaIN('s.FK_ID_Line', $arrayLineID, $criteria); }
+		if(count($arrayJobID) > 0) { $criteria = $this->createCriteriaIN('k.FK_ID_Job', $arrayJobID, $criteria); }
+		if(count($arrayStepID) > 0) { $criteria = $this->createCriteriaIN('k.FK_ID_Step', $arrayStepID, $criteria); }
 		if(strlen($criteria) > 4) {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
-		
 			$criteria = ' AND '.$criteria;
 		}
 
-		$sqlStr = "SELECT ac.DateStamp dateStamp, ac.LineID, l.Name lineName"
-					.", IF(ISNULL(ac.ActualOKQty), 0, ac.ActualOKQty) actualQtyOK"
-					.", IF(ISNULL(ac.PlanOKQty), 0, ac.PlanOKQty) planQtyOK"
-					.", (IF(ISNULL(ac.ActualOKQty), 0, ac.ActualOKQty)"
-						." / IF( (ISNULL(ac.PlanOKQty) || (ac.PlanOKQty=0)) && (ac.ActualOKQty > 0)"
-							.", 100"
-							.", ac.PlanOKQty )"
-						." * 100) achievementQtyOK"
-				." FROM job j"
-					." INNER JOIN step s ON j.FK_ID_Process = s.FK_ID_Process"
-					." INNER JOIN stock k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
-					." LEFT JOIN line l ON s.FK_ID_Line = l.id"
-					." LEFT JOIN ("
-						." SELECT sl.FK_ID_Line lineID, DATE(al.Datetime_Stamp) dateStamp"
-							.", SUM(al.Qty_OK) actualOKQty"
-							.", 0 planOKQty"
-						." FROM stock kl"
-							." INNER JOIN job jl ON kl.FK_ID_Job = jl.id"
-							." INNER JOIN step sl ON kl.FK_ID_Step = sl.id"
-							." LEFT JOIN activity al ON (kl.id = al.FK_ID_Stock)"
-						." WHERE DATE(al.Datetime_Stamp) IS NOT NULL"." AND jl.Delete_Flag=0"
-							." AND al.FK_ID_Activity_Source IS NULL"
-							." AND al.Qty_OK > 0" .$criteria
-						." GROUP BY sl.FK_ID_Line, DATE(al.Datetime_Stamp)"
-						." UNION"
-						." SELECT sl.FK_ID_Line lineID, pl.Date_Stamp dateStamp"
-							.", 0 actualOKQty"
-							.", SUM(pl.Plan_Qty_OK) planOKQty"
-						." FROM stock kl"
-							." INNER JOIN job jl ON kl.FK_ID_Job = jl.id"
-							." INNER JOIN step sl ON kl.FK_ID_Step = sl.id"
-							." LEFT JOIN plan pl ON (kl.id = pl.FK_ID_Stock)"
-						." WHERE pl.Date_Stamp IS NOT NULL"." AND jl.Delete_Flag=0"
-							." AND pl.Plan_Qty_OK > 0" .$criteria
-						." GROUP BY sl.FK_ID_Line, dateStamp"
-					.") ac ON (s.FK_ID_Line = ac.lineID)"
-				." WHERE ac.dateStamp IS NOT NULL AND j.Delete_Flag=0"
-				." GROUP BY ac.lineID, ac.dateStamp"
-				." HAVING ac.dateStamp BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
-				." ORDER BY ac.lineID, ac.dateStamp";
+		$dsActivityOk = $this->getDsActivityQtyOk($strDateStart, $strDateEnd, $criteria);
+		$dsPlanOk = $this->getDsPlanQtyOk($strDateStart, $strDateEnd, $criteria);
+		$result = array("dsActivityOk" => $dsActivityOk, "dsPlanOk" => $dsPlanOk);
+
+		return $result;
+	}
+	private function getDsActivityQtyOk($strDateStart, $strDateEnd, $criteria) {
+		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(a.Datetime_Stamp)) myId, l.Name lineName"
+				.", DATE(a.Datetime_Stamp) dateStamp"
+				.", SUM(a.Qty_OK) actualOkQty"
+				.", 0 planOkQty"
+				.", SUM(a.Qty_OK) achievementOkQty"
+			." FROM stock k"
+				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." INNER JOIN step s ON k.FK_ID_Step = s.id"
+				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
+				." LEFT JOIN activity a ON k.id = a.FK_ID_Stock"
+			." WHERE j.Delete_Flag=0 AND a.FK_ID_Activity_Source IS NULL AND a.Qty_OK > 0"
+				." AND DATE(a.Datetime_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
+				.$criteria
+			." GROUP BY s.FK_ID_Line, DATE(a.Datetime_Stamp)"
+			." ORDER BY lineName, dateStamp";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+	private function getDsPlanQtyOk($strDateStart, $strDateEnd, $criteria) {
+		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(p.Date_Stamp)) myId, l.Name lineName"
+				.", DATE(p.Date_Stamp) dateStamp"
+				.", 0 actualOkQty"
+				.", SUM(p.Plan_Qty_OK) planOkQty"
+				.", 0 achievementOkQty"
+			." FROM stock k"
+				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." INNER JOIN step s ON k.FK_ID_Step = s.id"
+				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
+				." LEFT JOIN plan p ON k.id = p.FK_ID_Stock"
+			." WHERE j.Delete_Flag=0 AND p.Plan_Qty_OK > 0"
+				." AND DATE(p.Date_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
+				.$criteria
+			." GROUP BY s.FK_ID_Line, DATE(p.Date_Stamp)"
+			." ORDER BY lineName, dateStamp";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
