@@ -312,7 +312,7 @@ class RecoveryNG extends CI_Controller {
 					);
 				} else {
 					// Old version of activity return ng.
-					$dataDestinationStockTmp = prepareDataUndoDestinationStockOldversion2($dsDestinationStock, $qtyNGSend, $i);
+					$dataDestinationStockTmp = $this->prepareDataUndoDestinationStockOldversion2($dsDestinationStock, $qtyNGSend, $i);
 					if(count($dataDestinationStockTmp) > 0) {
 						foreach($dataDestinationStockTmp as $valueTmp) {
 							$dataDestinationStock[$i++] = $valueTmp;
@@ -325,7 +325,7 @@ class RecoveryNG extends CI_Controller {
 			}
 		} else {
 			// Old version 1 : Decrease qty_ok_first_step_stock
-			$dataSourceStock = prepareDataUndoDestinationStockOldversion1($rowSourceStock, $qtyNGSend);
+			$dataSourceStock = $this->prepareDataUndoDestinationStockOldversion1($rowSourceStock, $qtyNGSend);
 			$result = (($dataSourceStock < 0) ? 4 : 3);
 		}
 
@@ -362,7 +362,7 @@ class RecoveryNG extends CI_Controller {
 				}
 			}
 		}
-
+//echo($dataDestinationStock);exit;
 		return $dataDestinationStock;
 	}
 	// __________________________________________ End Prepare data _____________________________________

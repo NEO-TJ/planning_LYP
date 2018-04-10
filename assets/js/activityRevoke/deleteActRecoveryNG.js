@@ -44,7 +44,7 @@ function ajaxUndoReturnNg(activityID, stockID, qtyNG){
 			},
 			complete: function(){
 			},
-			success: function(result) {
+			success: function(result) {//alert(JSON.stringify(result));
 				if(result == 0){
 					swal({
 						title: "Success",
