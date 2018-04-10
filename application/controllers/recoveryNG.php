@@ -362,7 +362,7 @@ class RecoveryNG extends CI_Controller {
 				}
 			}
 		}
-//echo($dataDestinationStock);exit;
+
 		return $dataDestinationStock;
 	}
 	// __________________________________________ End Prepare data _____________________________________
