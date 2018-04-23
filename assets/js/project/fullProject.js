@@ -39,7 +39,7 @@ function showDialog($type){
 $('form#form-all').submit(function(e) {
 	e.preventDefault();
 
-//	var includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
+//	let includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
 	if(validateAll()) {
 		saveAll();
 	} else {
@@ -53,7 +53,7 @@ $('form#form-all button.btn-reset').click(function(e) {
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveAll(){
-	var dataFullProject = (cloneMode ? prepareProcessData() : prepareProcessID());
+	let dataFullProject = (cloneMode ? prepareProcessData() : prepareProcessID());
 	dataFullProject['cloneMode'] = (cloneMode ? 1 : 0);
 	dataFullProject['jobID'] = $('select#job :selected').val();
 	dataFullProject['bomID'] = $('select#bom :selected').val();
@@ -111,13 +111,13 @@ function saveAll(){
 }
 //********************************************** Validation *******************************************
 function validateAll(){
-	var result = false;
+	let result = false;
 	
-	var resultProject = false;
-	var resultJob = false;
-	var resultQtyPlanProduct = false;
-	var resultProcess = false;
-	var resultAllStep = false;
+	let resultProject = false;
+	let resultJob = false;
+	let resultQtyPlanProduct = false;
+	let resultProcess = false;
+	let resultAllStep = false;
 	
 	// Check project id selected?
 	resultProject = validateFillSelectElement($('select#project'));
@@ -125,7 +125,7 @@ function validateAll(){
 	resultJob = validateFillSelectElement($('select#job'));
 	// Check process id selected?
 	resultProcess = (cloneMode ? validateFillInputElement($('input#processName'))
-					: validateFillSelectElement($('select#process')));
+		: validateFillSelectElement($('select#process')));
 	// Check All step require has input?
 	resultAllStep = validateStep();
 	
@@ -134,7 +134,7 @@ function validateAll(){
 }
 //********************************************* Prepare data ******************************************
 function prepareProcessID(){
-	var dataProcessID = {
+	let dataProcessID = {
 				'processID': $('select#process :selected').val(),
 	};
 	
@@ -183,7 +183,7 @@ function setSelectElement(dataSet, dataType) {
 	$('select#' + dataType).empty();		// you might wanna empty it first with .empty()
 	$('select#' + dataType).append('<option value="0">Please select ' + dataType + '</option>');
 
-	for(var i=0; i < dataSet.length; i++) {
+	for(let i=0; i < dataSet.length; i++) {
 		$('select#' + dataType).append('<option value="' + dataSet[i].id + '">' + dataSet[i].Name + '</option>');
 	}
 }

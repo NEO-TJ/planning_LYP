@@ -1,5 +1,5 @@
-var cloneMode = false;
-var permanentProcess = false;
+let cloneMode = false;
+let permanentProcess = false;
 // ************************************************ Event ***********************************************
 // ----------------------------------------------- Process ----------------------------------------------
 $('select#process').change(changeProcess);
@@ -39,7 +39,7 @@ $('form#form-process button.btn-reset').on('click',function(){
 //************************************************ Method *************************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveProcess(){
-	var dataFullProcess = prepareProcessData();
+	let dataFullProcess = prepareProcessData();
 	
 	// Get process table one row by ajax.
 	$.ajax({
@@ -73,8 +73,7 @@ function saveProcess(){
 				$('select#process').val(arrResult['processID']);
 				$('select#process').trigger('change');
 				$('div#collapse-process').collapse('hide');
-			}
-			else{
+			}else{
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Process </span> Not complete...!',
@@ -87,7 +86,7 @@ function saveProcess(){
 }
 //********************************************** Validation *******************************************
 function validateProcess(){
-	var result = false;
+	let result = false;
 	
 	// Check process name require has input?
 	result = validateFillInputElement($('input#processName'));
@@ -96,16 +95,16 @@ function validateProcess(){
 }
 //********************************************* Prepare data ******************************************
 function prepareProcessData(){
-	var processID = $('select#process :selected').val();
-	var processName = $('input#processName').val();
-	var processDesc = $('input#processDesc').val();
-	var processDescThai = $('input#processDescThai').val();
+	let processID = $('select#process :selected').val();
+	let processName = $('input#processName').val();
+	let processDesc = $('input#processDesc').val();
+	let processDescThai = $('input#processDescThai').val();
 
-	var dataFullProcess = {
-				'processID': processID, 
-				'processName': processName, 
-				'processDesc': processDesc,
-				'processDescThai': processDescThai,
+	let dataFullProcess = {
+		'processID': processID, 
+		'processName': processName, 
+		'processDesc': processDesc,
+		'processDescThai': processDescThai,
 	};
 	
 	return dataFullProcess;
@@ -117,8 +116,8 @@ function changeProcess(){
 	setProcessCaptionPanelMode();
 	resetFullProcessInputFill();
 	
-	var jobID = $('select#job :selected').val();
-	var processID = $('select#process :selected').val();
+	let jobID = $('select#job :selected').val();
+	let processID = $('select#process :selected').val();
 	
 	if((processID != 0) && (jobID == 0)) {
 		swal({
@@ -134,7 +133,7 @@ function changeProcess(){
 	} else {
 		disProcessChoose();
 
-		var data = {
+		let data = {
 				'jobID': jobID,
 				'processID': processID
 		};
@@ -153,8 +152,8 @@ function changeProcess(){
 			complete: function(){
 			},
 			success: function(dsData) {
-				var dsProcess = dsData['dsProcess'];
-				var dsFullStep = dsData['dsFullStep'];
+				let dsProcess = dsData['dsProcess'];
+				let dsFullStep = dsData['dsFullStep'];
 
 				// Process Part.
 				if((dsProcess.length) > 0){
@@ -167,12 +166,12 @@ function changeProcess(){
 				if(dsFullStep.length > 0) {
 					if(permanentProcess){
 						disStepEditMode();
-					} else {
+					}else{
 						disStepAddMode();
 					}
 
 					// Set Step.
-					for(var i=0; i < dsFullStep.length; i++){
+					for(let i=0; i < dsFullStep.length; i++){
 						if(i != 0){
 							cloneStepRowTable();
 						}
@@ -207,7 +206,7 @@ function resetProcessInputFill(){
 }
 //***************************************** Set caption panel mode *******************************************
 function setProcessCaptionPanelMode(){
-	var panelCaption = (($('select#process :selected').val() == 0) ? 'New' : 'Edit');
+	let panelCaption = (($('select#process :selected').val() == 0) ? 'New' : 'Edit');
 	$('#panel-caption-process').html('<span class="text-info"><h1>' + panelCaption + ' process</h1></span>');
 }
 
@@ -229,7 +228,7 @@ function disCollapseProcessMode(){
 		disStepCloneMode();
 	}
 	else {
-		var btnCaption = '';
+		let btnCaption = '';
 		if(permanentProcess){
 			disStepEditMode();
 		} else {

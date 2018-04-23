@@ -7,20 +7,20 @@ $('table#step.table-components').on("click", ".delete-elements", deleteStepRowTa
 // ********************************************** Method ***********************************************
 //********************************************* Prepare data ******************************************
 function prepareStepData(){
-	var dsStep = new Array();
+	let dsStep = new Array();
 	$('table#step.table-components tbody tr').each(function(i, row){
-		var dictStep = {
-					'stepID': 			$(this).find('td:nth-child(1) input#firstStepFlag').val(),
-					'firstStepFlag': 	(($(this).find('td:nth-child(1) input#firstStepFlag').prop('checked'))? 1: 0),
-					'nextStepNumber': 	$(this).find('td:nth-child(2) input#nextStepNumber').val(),
-					'stepNumber': 		$(this).find('td:nth-child(3) input#stepNumber').val(),
-					'stepDesc': 		$(this).find('td:nth-child(4) input#stepDesc').val(),
-					'lineID': 			$(this).find('td:nth-child(5) select#line :selected').val(),
-					'machineID': 		$(this).find('td:nth-child(6) select#machine :selected').val(),
-					'operationTime': 	( ($(this).find('td:nth-child(7) input#operationTime').val() ) / 60),
-					'subAssemblyID': 	$(this).find('td:nth-child(8) select#subAssemble :selected').val(),
-					'nbSub': 			$(this).find('td:nth-child(9) input#nbSub').val(),
-				};
+		let dictStep = {
+			'stepID': 			$(this).find('td:nth-child(1) input#firstStepFlag').val(),
+			'firstStepFlag': 	(($(this).find('td:nth-child(1) input#firstStepFlag').prop('checked'))? 1: 0),
+			'nextStepNumber': 	$(this).find('td:nth-child(2) input#nextStepNumber').val(),
+			'stepNumber': 		$(this).find('td:nth-child(3) input#stepNumber').val(),
+			'stepDesc': 		$(this).find('td:nth-child(4) input#stepDesc').val(),
+			'lineID': 			$(this).find('td:nth-child(5) select#line :selected').val(),
+			'machineID': 		$(this).find('td:nth-child(6) select#machine :selected').val(),
+			'operationTime': 	( ($(this).find('td:nth-child(7) input#operationTime').val() ) / 60),
+			'subAssemblyID': 	$(this).find('td:nth-child(8) select#subAssemble :selected').val(),
+			'nbSub': 			$(this).find('td:nth-child(9) input#nbSub').val(),
+		};
 		dsStep.push(dictStep);
 	});
 	
@@ -28,14 +28,14 @@ function prepareStepData(){
 }
 //********************************************** Validation ********************************************
 function validateStep() {
-	var result = false;
+	let result = false;
 	
-	var resultStepNumber = true;
-	var resultLineID = true;
-	var resultMachineID = true;
-	var resultOperationTime = true;
-	var resultSubAssemblyID = true;
-	var resultNBSub = true;
+	let resultStepNumber = true;
+	let resultLineID = true;
+	let resultMachineID = true;
+	let resultOperationTime = true;
+	let resultSubAssemblyID = true;
+	let resultNBSub = true;
 	
 	// Check require field of step.
 	$('table#step.table-components tbody tr').each(function(i, row) {
@@ -69,7 +69,7 @@ function addNewStepRowTable() {
 }
 //******************************** Clone row table with auto increment no ******************************
 function cloneStepRowTable() {
-	var $clone = $("table#step.table-components tbody tr:first-child");
+	let $clone = $("table#step.table-components tbody tr:first-child");
 	
 	$clone.find('.btn').removeClass('add-elements btn-default').addClass('delete-elements btn-danger')
 		.html('<i class="fa fa-minus"></i>');
@@ -91,7 +91,7 @@ function deleteStepRowTable(){
 }
 //***************************************** Set Step input fill **********************************************
 function setStepLastRowTable(dsFullStep, i) {
-	var currentTr = $('table#step.table-components tbody tr:last-child');
+	let currentTr = $('table#step.table-components tbody tr:last-child');
 	
 	currentTr.find('td:nth-child(1) input#firstStepFlag').val(dsFullStep[i].id);
 	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', ((dsFullStep[i].First_Step_Flag == 1)? true: false));
@@ -107,7 +107,7 @@ function setStepLastRowTable(dsFullStep, i) {
 //************************************** Reset Full Process input fill ***************************************
 //----------------------------------------- Reset Step input fill --------------------------------------------
 function resetStepLastRowTable(dsFullBom, i) {
-	var currentTr = $('table#step.table-components tbody tr:last-child');
+	let currentTr = $('table#step.table-components tbody tr:last-child');
 	
 	currentTr.find('td:nth-child(1) input#firstStepFlag').val(0);
 	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', false);
