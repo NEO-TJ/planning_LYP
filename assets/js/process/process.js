@@ -27,7 +27,7 @@ function showDialog($type){
 $('form#form-process').submit(function(e) {
 	e.preventDefault();
 
-//	var includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
+//	let includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
 	if(validateAll()) {
 		saveAll();
 	} else {
@@ -87,10 +87,10 @@ function saveAll(){
 }
 //********************************************** Validation *******************************************
 function validateAll(){
-	var result = false;
+	let result = false;
 	
-	var resultProcess = false;
-	var resultAllStep = false;
+	let resultProcess = false;
+	let resultAllStep = false;
 	
 	// Check process id selected?
 	resultProcess = validateProcess();
@@ -102,7 +102,7 @@ function validateAll(){
 }
 
 function validateProcess(){
-	var result = false;
+	let result = false;
 	
 	// Check process name require has input?
 	result = validateFillInputElement($('input#processName'));
@@ -113,11 +113,11 @@ function validateProcess(){
 
 //********************************************* Prepare data ******************************************
 function prepareProcessData(){
-	var processName = $('input#processName').val();
-	var processDesc = $('input#processDesc').val();
-	var processDescThai = $('input#processDescThai').val();
+	let processName = $('input#processName').val();
+	let processDesc = $('input#processDesc').val();
+	let processDescThai = $('input#processDescThai').val();
 
-	var dataFullProcess = {
+	let dataFullProcess = {
 				'processName': processName, 
 				'processDesc': processDesc,
 				'processDescThai': processDescThai,

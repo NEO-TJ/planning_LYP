@@ -19,7 +19,7 @@
  			echo js_asset('frontend.js');
 			echo js_asset('my.helper.js');
 				
-			echo js_asset('process/processCreate.js');
+			echo js_asset('process/Process.js');
 			echo js_asset('process/step.js');
 		?>
 	</body>

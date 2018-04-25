@@ -15,7 +15,7 @@
         <!-- project menu -->
           <li <?php 
         		if((($this->uri->segment(1) == 'project') 
-        				|| ($this->uri->segment(1) == 'processCreate'))
+        				|| ($this->uri->segment(1) == 'Process'))
         				|| ($this->uri->segment(1) == 'jobRemove')){
         			echo 'class="active dropdown"';
         		}
@@ -25,8 +25,8 @@
               <li <?php if($this->uri->segment(1) == 'project'){echo 'class="active"';}?>>
                 <a href="<?php echo base_url(); ?>project">1. Project</a>
               </li>
-              <li <?php if($this->uri->segment(1) == 'processCreate'){echo 'class="active"';}?>>
-                <a href="<?php echo base_url(); ?>processCreate">2. Process</a>
+              <li <?php if($this->uri->segment(1) == 'Process'){echo 'class="active"';}?>>
+                <a href="<?php echo base_url(); ?>Process">2. Process</a>
               </li>
               <hr>
               <li <?php if($this->uri->segment(1) == 'jobRemove'){echo 'class="active"';}?>>

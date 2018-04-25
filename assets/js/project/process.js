@@ -261,6 +261,8 @@ function disProcessNotChoose() {
 function disProcessChoose() {
 	$('button#clone-process').prop('disabled', permanentProcess);
 	$('table#step').find("input,button,textarea,select").prop('disabled', false);
+	//$('table#step').find("input,button,textarea,select").prop('disabled', true);
+	//$('table#step').find("input#operationTime").prop('disabled', false);
 	$('form#form-all button.btn-submit').prop('disabled', false);
 
 	$('button#print-process').prop('disabled', false);

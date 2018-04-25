@@ -1,7 +1,7 @@
 <div class="row top">
 	<div class="col-md-12 page-header users-header">
 		<div class="col-md-10">
-			<h1 id="headerPage">Create New Process</h1>
+			<h1 id="headerPage">Process</h1>
 		</div>
 		<div class="col-md-2">
 		</div>

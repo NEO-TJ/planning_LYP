@@ -1,5 +1,5 @@
 <?php
-class ProcessCreate extends CI_Controller {
+class Process extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 
@@ -13,7 +13,7 @@ class ProcessCreate extends CI_Controller {
 		$userData['level'] = $this->session->userdata('level');
 
 		$this->load->view('frontend/process/header', $userData);
-		$this->load->view('frontend/process/ProcessCreate_v', $data);
+		$this->load->view('frontend/process/Process_v', $data);
 		$this->load->view('frontend/process/footer');
 	}
 

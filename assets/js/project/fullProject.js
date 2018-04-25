@@ -79,7 +79,7 @@ function saveAll(){
 			if(result == 0){
 				swal({
 					title: "Success",
-					text: "Save process to database has success",
+					text: "Save project to database has success",
 					type: "success",
 					showCancelButton: false,
 					allowOutsideClick: false,
