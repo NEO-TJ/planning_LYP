@@ -118,9 +118,9 @@ function prepareProcessData(){
 	let processDescThai = $('input#processDescThai').val();
 
 	let dataFullProcess = {
-				'processName': processName, 
-				'processDesc': processDesc,
-				'processDescThai': processDescThai,
+		'processName': processName,
+		'processDesc': processDesc,
+		'processDescThai': processDescThai,
 	};
 	
 	return dataFullProcess;

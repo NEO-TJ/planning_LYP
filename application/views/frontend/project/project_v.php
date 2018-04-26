@@ -353,18 +353,18 @@
 			</div><!-- End col of process -->
 			
 			<div class="col-md-1 pull-left">
-			<!--
+			
 				<button type="button" class="btn btn-success pull-left" id="add-edit-process"
 					data-toggle="collapse" data-target="#collapse-process">[New-Edit] : Process</button>
-			-->
+			
 			</div>
 			<div class="col-md-1 pull-left"></div>
 			<div class="col-md-3 pull-left">
-			<!--
+			
 				<button type="button" class="btn btn-info pull-right" id="print-process">Print Process</button>
 				<button type="button" class="btn btn-warning pull-right" id="clone-process"
 					data-toggle="collapse" data-target="#collapse-process">[Clone] - Process</button>
-			-->
+			
 			</div>
 		</div><!-- End row of process -->
 <!-- ** Expand process Panel ********************************************************************* -->
