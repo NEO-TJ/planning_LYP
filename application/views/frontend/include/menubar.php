@@ -160,7 +160,7 @@
         <!-- logout menu -->
           <li><h4>||||||</h4></li>
           <li <?php if($this->uri->segment(1) == 'index'){echo 'class="active"';}?>>
-            <a href="<?php echo base_url(); ?>index">Logout</a>
+            <a href="<?php echo base_url(); ?>login">Logout</a>
           </li>
         <!-- end logout menu -->
       </ul>

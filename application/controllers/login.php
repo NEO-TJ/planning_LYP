@@ -2,66 +2,61 @@
 
 class Login extends CI_Controller
 {
-	public function __construct()
-	{
+	public function __construct() {
 		parent::__construct();
 		// set default data to view
-        $this->data = array();
+		$this->data = array();
 	}
 
-	public function index()
-	{
+	public function index() {
+		$this->session->sess_destroy();
+		$this->load->view('frontend/login/header');
 		$this->load->view('frontend/index');
+		$this->load->view('frontend/login/footer');
 	}
 
-	public function validate()
-	{
-		// get data from db
+	public function validate() {
 		$user = $this->user_m->validate();
-
 		$data = array();
 
-		if($user == true)
-		{
-
+		if($user == true) {
 			foreach ($user as $u) {
 				$data['id']		= $u->id;
 				$data['name']	= $u->Name;
 				$data['userID']	= $u->User_ID;
-				$data['lineID']	= $u->Line_ID;
+				$data['lineID']	= $u->FK_ID_Line;
 				$data['level']	= $u->Level;
-			} // end foreach
+			}
 			
-			// set data to session
-			$this->session->set_userdata($data);
-			
-			//check level user
 			switch ($u->Level) {
 				case '1':
-					// redirect page to admin page
+					$this->session->set_userdata($data);
 					redirect("planning");
 					break;
 				case '2':
-					// redirect page to user page
+					$this->session->set_userdata($data);
 					redirect("planning");
+					break;
+				case '3':
+					$this->session->sess_destroy();
+					$this->session->set_flashdata('msg',  'ท่านไม่ได้รับอนุญาติให้ใช้งานในระบบนี้');
+					header('Location: ../');
 					break;
 				default:
-					// redirect page to user page
+					$this->session->sess_destroy();
 					redirect("planning");
 					break;
-			} // end switch
-			
+			}
 		} else {
-			// redirect with session msessage
+			$this->session->sess_destroy();
 			$this->session->set_flashdata('msg',  'ข้อมูลไม่ถูกต้องกรุณาลองใหม่อีกครั้ง');
 			header('Location: ../');
-		}// end else
+		}
 	}
 	
 	
 	
-	public function logout()
-	{
+	public function logout() {
 		$this->load->view('frontend/include/header');
 		$this->load->view('frontend/logout');
 		$this->load->view('frontend/include/footer');
