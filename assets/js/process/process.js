@@ -13,7 +13,7 @@ $(document).ready(function() {
 //************************************************* Tool ***********************************************
 function showDialog($type){
 	if($type == dltOK){
-		
+
 	}else if($type == dltValidate) {
 		swal("Warning", "Please check your input key.","warning");
 	}
@@ -46,7 +46,7 @@ function saveAll(){
 
 	// Save full process and step by ajax.
 	$.ajax({
-		url: 'processCreate/ajaxSaveNewFullProcess',
+		url: 'process/ajaxSaveNewFullProcess',
 		type: 'post',
 		data: dataFullProcess,
 		beforeSend: function(){
@@ -71,7 +71,7 @@ function saveAll(){
 					confirmButtonText: "Done",
 					confirmButtonClass: "btn btn-success",
 				}).then(function(){
-					window.location.href="processCreate"
+					window.location.href="process"
 				});
 			}
 			else{
@@ -88,10 +88,10 @@ function saveAll(){
 //********************************************** Validation *******************************************
 function validateAll(){
 	let result = false;
-	
+
 	let resultProcess = false;
 	let resultAllStep = false;
-	
+
 	// Check process id selected?
 	resultProcess = validateProcess();
 	// Check All step require has input?
