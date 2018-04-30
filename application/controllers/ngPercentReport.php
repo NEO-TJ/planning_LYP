@@ -3,7 +3,6 @@ class NGPercentReport extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
-
 		$this->is_logged();
 	}
     
@@ -48,8 +47,8 @@ class NGPercentReport extends CI_Controller {
 	// --------------------------------------------------------- Initial combobox ----------------------------
 	private function getInitialDataToDisplay() {
 		$data['dsLine'] = $this->getDsLine(0);
-		$data['dsJob'] = $this->getDsJob(0);
-		$data['dsStep'] = $this->getDsStep(0);
+		$data['dsJob'] = $this->getDsJobStatusOpen(0);
+		$data['dsStep'] = $this->getDsStepJobOpen();
 
 		return $data;
 	}
@@ -66,7 +65,23 @@ class NGPercentReport extends CI_Controller {
 
 		return $dsNGPercent;
 	}
-    
+ 
+
+	private function getDsJobStatusOpen($id) {
+		$this->load->model('job_m');
+		$dsResult = (($id == 0) 
+			? $this->job_m->get_all_row_status_open() 
+			: $this->job_m->get_row_status_open_by_id($id));
+
+		return $dsResult;
+	}
+	private function getDsStepJobOpen() {
+		$this->load->model('step_m');
+		$dsResult = $this->step_m->getStep_Job_Open();
+
+		return $dsResult;
+	}
+
 
 	private function getDsJob($id) {
 		$this->load->model('job_m');
@@ -86,12 +101,12 @@ class NGPercentReport extends CI_Controller {
 	
 		return $dsResult;
 	}
-    
-    
 
 
-    
-    
+
+
+
+
 	// ************************************************ Helper *****************************************
 	private function getPostArrayHelper($arrayData) {
 		return (((count($arrayData) == 1) && ($arrayData[0] == '')) ? $arrayData = [] : $arrayData);

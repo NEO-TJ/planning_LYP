@@ -74,8 +74,8 @@ class AchievementReport extends CI_Controller {
 	// --------------------------------------------------------- Initial combobox ----------------------------
 	private function getInitialDataToDisplay() {
 		$data['dsLine'] = $this->getDsLine(0);
-		$data['dsJob'] = $this->getDsJob(0);
-		$data['dsStep'] = $this->getDsStep(0);
+		$data['dsJob'] = $this->getDsJobStatusOpen(0);
+		$data['dsStep'] = $this->getDsStepJobOpen();
 
 		return $data;
 	}
@@ -125,6 +125,23 @@ class AchievementReport extends CI_Controller {
 		}
 
 		return $dsAchievement;
+	}
+
+
+	
+	private function getDsJobStatusOpen($id) {
+		$this->load->model('job_m');
+		$dsResult = (($id == 0) 
+			? $this->job_m->get_all_row_status_open() 
+			: $this->job_m->get_row_status_open_by_id($id));
+
+		return $dsResult;
+	}
+	private function getDsStepJobOpen() {
+		$this->load->model('step_m');
+		$dsResult = $this->step_m->getStep_Job_Open();
+
+		return $dsResult;
 	}
 
 

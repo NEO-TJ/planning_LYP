@@ -14,9 +14,9 @@
           <li><h4>||||||</h4></li>
         <!-- project menu -->
           <li <?php 
-        		if((($this->uri->segment(1) == 'project') 
-        				|| ($this->uri->segment(1) == 'Process'))
-        				|| ($this->uri->segment(1) == 'jobRemove')){
+        		if(($this->uri->segment(1) == 'project') 
+            || ($this->uri->segment(1) == 'Process')
+            || ($this->uri->segment(1) == 'jobRemove')){
         			echo 'class="active dropdown"';
         		}
         	?>>
@@ -40,7 +40,9 @@
         
         <!-- qty input menu -->
           <li <?php 
-        		if(($this->uri->segment(1) == 'qtyInput') || ($this->uri->segment(1) == 'recoveryNG')) {
+            if(($this->uri->segment(1) == 'qtyInput') 
+            || ($this->uri->segment(1) == 'activityRevoke')
+            || ($this->uri->segment(1) == 'recoveryNG')) {
         			echo 'class="active dropdown"';
         		}
         	?>>

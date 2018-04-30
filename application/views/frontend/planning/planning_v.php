@@ -3,7 +3,7 @@
 	<div class="col-md-12 page-header users-header">
 		<div class="col-md-12">
 			<h1 id="headerPage" title="">Planning</h1>
-			<?php echo "<input type='hidden' id='diffStartCurrentDate' value=0 />"; ?>
+			<?php echo "<input class='numeric' type='hidden' id='diffStartCurrentDate' value=0 />"; ?>
 		</div>
 	</div>
 </div>

@@ -1,10 +1,5 @@
 <?php
 class Process extends CI_Controller {
-	// Variable.
-	private $inputModeName = [1 => 'New Process', 2 => 'Edit Process', 3 => 'Copy Process'];
-
-
-	// Construction.
 	public function __construct(){
 		parent::__construct();
 
@@ -12,41 +7,14 @@ class Process extends CI_Controller {
 	}
 
 
-
-	// ************************************************************ Public function ******************************
 	public function index(){
 		if(!($this->is_logged())) {exit(0);}
-		$data = $this->getDataToDisplayViewMode();
+		$data = $this->getInitialDataToDisplay();
 		$userData['level'] = $this->session->userdata('level');
 
-		$this->load->view('frontend/process/list/header', $userData);
-		$this->load->view('frontend/process/list/body_v', $data);
-		$this->load->view('frontend/process/list/footer');
-	}
-	public function addNew(){
-		if(!($this->is_logged())) {exit(0);}
-
-		if ($this->input->server('REQUEST_METHOD') === 'POST'){
-			$inputMode=1;
-			$rowID = 0;
-
-			$this->setInputDisplayMode($inputMode, $rowID);
-		}
-	}
-	public function edit(){
-		if(!($this->is_logged())) {exit(0);}
-
-		if ($this->input->server('REQUEST_METHOD') === 'POST'){
-			$rowID = $this->input->post('rowID');
-			if($rowID < 0){
-				$inputMode = 3;
-				$rowID *= -1;
-			}else{
-				$inputMode = 2;
-			}
-
-			$this->setInputDisplayMode($inputMode, $rowID);
-		}
+		$this->load->view('frontend/process/header', $userData);
+		$this->load->view('frontend/process/Process_v', $data);
+		$this->load->view('frontend/process/footer');
 	}
 
 
@@ -83,54 +51,6 @@ class Process extends CI_Controller {
 
 
 	// ********************************************************* Private function ****************************
-	// -------------------------------------------------------- Initial view mode ----------------------------
-	private function getDataToDisplayViewMode(){
-		$data['dsView'] = $this->getDsProcess(0);
-
-		return $data;
-	}
-	// ------------------------------------------------------- Set input display mode ----------------------------
-	private function setInputDisplayMode($inputMode=1, $rowID=0){
-		$userData['level'] = $this->session->userdata('level');
-		$data = $this->getDataToDisplayInputMode($rowID);
-		$data['inputModeName'] = $this->inputModeName[$inputMode];
-		$data['inputMode'] = $inputMode;
-		if($inputMode == 3) {
-			$data['dsProcess']['id'] = 0;
-			$data['dsProcess']['Name'] = "Copy - " . $data['dsProcess']['Name'];
-		}
-
-		$this->load->view('frontend/process/input/header', $userData);
-		$this->load->view('frontend/process/input/body_v', $data);
-		$this->load->view('frontend/process/input/footer');
-	}
-	// -------------------------------------------------------- Initial input mode -------------------------------
-	private function getDataToDisplayInputMode($rowID=0) {
-		// Get ds for combobox.
-		$result['dsLine'] = $this->getDsLine(0);
-		$result['dsMachine'] = $this->getDsMachine(0);
-		$result['dsSubAssembly'] = $this->getDsSubAssembly(0);
-
-		$this->load->model('process_m');
-		$dataset = $this->process_m->get_row_by_id($rowID);
-		$result['dsProcess'] = ((count($dataset) > 0) ? $dataset[0] : $this->process_m->get_template());
-
-		if(count($result['dsProcess']) > 0) {
-			$result['dsStep'] = $this->getDsStep($result['dsProcess']['id']);
-		}
-
-		return $result;
-	}
-
-	private function getDsStep($processID){
-		$dsStep = [];
-		$this->load->model('step_m');
-		$dsStep = $this->step_m->get_by_where_array(["FK_ID_Process" => $processID]);
-
-		return $dsStep;
-	}
-
-
 	// --------------------------------------------------------- Initial combobox ----------------------------
 	private function getInitialDataToDisplay(){
 		$data['dsProcess'] = $this->getDsProcess(0);

@@ -58,7 +58,7 @@ $(document).on('click', 'button#previous-date', function(e) {
 });
 
 // --------------------------------------------- Plan input --------------------------------------------
-$(document).on('keydown', 'input', function(e) { numericFilter(e, this, false); });
+$(document).on('keydown', 'input.numeric', function(e) { numericFilter(e, this, false); });
 
 
 $(document).on('change', 'input[name^="okQtySlot"]', function(e) {
@@ -105,7 +105,8 @@ $(document).on('click', 'button#delay', function(e) {
             '<span class="input-group-btn">' +
             '<button class="btn btn-primary disabled" type="button">Day number : </button>' +
             '</span>' +
-            '<input type="number" class="form-control text-right" autocomplete="off" id="delayDayQty"' +
+            '<input type="number" class="form-control text-right numeric"' +
+            ' autocomplete="off" id="delayDayQty"' +
             ' placeholder="Day number for delay..." value="" />'
 
             +
@@ -127,7 +128,7 @@ $(document).on('click', 'button#delay', function(e) {
             '<button type="button" class="btn btn-cancel btn-reset pull-left" id="cancelDelay">Cancel</button>' +
             '</div>' +
             '<div class="col-md-3">' +
-            '<input type="text" class="hide" id="stockID" value="' + stockID + '" />' +
+            '<input type="text" class="hide numeric" id="stockID" value="' + stockID + '" />' +
             '</div>' +
             '</div>',
         showConfirmButton: false,
@@ -598,7 +599,7 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
                 htmlBody += rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
                 htmlBody += ' id="okQtySlot' + iSD + '" name="okQtySlot[' + iSD + ']";>';
-                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+                htmlBody += '<input type="text" class="form-control text-right numeric" autocomplete="off"';
                 htmlBody += ' id="okQtySlot' + iSD + '"';
                 htmlBody += ' name="okQtySlot[' + iSD + ']";';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';
@@ -623,7 +624,7 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
                 htmlBody += rSlotDateAttr[iSD].bgColor + '"';
                 htmlBody += ' rowspan="' + duplicateCount + '"';
                 htmlBody += ' id="workerQtySlot' + iSD + '" name="workerQtySlot[' + iSD + ']";>';
-                htmlBody += '<input type="text" class="form-control text-right" autocomplete="off"';
+                htmlBody += '<input type="text" class="form-control text-right numeric" autocomplete="off"';
                 htmlBody += ' id="workerQtySlot' + iSD + '"';
                 htmlBody += ' name="workerQtySlot[' + iSD + ']";';
                 htmlBody += ' style="font-size: 15px; font-family: monospace;"';

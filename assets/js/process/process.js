@@ -29,7 +29,7 @@ $('form#form-process').submit(function(e) {
 
 //	let includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
 	if(validateAll()) {
-		saveAll();
+		//saveAll();
 	} else {
 		showDialog(dltValidate);
 	}

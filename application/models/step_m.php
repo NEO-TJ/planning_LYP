@@ -67,9 +67,9 @@ class Step_m extends CI_Model {
 		$sqlStr = "SELECT DISTINCT(s.id), s.Number, s.DESC"
 			." FROM step s"
 			." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
-			." WHERE j.Delete_Flag=0" .$criteria
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
 			." ORDER BY s.FK_ID_Process, s.Number";
-
+//echo($sqlStr);exit;
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
 
@@ -90,7 +90,7 @@ class Step_m extends CI_Model {
 			." FROM step s"
 			." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
 			." INNER JOIN line l ON (s.FK_ID_Line = l.id)"
-			." WHERE j.Delete_Flag=0" .$criteria
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
 			." ORDER BY l.Name";
 
 		$query = $this->db->query($sqlStr);
@@ -230,7 +230,8 @@ class Step_m extends CI_Model {
 			." FROM job as j"
 			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
 			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
-			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.Next_Step_Number = ".$stepNumber."))"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+			." AND ((j.id = ".$jobID.") && (s.Next_Step_Number = ".$stepNumber."))"
 			." ORDER BY j.id, s.Number";
 
 		$query = $this->db->query($sqlStr);
@@ -245,7 +246,8 @@ class Step_m extends CI_Model {
 			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
 			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
 			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
-			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+			." AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
 			." ORDER BY j.id, s.Number";
 
 		$query = $this->db->query($sqlStr);
@@ -262,7 +264,8 @@ class Step_m extends CI_Model {
 			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
 			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
 			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
-			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+			." AND ((j.id = ".$jobID.") && (s.id = ".$stepID."))"
 			." ORDER BY j.id, s.Number";
 
 		$query = $this->db->query($sqlStr);
@@ -279,7 +282,8 @@ class Step_m extends CI_Model {
 			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
 			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
 			." INNER JOIN sub_assembly as sb ON (s.FK_ID_Sub_Assembly = sb.id)"
-			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.Next_Step_Number = ".$stepNumber."))"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+			." AND ((j.id = ".$jobID.") && (s.Next_Step_Number = ".$stepNumber."))"
 			." ORDER BY j.id, s.Number";
 
 		$query = $this->db->query($sqlStr);

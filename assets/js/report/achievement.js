@@ -15,11 +15,11 @@ function getReport() {
 	let arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
 	let data = {
-			'strDateStart': strDateStart,
-			'strDateEnd': strDateEnd,
-			'jobID' : arrayJobID,
-			'stepID' : arrayStepID,
-			'lineID' : arrayLineID,
+		'strDateStart': strDateStart,
+		'strDateEnd': strDateEnd,
+		'jobID' : arrayJobID,
+		'stepID' : arrayStepID,
+		'lineID' : arrayLineID,
 	};
 
 	// Get achievement report by ajax.
@@ -61,7 +61,7 @@ function genLineGroup(lineName) {
 function genSummary(totalPlanOkQty, totalActualOkQty) {
 	let htmlReport;
 	let totalAchievementQty = ( totalActualOkQty / 
-							( ((totalPlanOkQty == 0) && (totalActualOkQty > 0)) ? 100 : totalPlanOkQty) ) * 100;
+		( ((totalPlanOkQty == 0) && (totalActualOkQty > 0)) ? 100 : totalPlanOkQty) ) * 100;
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left"></td>';
@@ -97,30 +97,30 @@ function genSummary(totalPlanOkQty, totalActualOkQty) {
 }
 function genData(row) {
 	let htmlReport;
-	
+
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['dateStamp'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['planOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
 	htmlReport +='<td class="text-right">' + row['actualOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
 	htmlReport +='<td class="text-right">' + parseFloat(row['achievementOkQty'])
-					.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '  %</td>';
+		.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '  %</td>';
 	htmlReport +='</tr>';
-	
+
 	return htmlReport;
 }
 function genReport(dsAchievement) {
 	let htmlReport = "";
-	
+
 	let r = 0;
 	let totalPlanOkQty = 0;
 	let totalActualOkQty = 0;
 	let lineName = " (TJ Start) ";
-	
+
 	let row;
 	for(let i=0; i<dsAchievement.length; i++)
 	{
 		row = dsAchievement[i];
-		
+
 		if(lineName != row['lineName']) {
 			if(lineName != " (TJ Start) ") {
 				//Summary.
@@ -150,8 +150,8 @@ function genReport(dsAchievement) {
 		htmlReport += genSummary(totalPlanOkQty, totalActualOkQty);
 		r++;
 	}
-	
-	
+
 	$('#headerPage').prop('title', "Total Record : " + dsAchievement.length);
+
 	return htmlReport;
 }

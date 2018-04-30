@@ -10,7 +10,7 @@ class Plan_m extends CI_Model {
 // End Private Property
 
 	public function __construct() {
-			parent::__construct();
+		parent::__construct();
 	}
 
 
@@ -225,7 +225,8 @@ class Plan_m extends CI_Model {
 					." LEFT JOIN line l ON s.FK_ID_Line = l.id"
 					." LEFT JOIN step ns ON s.Next_Step_Number = ns.Number AND j.FK_ID_Process = ns.FK_ID_Process"
 					." LEFT JOIN line nl ON ns.FK_ID_Line = nl.id"
-					." WHERE j.Delete_Flag=0 AND p.Plan_Qty_OK > 0" .$criteria
+					." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+					." AND p.Plan_Qty_OK > 0" .$criteria
 					." AND Date_Stamp BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 					." ORDER BY s.FK_ID_Line, j.Name, s.Number, p.Date_Stamp";
 
@@ -264,7 +265,8 @@ class Plan_m extends CI_Model {
 				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
 				." LEFT JOIN activity a ON k.id = a.FK_ID_Stock"
-			." WHERE j.Delete_Flag=0 AND a.FK_ID_Activity_Source IS NULL AND a.Qty_OK > 0"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+				." AND a.FK_ID_Activity_Source IS NULL AND a.Qty_OK > 0"
 				." AND DATE(a.Datetime_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
 			." GROUP BY s.FK_ID_Line, DATE(a.Datetime_Stamp)"
@@ -286,7 +288,8 @@ class Plan_m extends CI_Model {
 				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
 				." LEFT JOIN plan p ON k.id = p.FK_ID_Stock"
-			." WHERE j.Delete_Flag=0 AND p.Plan_Qty_OK > 0"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
+				." AND p.Plan_Qty_OK > 0"
 				." AND DATE(p.Date_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
 			." GROUP BY s.FK_ID_Line, DATE(p.Date_Stamp)"
@@ -349,7 +352,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+'.$firstWeekInterval.' day')->format('Y-m-d')."%'"
@@ -361,7 +364,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
@@ -373,7 +376,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
@@ -385,7 +388,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
@@ -397,7 +400,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
@@ -409,7 +412,7 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
@@ -421,13 +424,13 @@ class Plan_m extends CI_Model {
 						." FROM plan p"
 							." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 							." INNER JOIN job j ON k.FK_ID_Job = j.id"
-						." WHERE j.Delete_Flag=0"
+						." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 							." AND p.Date_Stamp BETWEEN '"
 							.$oStartDate->modify('+2 day')->format('Y-m-d')."%' AND '"
 							.$oStartDate->modify('+5 day')->format('Y-m-d')."%'"
 						." GROUP BY p.FK_ID_Stock"
 					.") w7 ON k.id = w7.FK_ID_Stock"
-				." WHERE j.Delete_Flag=0" .$criteria
+				." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
 				." ORDER BY c.Name, j.Name, l.Name, sm.Name";
 
 		$query = $this->db->query($sqlStr);

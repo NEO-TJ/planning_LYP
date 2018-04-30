@@ -16,10 +16,6 @@ class Job_m extends CI_Model {
 	var $col_delete_flag = "Delete_Flag";
 // End Private Property
 	
-	/**
-    * Responsable for auto load the database
-    * @return void
-	*/
 	public function __construct() {
 		parent::__construct();
 	}
@@ -54,7 +50,7 @@ class Job_m extends CI_Model {
 					." LEFT JOIN line l ON s.FK_ID_Line = l.id"
 					." LEFT JOIN step ns ON s.Next_Step_Number = ns.Number AND j.FK_ID_Process = ns.FK_ID_Process"
 					." LEFT JOIN line nl ON ns.FK_ID_Line = nl.id"
-					." WHERE j.Delete_Flag=0" .$criteria
+					." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
 					." ORDER BY s.FK_ID_Line, j.Name, s.Number";
 
 		$query = $this->db->query($sqlStr);
@@ -71,11 +67,6 @@ class Job_m extends CI_Model {
 	
 
 	// ******************************************* Custome function ************************************	
-	/**
-		* Get job by his is
-		* @param int $arrayJobID, $arrayjobTypeID, $arrayjobStatusID
-		* @return array
-	*/
 	public function get_row_by_id_type_status($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[]) {
 		// Create criteria query.
 		$this->load->model('plan_m');
@@ -93,7 +84,7 @@ class Job_m extends CI_Model {
 			." FROM job j"
 				." LEFT JOIN job_type t ON j.FK_ID_Job_Type = t.id"
 				." LEFT JOIN job_status u ON j.FK_ID_Job_Status = u.id"
-			." WHERE j.Delete_Flag=0" .$criteria
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status = 1" .$criteria
 			." ORDER BY j.Name";
 		
 		$query = $this->db->query($sqlStr);
@@ -103,11 +94,6 @@ class Job_m extends CI_Model {
 	}
     
     
-	/**
-     * Get job by his is
-     * @param int $arrayjobTypeID, $arrayjobStatusID
-     * @return array
-	*/
 	public function get_row_by_type_status($arrayjobTypeID=[], $arrayjobStatusID=[]) {
 		// Create criteria query.
 		$this->load->model('plan_m');
@@ -145,7 +131,7 @@ class Job_m extends CI_Model {
 		$sqlStr = "SELECT DISTINCT(j.id), j.Name"
 				." FROM job j"
 					." INNER JOIN project p ON (j.FK_ID_Project = p.id)"
-				." WHERE j.Delete_Flag=0" .$criteria
+				." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status = 1" .$criteria
 				." ORDER BY j.id";
 	
 		$query = $this->db->query($sqlStr);
@@ -304,11 +290,6 @@ class Job_m extends CI_Model {
 
 
 	// ****************************************************** Normal function *****************************************
-	/**
-		* Get project by his is
-		* @param int $project_id 
-		* @return array
-	*/
 	public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -323,16 +304,6 @@ class Job_m extends CI_Model {
 		return $query->result_array();
 	}
     
-	/**
-    * Fetch project data from the database
-    * possibility to mix search, filter and order
-    * @param string $search_string 
-    * @param strong $order
-    * @param string $order_type 
-    * @param int $limit_start
-    * @param int $limit_end
-    * @return array
-	*/
 	public function get_row($search_string=null, $order='Name', $order_type='Asc'
 	, $limit_start=null, $limit_end=null) {
 		$this->db->select('*');
@@ -363,12 +334,6 @@ class Job_m extends CI_Model {
 		return $query->result_array(); 	
 	}
 
-	/**
-    * Count the number of rows
-    * @param int $search_string
-    * @param int $order
-    * @return int
-	*/
 	function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -384,21 +349,11 @@ class Job_m extends CI_Model {
 		return $query->num_rows();        
 	}
 
-	/**
-    * Store the new item into the database
-    * @param array $data - associative array with data to store
-    * @return boolean 
-	*/
 	function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 	    return $insert;
 	}
 
-	/**
-    * Update project
-    * @param array $data - associative array with data to store
-    * @return boolean
-	*/
 	function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
@@ -412,11 +367,6 @@ class Job_m extends CI_Model {
 		}
 	}
 
-	/**
-    * Delete project
-    * @param int $id - project id
-    * @return boolean
-	*/
 	function delete_row($id) {
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);

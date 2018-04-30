@@ -70,12 +70,12 @@ function changeLine(){
 }
 
 function filterJob(dsJob) {
-	var tableTagInputCaption = '<span class="input-group-btn">';
+	let tableTagInputCaption = '<span class="input-group-btn">';
 	tableTagInputCaption += '<button class="btn btn-primary disabled" type="button">Job : </button>';
 	tableTagInputCaption += '</span>';
 	
-	var tableTagInputSelecter = '<select class="form-control multi-select" id="jobID" name="jobID[]" multiple="multiple">';
-	for(var i=0; i<dsJob.length; i++) {
+	let tableTagInputSelecter = '<select class="form-control multi-select" id="jobID" name="jobID[]" multiple="multiple">';
+	for(let i=0; i<dsJob.length; i++) {
 		tableTagInputSelecter += '<option value=' + dsJob[i]['id'] + '>' + dsJob[i]['Name'] + '</option>';
 	}
 	tableTagInputSelecter += '</select>'
@@ -87,36 +87,36 @@ function filterJob(dsJob) {
 
 //******************************************** Change job mode *****************************************
 function changeJob() {
-	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; }).get();
+	let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; }).get();
 
-	var data = { 'jobID': arrayJobID };
+	let data = { 'jobID': arrayJobID };
 
 	// Get project table one row by ajax.
 	$.ajax({
-			url: 'planning/ajaxGetDsStepByJobID',
-			type: 'post',
-			data: data,
-			dataType: 'json',
-			beforeSend: function() {},
-			error: function(xhr, textStatus) {
-					swal("Error", textStatus + xhr.responseText, "error");
-			},
-			complete: function() {},
-			success: function(dsStep) {
-					filterStep(dsStep);
-			}
+		url: 'planning/ajaxGetDsStepByJobID',
+		type: 'post',
+		data: data,
+		dataType: 'json',
+		beforeSend: function() {},
+		error: function(xhr, textStatus) {
+			swal("Error", textStatus + xhr.responseText, "error");
+		},
+		complete: function() {},
+		success: function(dsStep) {
+			filterStep(dsStep);
+		}
 	});
 }
 
 function filterStep(dsStep) {
-	var tableTagInputCaption = '<span class="input-group-btn">';
+	let tableTagInputCaption = '<span class="input-group-btn">';
 	tableTagInputCaption += '<button class="btn btn-primary disabled" type="button">Step number : </button>';
 	tableTagInputCaption += '</span>';
 
-	var tableTagInputSelecter = '<select class="form-control multi-select" id="stepID" name="stepID[]" multiple="multiple">';
-	for (var i = 0; i < dsStep.length; i++) {
-			tableTagInputSelecter += '<option value=' + dsStep[i]['id'] + '>'
-			tableTagInputSelecter += dsStep[i]['Number'] + ' - ' + dsStep[i]['DESC'] + '</option>';
+	let tableTagInputSelecter = '<select class="form-control multi-select" id="stepID" name="stepID[]" multiple="multiple">';
+	for (let i = 0; i < dsStep.length; i++) {
+		tableTagInputSelecter += '<option value=' + dsStep[i]['id'] + '>'
+		tableTagInputSelecter += dsStep[i]['Number'] + ' - ' + dsStep[i]['DESC'] + '</option>';
 	}
 
 	$('div#stepID').html(tableTagInputCaption + tableTagInputSelecter);
@@ -153,12 +153,12 @@ function getReport() {
 		let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
 		let data = {
-				'useDataPlan'		: useDataPlan,
-				'strDateStart'	: strDateStart,
-				'strDateEnd'		: strDateEnd,
-				'lineID'				: lineID,
-				'jobID'					: arrayJobID,
-				'stepID'				: arrayStepID,
+			'useDataPlan'		: useDataPlan,
+			'strDateStart'	: strDateStart,
+			'strDateEnd'		: strDateEnd,
+			'lineID'				: lineID,
+			'jobID'					: arrayJobID,
+			'stepID'				: arrayStepID,
 		};
 
 		// Get daily target report by ajax.
@@ -176,7 +176,7 @@ function getReport() {
 			},
 			success: function(dsDailyTarget) {
 				$('table#dailyTargetReport > tbody').html(genReport(dsDailyTarget));
-				for(var i=0; i<dsDailyTarget.length; i++) {
+				for(let i=0; i<dsDailyTarget.length; i++) {
 					generateBarcode(dsDailyTarget[i]['jsBarcode'], i);
 				}
 			}
@@ -188,22 +188,22 @@ function getReport() {
 
 //-------------------------------------------- Generate Barcode ----------------------------------------
 function generateBarcode(strSource, d){
-	var value = strSource;
-	var btype = "code39";
-	var renderer = "bmp";
-	
-	var settings = {
+	let value = strSource;
+	let btype = "code39";
+	let renderer = "bmp";
+
+	let settings = {
 		output:renderer,
 		barWidth: "2",
 		barHeight: "30",
 	};
-	
-    $('td#bc' + d).barcode(value, btype, settings);
+
+	$('td#bc' + d).barcode(value, btype, settings);
 }
 
 //--------------------------------------------- Generate Html ------------------------------------------
 function genLineGroup(lineCurrent) {
-	var htmlReport = '';
+	let htmlReport = '';
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left" rowspan="1" colspan="8">';
@@ -216,7 +216,7 @@ function genLineGroup(lineCurrent) {
 	return htmlReport;
 }
 function genSummary(totalQtyPlan) {
-	var htmlReport = '';
+	let htmlReport = '';
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left"></td>';
@@ -240,7 +240,7 @@ function genSummary(totalQtyPlan) {
 	return htmlReport;
 }
 function genData(row, d) {
-	var htmlReport = '';
+	let htmlReport = '';
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['Date_Stamp'] + '</td>';
@@ -257,15 +257,15 @@ function genData(row, d) {
 	return htmlReport;
 }
 function genReport(dsDailyTarget) {
-	var htmlReport = '';
+	let htmlReport = '';
 	
-	var r = 0;
-	var d = 0;
-	var totalQtyPlan = 0;
-	var lineCurrent = " (TJ Start) ";
+	let r = 0;
+	let d = 0;
+	let totalQtyPlan = 0;
+	let lineCurrent = " (TJ Start) ";
 	
-	var row;
-	for(var i=0; i<dsDailyTarget.length; i++)
+	let row;
+	for(let i=0; i<dsDailyTarget.length; i++)
 	{
 		row = dsDailyTarget[i];
 		

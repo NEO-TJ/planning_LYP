@@ -186,6 +186,17 @@ class Process_m extends CI_Model {
 	}
 
 
+	// --------------------------------------------- Get template --------------------------------------
+	public function get_template(){
+		$result = [
+			$this->col_id					=> 0,
+			$this->col_name				=> '',
+			$this->col_desc				=> '',
+			$this->col_desc_thai	=> '',
+		];
+
+		return $result;
+	}
 
 
 
@@ -315,11 +326,21 @@ class Process_m extends CI_Model {
 	}
 
 	function delete_in_not_in_any_table($table_name, $idNameIN, $idNameNotIN, $idIN=0, $arrIdNotIN=0){
-		$this->db->where($idNameIN, $idIN);
-		$this->db->where_not_in($idNameNotIN, $arrIdNotIN);
+		$blnWhere = false;
+		if($idIN > 0) {
+			$this->db->where($idNameIN, $idIN);
+			$blnWhere = true;
+		}
+		if($arrIdNotIN > 0) {
+			$this->db->where_not_in($idNameNotIN, $arrIdNotIN);
+			$blnWhere = true;
+		}
 
-		$result = $this->db->delete($table_name);
-
+		if($blnWhere) {
+			$result = $this->db->delete($table_name);
+		}
+//$test = $this->db->last_query();
+//echo $test;exit;
 		return $result;
 	}
 }
