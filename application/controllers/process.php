@@ -38,7 +38,7 @@ class Process extends CI_Controller {
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			$rowID = $this->input->post('rowID');
-			if($rowID < 0){
+			if($rowID <= 0){
 				$inputMode = 3;
 				$rowID *= -1;
 			}else{
@@ -52,16 +52,15 @@ class Process extends CI_Controller {
 
 	// ************************************************************* AJAX function ******************************
 	// ________________________________________ Save New Full Process _______________________________________
-	public function ajaxSaveNewFullProcess(){
+	public function ajaxSaveFullProcess(){
 		if(!($this->is_logged())) {exit(0);}
 		$result = 1;
 		$resultSave = false;
-		$resultQtyPlanProduct = false;
-		$cloneMode = false;
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			// -------------- Save Process Part ------------------------------------------
-			$dataProcess_to_store = array(
+			$processId = $this->input->post('processId');
+			$dataProcessToStore = array(
 				'Name' 		=> $this->input->post('processName'),
 				'DESC' 		=> $this->input->post('processDesc'),
 				'DESC_Thai'	=> $this->input->post('processDescThai')
@@ -70,7 +69,7 @@ class Process extends CI_Controller {
 			$dsStep = $this->input->post('dsStep');
 
 			$this->load->model('process_m');
-			$resultSave = $this->process_m->transaction_save_full_process(0, $dataProcess_to_store, $dsStep);
+			$resultSave = $this->process_m->transactionSaveFullProcess($processId, $dataProcessToStore, $dsStep);
 
 			$result = ($resultSave ? 0 : 1);
 		}
@@ -96,8 +95,13 @@ class Process extends CI_Controller {
 		$data['inputModeName'] = $this->inputModeName[$inputMode];
 		$data['inputMode'] = $inputMode;
 		if($inputMode == 3) {
+			// Process Part.
 			$data['dsProcess']['id'] = 0;
 			$data['dsProcess']['Name'] = "Copy - " . $data['dsProcess']['Name'];
+			// Step Part.
+			foreach($data['dsStep'] as $row) {
+				$row['id'] = 0;
+			}
 		}
 
 		$this->load->view('frontend/process/input/header', $userData);
@@ -112,11 +116,14 @@ class Process extends CI_Controller {
 		$result['dsSubAssembly'] = $this->getDsSubAssembly(0);
 
 		$this->load->model('process_m');
-		$dataset = $this->process_m->get_row_by_id($rowID);
-		$result['dsProcess'] = ((count($dataset) > 0) ? $dataset[0] : $this->process_m->get_template());
+		$dsProcess = $this->process_m->get_row_by_id($rowID);
+		$result['dsProcess'] = ((count($dsProcess) > 0) ? $dsProcess[0] : $this->process_m->get_template());
 
 		if(count($result['dsProcess']) > 0) {
-			$result['dsStep'] = $this->getDsStep($result['dsProcess']['id']);
+			$this->load->model('step_m');
+			$dsStep = $this->getDsStep($result['dsProcess']['id']);
+			$result['dsStep'] = ((count($dsStep) > 0) ? $dsStep : $this->step_m->get_template());
+			//echo(json_encode($dsStep));exit;
 		}
 
 		return $result;

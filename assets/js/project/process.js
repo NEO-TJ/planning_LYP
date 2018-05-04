@@ -1,18 +1,9 @@
-let cloneMode = false;
 let permanentProcess = false;
 // ************************************************ Event ***********************************************
 // ----------------------------------------------- Process ----------------------------------------------
 $('select#process').change(changeProcess);
 $('div#collapse-process').on("show.bs.collapse", function(e){
 	disCollapseProcessMode();
-});
-
-//------------------------------------------------ Button ------------------------------------------------
-$('button#add-edit-process').on('click', function(){
-	cloneMode = false;
-});
-$('button#clone-process').on('click', function(){
-	cloneMode = true;
 });
 
 
@@ -27,7 +18,6 @@ $('form#form-process').on('submit', function(e) {
 	}
 });
 $('form#form-process button.btn-reset').on('click',function(){
-	cloneMode = false;
 	$('select#process').removeClass('bg-error');
 
 	disCollapseProcessMode();
@@ -113,7 +103,6 @@ function prepareProcessData(){
 //------------------------------------------------- Mode ----------------------------------------------
 //****************************************** Change process mode **************************************
 function changeProcess(){
-	setProcessCaptionPanelMode();
 	resetFullProcessInputFill();
 	
 	let jobID = $('select#job :selected').val();
@@ -134,8 +123,8 @@ function changeProcess(){
 		disProcessChoose();
 
 		let data = {
-				'jobID': jobID,
-				'processID': processID
+			'jobID': jobID,
+			'processID': processID
 		};
 
 		// Get process table one row by ajax.
@@ -164,12 +153,6 @@ function changeProcess(){
 				
 				// Step Part.
 				if(dsFullStep.length > 0) {
-					if(permanentProcess){
-						disStepEditMode();
-					}else{
-						disStepAddMode();
-					}
-
 					// Set Step.
 					for(let i=0; i < dsFullStep.length; i++){
 						if(i != 0){
@@ -177,8 +160,6 @@ function changeProcess(){
 						}
 						setStepLastRowTable(dsFullStep, i);
 					}
-				} else {
-					disStepAddMode();
 				}
 			}
 		});
@@ -204,89 +185,29 @@ function resetProcessInputFill(){
 	$('input#processDesc').removeClass('bg-error');
 	$('input#processDescThai').removeClass('bg-error');
 }
-//***************************************** Set caption panel mode *******************************************
-function setProcessCaptionPanelMode(){
-	let panelCaption = (($('select#process :selected').val() == 0) ? 'New' : 'Edit');
-	$('#panel-caption-process').html('<span class="text-info"><h1>' + panelCaption + ' process</h1></span>');
-}
 
 
 //************************* Set display process and step of [New-Edit] or [Clone] mode ***********************
 function disCollapseProcessMode(){
-	if(cloneMode) {
-		$('select#process').prop('disabled', true);
-		$('button#add-edit-process').prop('disabled', true);
-		$('button#clone-process').prop('disabled', true);
-		$('form#form-process button.btn-submit').prop('disabled', true);
+	$('div#panel-expand-process').removeClass('panel-danger');
+	$('div#panel-expand-process').addClass('panel-success');
 
-		$('#panel-caption-process').html('<span class="text-info"><h1>Clone process</h1></span>');
-		$('div#panel-expand-process').removeClass('panel-success');
-		$('div#panel-expand-process').addClass('panel-danger');
-		
-		$('input#processName').val('');
-
-		disStepCloneMode();
-	}
-	else {
-		let btnCaption = '';
-		if(permanentProcess){
-			disStepEditMode();
-		} else {
-			disStepAddMode();
-			btnCaption = 'New-';
-		}
-		$('button#add-edit-process').text('[' + btnCaption + 'Edit] : process');
-		setProcessCaptionPanelMode();
-		$('div#panel-expand-process').removeClass('panel-danger');
-		$('div#panel-expand-process').addClass('panel-success');
-
-		$('select#process').prop('disabled', permanentProcess);
-		$('button#add-edit-process').prop('disabled', false);
-		$('button#clone-process').prop('disabled', permanentProcess);
-		$('form#form-process button.btn-submit').prop('disabled', false);
-
-	}
+	$('select#process').prop('disabled', permanentProcess);
+	$('button#add-edit-process').prop('disabled', false);
+	$('form#form-process button.btn-submit').prop('disabled', false);
 }
 
 //******************************************** Set Display Flow **********************************************
 function disProcessNotChoose() {
-	$('button#clone-process').prop('disabled', true);
 	$('table#step').find("input,button,textarea,select").prop('disabled', true);
 	$('form#form-all button.btn-submit').prop('disabled', true);
-
-	disStepAddMode();
 
 	$('button#print-process').prop('disabled', true);
 }
 function disProcessChoose() {
-	$('button#clone-process').prop('disabled', permanentProcess);
-	$('table#step').find("input,button,textarea,select").prop('disabled', false);
-	//$('table#step').find("input,button,textarea,select").prop('disabled', true);
-	//$('table#step').find("input#operationTime").prop('disabled', false);
+	$('table#step').find("input,button,textarea,select").prop('disabled', true);
+	$('table#step').find("input#operationTime").prop('disabled', false);
 	$('form#form-all button.btn-submit').prop('disabled', false);
 
 	$('button#print-process').prop('disabled', false);
-}
-
-//******************************************** Set Display Flow **********************************************
-function disStepAddMode() {
-	$('th#step-caption').text('STEP : [New]');
-
-	$('th#step-caption').removeClass('bg-info');
-	$('th#step-caption').removeClass('bg-danger');
-	$('th#step-caption').addClass('bg-primary');
-}
-function disStepEditMode() {
-	$('th#step-caption').text('STEP : [Edit]');
-	
-	$('th#step-caption').removeClass('bg-primary');
-	$('th#step-caption').removeClass('bg-danger');
-	$('th#step-caption').addClass('bg-info');
-}
-function disStepCloneMode() {
-	$('th#step-caption').text('STEP : [Clone]');
-	
-	$('th#step-caption').removeClass('bg-primary');
-	$('th#step-caption').removeClass('bg-info');
-	$('th#step-caption').addClass('bg-danger');
 }

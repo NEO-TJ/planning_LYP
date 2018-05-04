@@ -354,7 +354,7 @@
 			
 			<div class="col-md-1 pull-left">
 			
-				<button type="button" class="btn btn-success pull-left" id="add-edit-process"
+				<button type="button" class="btn btn-success pull-left hide" id="add-edit-process"
 					data-toggle="collapse" data-target="#collapse-process">[New-Edit] : Process</button>
 			
 			</div>
@@ -362,7 +362,7 @@
 			<div class="col-md-3 pull-left">
 			
 				<button type="button" class="btn btn-info pull-right" id="print-process">Print Process</button>
-				<button type="button" class="btn btn-warning pull-right" id="clone-process"
+				<button type="button" class="btn btn-warning pull-right hide" id="clone-process"
 					data-toggle="collapse" data-target="#collapse-process">[Clone] - Process</button>
 			
 			</div>
@@ -443,68 +443,34 @@
 						<th class="text-center" width="100">* (Sec)</th>
 						<th class="text-center" width="200">* Sub assembly</th>
 						<th class="text-center" width="100">* NB sub</th>
-						<th class="text-center" width="36">#</th>
 					</tr>
 				</thead>
 				<tbody class="bg-warning">
 					<tr>
-					<td class="text-center td-group">
-							<input type="checkbox" class="form-control td-group" name="firstStepFlag[]" id="firstStepFlag" value="0" />
-						</td>
 						<td class="text-center td-group">
-							<input type="text" class="form-control td-group" name="nextStepNumber[]" id="nextStepNumber"
-								placeholder="Next Step Number..." />
+							<input type="checkbox" class="form-control td-group" 
+							name="firstStepFlag[]" id="firstStepFlag" value="0" />
 						</td>
-						<td class="text-center td-group">
-							<input class="form-control" type="text" name="stepNumber[]" id="stepNumber"
-								placeholder="Step Number...">
+						<td class="text-right td-group" name="nextStepNumber[]" id="nextStepNumber">
 						</td>
-						<td class="text-center td-group">
-							<input class="form-control" type="text" name="stepDesc[]" id="stepDesc"
-								placeholder="Description...">
+						<td class="text-right td-group" name="stepNumber[]" id="stepNumber">
 						</td>
-						<td class="text-center td-group">
-							<select class="form-control text-center" name="line[]" id="line">
-								<option value="0" selected>Please select line</option>
-								<?php 
-									foreach($dsLine as $row) {
-										echo '<option value="'.$row['id'].'">'.$row['Name'].'</option>';
-									}
-								?>
-							</select>
+						<td class="text-left td-group" name="stepDesc[]" id="stepDesc">
 						</td>
-						<td class="text-center td-group">
-							<select class="form-control text-center" name="machine[]" id="machine">
-								<option value="0" selected>Please select machine</option>
-								<?php 
-									foreach($dsMachine as $row) {
-										echo '<option value="'.$row['id'].'">'.$row['Name'].'</option>';
-									}
-								?>
-							</select>
+						<td class="text-left td-group" name="lineName[]" id="lineName">
 						</td>
+						<td class="text-left td-group" name="machineName[]" id="machineName">
+						</td>
+
 						<td class="text-center td-group">
+							<input class="form-control" type="hidden" name="stockID[]" id="stockID" value=0>
 							<input class="form-control text-center" type="number" name="operationTime[]" id="operationTime"
-								placeholder="Time operation...">
+							placeholder="Time operation...">
 						</td>
-						<td class="text-center td-group">
-							<select class="form-control text-center" name="subAssemble[]" id="subAssemble">
-								<option value="0" selected>Please select sub assemble</option>
-								<?php 
-									foreach($dsSubAssembly as $row) {
-										echo '<option value="'.$row['id'].'">'.$row['Name'].'</option>';
-									}
-								?>
-							</select>
+
+						<td class="text-left td-group" name="subAssemblyName[]" id="subAssemblyName">
 						</td>
-						<td class="text-center td-group">
-							<input class="form-control text-center" type="number" name="nbSub[]" id="nbSub"
-								title="Quantity of Sub_Assembly to make one step" placeholder="NB sub...">
-						</td>
-						<td class="text-center">
-							<button type="button" class="btn btn-default add-elements">
-								<i class="fa fa-plus"></i>
-							</button>
+						<td class="text-right td-group" name="nbSub[]" id="nbSub">
 						</td>
 					</tr>
 				</tbody>

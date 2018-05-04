@@ -53,11 +53,12 @@ $('form#form-all button.btn-reset').click(function(e) {
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveAll(){
-	let dataFullProject = (cloneMode ? prepareProcessData() : prepareProcessID());
-	dataFullProject['cloneMode'] = (cloneMode ? 1 : 0);
-	dataFullProject['jobID'] = $('select#job :selected').val();
-	dataFullProject['bomID'] = $('select#bom :selected').val();
-	dataFullProject['dsStep'] = prepareStepData();
+	let dataFullProject = {
+		'processID'	: $('select#process :selected').val(),
+		'jobID'			: $('select#job :selected').val(),
+		'bomID'			: $('select#bom :selected').val(),
+		'dsStep'		: prepareStepData(),
+	};
 
 	// Save full process and step by ajax.
 	$.ajax({
@@ -117,26 +118,23 @@ function validateAll(){
 	let resultJob = false;
 	let resultQtyPlanProduct = false;
 	let resultProcess = false;
-	let resultAllStep = false;
+	let resultAllStock = false;
 	
 	// Check project id selected?
 	resultProject = validateFillSelectElement($('select#project'));
 	// Check job id selected?
 	resultJob = validateFillSelectElement($('select#job'));
 	// Check process id selected?
-	resultProcess = (cloneMode ? validateFillInputElement($('input#processName'))
-		: validateFillSelectElement($('select#process')));
+	resultProcess = validateFillSelectElement($('select#process'));
 	// Check All step require has input?
-	resultAllStep = validateStep();
+	resultAllStock = validateStock();
 	
-	result = (resultProject && resultJob && resultProcess && resultAllStep);
+	result = (resultProject && resultJob && resultProcess && resultAllStock);
 	return result;
 }
 //********************************************* Prepare data ******************************************
 function prepareProcessID(){
-	let dataProcessID = {
-				'processID': $('select#process :selected').val(),
-	};
+	let dataProcessID = { 'processID': $('select#process :selected').val() };
 	
 	return dataProcessID;
 }
@@ -154,7 +152,7 @@ function resetProjectPage(){
 	resetStepLastRowTable();
 	$('select').val(0);
 	$('input').val('');
-	
+
 	$('select#project').prop('disabled', false);
 	$('select#job').prop('disabled', true);
 	$('select#bom').prop('disabled', true);
@@ -164,17 +162,12 @@ function resetProjectPage(){
 	$('button#add-edit-job').prop('disabled', true);
 	$('button#add-edit-bom').prop('disabled', true);
 	$('button#add-edit-process').prop('disabled', true);
-	$('button#clone-process').prop('disabled', true);
 	$('form#form-all button.btn-submit').prop('disabled', true);
 
 	$('select#project').removeClass('bg-error');
 	$('select#job').removeClass('bg-error');
 	$('select#bom').removeClass('bg-error');
 	$('select#process').removeClass('bg-error');
-	
-	$('div#panel-expand-process').removeClass('panel-danger');
-	$('div#panel-expand-process').addClass('panel-success');
-	$('button#add-edit-process').text('[New-Edit] : process');
 
 	disStepAddMode();
 }

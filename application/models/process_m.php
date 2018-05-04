@@ -6,6 +6,7 @@ class Process_m extends CI_Model {
 	var $col_name = "Name";
 	var $col_desc = "DESC";
 	var $col_desc_thai = "DESC_Thai";
+
 	
 	public function __construct(){
 		parent::__construct();
@@ -13,8 +14,67 @@ class Process_m extends CI_Model {
 
 	// ******************************************* Custome function ************************************
 	// ------------------------------------------- Save full project -----------------------------------
+	function transactionSaveFullProject($jobID, $bomID, $processID, $dsStep, $qtyPlanProduct){
+		$result = false;
+		$resultJob = false;
+		$resultStock = true;
+
+		$this->load->model('job_m');
+		$this->load->model('step_m');
+		$this->load->model('stock_m');
+
+		// Start transcation.
+		$this->db->trans_begin();
+
+		// ---------------- Save Stock Part ------------------------------------------
+		$i=0;$j=0;
+			foreach($dsStep as $row){
+				if($row['stockID'] > 0) {
+					// Update op-time in Stock.
+					$dataStockToStore = array('Operation_Time'	=> $row['operationTime']);
+					$resultStock &= $this->updateRowFreeRole($this->stock_m->table_name, $this->stock_m->col_id
+					, $row['stockID'], $dataStockToStore);
+				} else {
+					// Insert Stock.
+					$dataStockToStore = array(
+						'FK_ID_Job'					=> $jobID,
+						'FK_ID_Step'				=> $row['stepID'],
+						'Qty_OK_First_Step'	=> $row['firstStepFlag'] * ($qtyPlanProduct * $row['nbSub']),
+						'Qty_OK'						=> 0,
+						'Qty_NG'						=> 0,
+						'Operation_Time'		=> $row['operationTime'],
+					);
+					$stockID = $this->insertRowOtherTable($this->stock_m->table_name, $dataStockToStore);
+					$resultStock &= (($stockID > 0) ? true : false);
+				}
+			}
+		// ---------------- End Save Stock Part --------------------------------------
+
+		// ------------- Update foreign key(Relation table) to Job table ---------------------------------
+			$dataJobToStore[$this->job_m->col_process_id] = $processID;
+			if($bomID > 0) { $dataJobToStore[$this->job_m->col_bom_id] = $bomID; }
+
+			$resultJob = $this->updateRowFreeRole($this->job_m->table_name
+				, $this->job_m->col_id, $jobID, $dataJobToStore);
+		// ------------- End Update foreign key(Relation table) to Job table -----------------------------
+
+		// Check status of transaction progress.
+			if($this->db->trans_status() && ($resultJob && $resultStock)) {
+				$this->db->trans_commit();
+				$result = true;
+			} else {
+				$this->db->trans_rollback();
+				$result = false;
+			}
+		// End Check status of transaction progress.
+	
+		return $result;
+	}
+
+
 	function transaction_save_full_project($jobID, $bomID, $processID, $cloneMode
 	, $dataProcess_to_store, $dsStep, $qtyPlanProduct){
+
 		$result = false;
 		$resultJob = false;
 		$resultProcess = false;
@@ -54,11 +114,11 @@ class Process_m extends CI_Model {
 				$stepID = ($cloneMode ? 0 : $row['stepID']);		// Check Clone mode? (For insert insert new step)
 				if($stepID == 0) {
 					// Insert Step.
-					$stepID = $this->insert_row_other_table($this->step_m->table_name, $dataStep_to_store);
+					$stepID = $this->insertRowOtherTable($this->step_m->table_name, $dataStep_to_store);
 					$resultStep &= (($stepID == 0) ? false : true);
 				} else {
 					// Update Step.
-					$resultStep &= $this->update_row_by_any_data($this->step_m->table_name
+					$resultStep &= $this->updateRowFreeRole($this->step_m->table_name
 						, $this->step_m->col_id, $stepID, $dataStep_to_store);
 				}
 
@@ -70,7 +130,7 @@ class Process_m extends CI_Model {
 						// Prepare data for update op-time in Stock.
 						$dataStock_to_store = array('Operation_Time'	=> $row['operationTime']);
 						// Update op-time in Stock.
-						$resultStock &= $this->update_row_by_any_data($this->stock_m->table_name, $this->stock_m->col_step_id
+						$resultStock &= $this->updateRowFreeRole($this->stock_m->table_name, $this->stock_m->col_step_id
 						, $stepID, $dataStock_to_store);
 					} else {
 						// Insert Stock.
@@ -83,7 +143,7 @@ class Process_m extends CI_Model {
 							'Operation_Time'	=> $row['operationTime'],
 						);
 
-						$stockID = $this->insert_row_other_table($this->stock_m->table_name, $dataStock_to_store);
+						$stockID = $this->insertRowOtherTable($this->stock_m->table_name, $dataStock_to_store);
 						$resultStock &= (($stockID == 0) ? false : true);
 					}
 
@@ -101,7 +161,7 @@ class Process_m extends CI_Model {
 			$dataJob_to_store[$this->job_m->col_process_id] = $processID;
 			if($bomID > 0) { $dataJob_to_store[$this->job_m->col_bom_id] = $bomID; }
 
-			$resultJob = $this->update_row_by_any_data($this->job_m->table_name
+			$resultJob = $this->updateRowFreeRole($this->job_m->table_name
 				, $this->job_m->col_id, $jobID, $dataJob_to_store);
 		}
 
@@ -120,27 +180,34 @@ class Process_m extends CI_Model {
 
 
 	// ------------------------------------------- Save full process -----------------------------------
-	function transaction_save_full_process($processID=0, $dataProcess_to_store, $dsStep){
+	function transactionSaveFullProcess($processID=0, $dataProcessToStore, $dsStep){
 		$result = false;
 		$resultProcess = false;
 		$resultStep = true;
+		$resultStock = false;
 
-		$AddNewMode = (($processID==0) ? true : false);
+		$AddNewMode = (($processID <= 0) ? true : false);
 		$this->load->model('step_m');
+		$this->load->model('stock_m');
 
 		// Start transcation.
 		$this->db->trans_begin();
 
 		// -------------- Save Process Part ------------------------------------------
-		if($processID == 0){						// Check Clone mode of Process? (For insert process data)
-			$processID = $this->insert_row($dataProcess_to_store);
-			$resultProcess = (($processID == 0) ? false : true);
-		} else {$resultProcess = true;}
+		if($processID <= 0) {
+			// Case Add new or Clone mode of Process? (For insert process data)
+			$processID = $this->insert_row($dataProcessToStore);
+			$resultProcess = (($processID <= 0) ? false : true);
+		} else {
+			// Case edit mode of Process? (For update process data)
+			$resultProcess = $this->update_row($processID, $dataProcessToStore);
+		}
+		// -------------- End Save Process Part --------------------------------------
 
+		// ---------------- Save Step Part -------------------------------------------
 		if($resultProcess) {
 			$arrStepID = [];
 			foreach($dsStep as $row){
-				// ---------------- Save Step Part -------------------------------------------
 				// Prepare data for save Step
 				$dataStep_to_store = array(
 					'Number'			=> $row['stepNumber'],
@@ -155,13 +222,13 @@ class Process_m extends CI_Model {
 				);
 				// Step part.
 				$stepID = ($AddNewMode ? 0 : $row['stepID']);		// Check Clone mode? (For insert insert new step)
-				if($stepID == 0) {
+				if($stepID <= 0) {
 					// Insert Step.
-					$stepID = $this->insert_row_other_table($this->step_m->table_name, $dataStep_to_store);
+					$stepID = $this->insertRowOtherTable($this->step_m->table_name, $dataStep_to_store);
 					$resultStep &= (($stepID == 0) ? false : true);
 				} else {
 					// Update Step.
-					$resultStep &= $this->update_row_by_any_data($this->step_m->table_name
+					$resultStep &= $this->updateRowFreeRole($this->step_m->table_name
 						, $this->step_m->col_id, $stepID, $dataStep_to_store);
 				}
 
@@ -169,9 +236,16 @@ class Process_m extends CI_Model {
 			}
 
 			// ------------ Delete step in DB by exclude step id.
-			$resultStep &= $this->delete_in_not_in_any_table($this->step_m->table_name, $this->step_m->col_process_id
-				, $this->step_m->col_id, $processID, $arrStepID);
+			$dsStepIdExclude = $this->getStepExcludeProcess($processID, $arrStepID);
+			$rStepIdExclude = array_column($dsStepIdExclude, "id");
+			if(count($rStepIdExclude) > 0) {
+				$resultStep &= $this->deleteRowArrayId($rStepIdExclude
+				, $this->step_m->col_id, $this->step_m->table_name);
+				$resultStock = $this->deleteRowArrayId($rStepIdExclude
+				, $this->stock_m->col_step_id, $this->stock_m->table_name);
+			}
 		}
+		// ---------------- End Save Step Part ---------------------------------------
 
 		// Check status of transaction progress.
 		if($this->db->trans_status() && ($resultProcess && $resultStep)) {
@@ -181,6 +255,7 @@ class Process_m extends CI_Model {
 			$this->db->trans_rollback();
 			$result = false;
 		}
+		// End Check status of transaction progress.
 
 		return $result;
 	}
@@ -218,7 +293,7 @@ class Process_m extends CI_Model {
 	}    
 
 	public function get_row($search_string=null, $order='Name', $order_type='Asc'
-		, $limit_start=null, $limit_end=null){
+	, $limit_start=null, $limit_end=null){
 
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -247,6 +322,23 @@ class Process_m extends CI_Model {
 		return $query->result_array(); 	
 	}
 
+	function getStepExcludeProcess($processId=0, $rStepId=[]){
+		$this->load->model('step_m');
+		
+		$this->db->select($this->step_m->col_id);
+		$this->db->from($this->step_m->table_name);
+		if($processId > 0) {
+			$this->db->where($this->step_m->col_process_id, $processId);
+		}
+		if(count($rStepId) > 0) {
+			$this->db->where_not_in($this->step_m->col_id, $rStepId);
+		}
+
+		$query = $this->db->get();
+		$result = $query->result_array();
+
+		return $result;
+	}
 
 	// ------------------------------------------------- Count -----------------------------------------
 	function count_row($search_string=null, $order=null){
@@ -282,7 +374,7 @@ class Process_m extends CI_Model {
 		//return $insert;
 	}
 
-	function insert_row_other_table($table_name, $data){
+	function insertRowOtherTable($table_name, $data){
 		$insert = $this->db->insert($table_name, $data);
 		return $this->db->insert_id();
 		//return $insert;
@@ -303,7 +395,7 @@ class Process_m extends CI_Model {
 		}
 	}
 
-	function update_row_by_any_data($tableName, $idName, $id, $data){
+	function updateRowFreeRole($tableName, $idName, $id, $data){
 		$this->db->where($idName, $id);
 		$this->db->update($tableName, $data);
 		$report = array();
@@ -325,22 +417,13 @@ class Process_m extends CI_Model {
 		return $result;
 	}
 
-	function delete_in_not_in_any_table($table_name, $idNameIN, $idNameNotIN, $idIN=0, $arrIdNotIN=0){
-		$blnWhere = false;
-		if($idIN > 0) {
-			$this->db->where($idNameIN, $idIN);
-			$blnWhere = true;
-		}
-		if($arrIdNotIN > 0) {
-			$this->db->where_not_in($idNameNotIN, $arrIdNotIN);
-			$blnWhere = true;
+	function deleteRowArrayId($rId=[], $columnWhere, $tableName){
+		$result = false;
+		if(count($rId) > 0) {
+			$this->db->where_in($columnWhere, $rId);
+			$result = $this->db->delete($tableName);
 		}
 
-		if($blnWhere) {
-			$result = $this->db->delete($table_name);
-		}
-//$test = $this->db->last_query();
-//echo $test;exit;
 		return $result;
 	}
 }

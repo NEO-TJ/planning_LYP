@@ -2,14 +2,14 @@
 <?php $inputModeTheme = (($inputMode==3)?"DarkRed":(($inputMode==2)?"DarkGreen":"DarkOrange")) ?>
 <!-- Open form-process -->
 <?php echo form_open(base_url(), array("id" => "form-process")); ?>
-<input type='hidden' id='rowID' name='rowID' value=<?=($dsProcess['id'])?>></input>
+<input type='hidden' id='processId' name='processId' value=<?=($dsProcess['id'])?>></input>
 
 <!-- Panel of Process & Step -->
 	<div class="panel panel-primary">
-	<!-- Row of expand process -->
+	<!-- Row of process header master -->
 		<div class="row">
 			<div class="col-md-12">
-			<!-- Panel of expand process -->
+			<!-- Panel of process header master -->
 				<div class="panel panel-info expand-input">
 					<div class="panel-heading" style="text-align: center;">
 						<h1 id="panel-caption-process">
@@ -57,10 +57,10 @@
 					<!-- End col of process Desc Thai -->
 					</div>
 				</div>
-			<!-- End panel of expand process -->
+			<!-- End panel of process header master -->
 			</div>
 		</div>
-	<!-- End row of expand process -->
+	<!-- End row of process header master -->
 
 		<hr>
 	<!-- Row of Step -->
@@ -105,7 +105,7 @@
 					</div>
 					<div class="col-md-3 pull-right">
 						<button type="button" class="btn btn-danger btn-reset pull-left">Reset process</button>
-						<button type="submit" class="btn btn-primary btn-submit pull-right" disabled>Update process</button>
+						<button type="submit" class="btn btn-primary btn-submit pull-right">Update process</button>
 					</div>
 				</div>
 			<!-- End command button -->

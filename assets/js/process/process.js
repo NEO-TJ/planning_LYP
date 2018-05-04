@@ -27,9 +27,8 @@ function showDialog($type){
 $('form#form-process').submit(function(e) {
 	e.preventDefault();
 
-//	let includeProcessDetail = $('form#form-process button.btn-submit').prop('disabled');
 	if(validateAll()) {
-		//saveAll();
+		saveAll();
 	} else {
 		showDialog(dltValidate);
 	}
@@ -41,12 +40,13 @@ $('form#form-process button.btn-reset').click(function(e) {
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveAll(){
+	let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
 	dataFullProcess = prepareProcessData();
 	dataFullProcess['dsStep'] = prepareStepData();
 
 	// Save full process and step by ajax.
 	$.ajax({
-		url: 'process/ajaxSaveNewFullProcess',
+		url: baseUrl + 'process/ajaxSaveFullProcess',
 		type: 'post',
 		data: dataFullProcess,
 		beforeSend: function(){
@@ -73,8 +73,7 @@ function saveAll(){
 				}).then(function(){
 					window.location.href="process"
 				});
-			}
-			else{
+			}else{
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> All Project </span> Not complete...!<p>' + result,
@@ -113,11 +112,13 @@ function validateProcess(){
 
 //********************************************* Prepare data ******************************************
 function prepareProcessData(){
+	let processId = $('input#processId').val();
 	let processName = $('input#processName').val();
 	let processDesc = $('input#processDesc').val();
 	let processDescThai = $('input#processDescThai').val();
 
 	let dataFullProcess = {
+		'processId': processId,
 		'processName': processName,
 		'processDesc': processDesc,
 		'processDescThai': processDescThai,

@@ -201,36 +201,21 @@ class Project extends CI_Controller {
 		$result = 2;
 		$resultSave = false;
 		$resultQtyPlanProduct = false;
-		$cloneMode = false;
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			// -------- Prepare data Job and BOM Part ------------------------------------
 			$jobID = $this->input->post('jobID');
 			$bomID = $this->input->post('bomID');
+			$processID = $this->input->post('processID');
+			$dsStep = $this->input->post('dsStep');
 			$qtyPlanProduct = $this->getQtyPlanProduct($jobID);
 
 			if($qtyPlanProduct > -1) {
 				$resultQtyPlanProduct = true;
-
-				// ---------- Prepare data Process Part --------------------------------------
-				$cloneMode = (($this->input->post('cloneMode') == 1) ? true : false);
-				if($cloneMode){
-					$processID = 0;
-					$dataProcess_to_store = array(
-						'Name' 				=> $this->input->post('processName'),
-						'DESC' 				=> $this->input->post('processDesc'),
-						'DESC_Thai'		 	=> $this->input->post('processDescThai')
-					);
-				} else {
-					$processID = $this->input->post('processID');
-					$dataProcess_to_store = array();
-				}
-				// ----------- Prepare data Step Part ----------------------------------------
-				$dsStep = $this->input->post('dsStep');
-
+				// ----------- Prepare data StepStock Part ----------------------------------------
 				$this->load->model('process_m');
-				$resultSave = $this->process_m->transaction_save_full_project($jobID, $bomID, $processID, $cloneMode
-					, $dataProcess_to_store, $dsStep, $qtyPlanProduct);
+				$resultSave = $this->process_m->transactionSaveFullProject(
+					$jobID, $bomID, $processID, $dsStep, $qtyPlanProduct);
 			}
 
 			if($resultQtyPlanProduct) {
@@ -317,10 +302,7 @@ class Project extends CI_Controller {
 			$dsProcess = $this->getDsProcess($processID);
 			$dsFullStep = $this->getDsFullStep($jobID, $processID);
 
-			$data = array(
-				'dsProcess'			=> $dsProcess,
-				'dsFullStep'		=> $dsFullStep,
-			);
+			$data = array('dsProcess' => $dsProcess, 'dsFullStep' => $dsFullStep);
 
 			echo json_encode($data);
 		}
@@ -368,77 +350,6 @@ class Project extends CI_Controller {
 
 	// ***************************************** Private function **************************************
 	// ------------------------------------------ Save data to DB --------------------------------------
-	private function saveFullStep($jobID, $processID, $dsStep, $qtyPlanProduct){
-		$result = false;
-
-		$resultStep = true;
-		$resultStock = true;
-
-		$this->load->model('step_m');
-		$this->load->model('stock_m');
-
-		$arrStepID = [];
-		foreach($dsStep as $row){
-			// Prepare data for save Step
-			$dataStep_to_store = array(
-				'Number'			=> $row['stepNumber'],
-				'DESC'				=> $row['stepDesc'],
-				'FK_ID_Process'		=> $processID,
-				'FK_ID_Line'		=> $row['lineID'],
-				'FK_ID_Machine'		=> $row['machineID'],
-				'FK_ID_Sub_Assembly'=> $row['subAssemblyID'],
-				'NB_Sub'			=> $row['nbSub'],
-				'Next_Step_Number'	=> $row['nextStepNumber'],
-				'First_Step_Flag'	=> $row['firstStepFlag'],
-			);
-			// Step part.
-			$stepID = $row['stepID'];
-			if($stepID == 0) {
-				// Insert Step.
-				$insertStepID = $this->step_m->insert_row($dataStep_to_store);
-
-				if($insertStepID != 0) {
-					$stepID = $insertStepID;
-					$resultStep &= true;
-				} else {
-					$resultStep &= false;
-				}
-			} else {
-				// Update Step.
-				$resultStep &= $this->step_m->update_row($stepID, $dataStep_to_store);
-			}
-
-
-
-			// Stock part.
-			if(($this->stock_m->count_row_by_job_and_step_id($jobID, $stepID)) > 0) {
-				// Prepare data for update op-time in Stock.
-				$dataStock_to_store = array('Operation_Time'	=> $row['operationTime']);
-				// Update op-time in Stock.
-				$resultStock &= $this->stock_m->update_row_by_step_id($stepID, $dataStock_to_store);
-			} else {
-				// Insert Stock.
-				$dataStock_to_store = array(
-					'FK_ID_Job'			=> $jobID,
-					'FK_ID_Step'		=> $stepID,
-					'Qty_OK_First_Step'	=> $row['firstStepFlag'] * ($qtyPlanProduct * $row['nbSub']),
-					'Qty_OK'			=> 0,
-					'Qty_NG'			=> 0,
-					'Operation_Time'	=> $row['operationTime'],
-				);
-
-				$resultStock &= $this->stock_m->insert_row($dataStock_to_store);
-			}
-
-			array_push($arrStepID, $stepID);
-		}
-
-		// ------------ Delete step in DB by exclude step id.
-		$resultStep &= $this->step_m->delete_not_in($processID, $arrStepID);
-		$resultStock &= $this->stock_m->delete_not_in($jobID, $arrStepID);
-
-		return ($resultStep && $resultStock);
-	}
 	private function updateJob($jobID, $bomID, $processID){
 		$result = false;
 
@@ -539,11 +450,7 @@ class Project extends CI_Controller {
 	private function getDsFullStep($jobID, $processID){
 		$dsFullStep=[];
 		$this->load->model('step_m');
-		$dsFullStep = $this->step_m->getFullStep_have_stock($jobID, $processID);
-		if(count($dsFullStep) < 1) {
-			//$dsFullStep = $this->step_m->getFullStep_have_not_stock($jobID, $processID);
-			$dsFullStep = $this->step_m->getFullStep_have_not_stock_r1($processID);
-		}
+		$dsFullStep = $this->step_m->getFullStepStock($jobID, $processID);
 
 		return $dsFullStep;
 	}

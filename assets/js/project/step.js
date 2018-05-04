@@ -10,51 +10,30 @@ function prepareStepData(){
 	let dsStep = new Array();
 	$('table#step.table-components tbody tr').each(function(i, row){
 		let dictStep = {
-			'stepID': 			$(this).find('td:nth-child(1) input#firstStepFlag').val(),
-			'firstStepFlag': 	(($(this).find('td:nth-child(1) input#firstStepFlag').prop('checked'))? 1: 0),
-			'nextStepNumber': 	$(this).find('td:nth-child(2) input#nextStepNumber').val(),
-			'stepNumber': 		$(this).find('td:nth-child(3) input#stepNumber').val(),
-			'stepDesc': 		$(this).find('td:nth-child(4) input#stepDesc').val(),
-			'lineID': 			$(this).find('td:nth-child(5) select#line :selected').val(),
-			'machineID': 		$(this).find('td:nth-child(6) select#machine :selected').val(),
-			'operationTime': 	( ($(this).find('td:nth-child(7) input#operationTime').val() ) / 60),
-			'subAssemblyID': 	$(this).find('td:nth-child(8) select#subAssemble :selected').val(),
-			'nbSub': 			$(this).find('td:nth-child(9) input#nbSub').val(),
+			'stepID'				: $(this).find('input#firstStepFlag').val(),
+			'stockID'				:	(isEmpty($(this).find('input#stockID').val()) 
+												? 0 : $(this).find('input#stockID').val()),
+			'operationTime'	:	( ($(this).find('input#operationTime').val() ) / 60),
+			'firstStepFlag'	:	(($(this).find('input#firstStepFlag').prop('checked'))? 1: 0),
+			'nbSub'					:	$(this).find('td#nbSub').text(),
 		};
 		dsStep.push(dictStep);
 	});
-	
+
 	return dsStep;
 }
 //********************************************** Validation ********************************************
-function validateStep() {
+function validateStock() {
 	let result = false;
-	
-	let resultStepNumber = true;
-	let resultLineID = true;
-	let resultMachineID = true;
 	let resultOperationTime = true;
-	let resultSubAssemblyID = true;
-	let resultNBSub = true;
 	
 	// Check require field of step.
 	$('table#step.table-components tbody tr').each(function(i, row) {
 		// Check Step Number require has input?
-		resultStepNumber &= validateFillInputElement($(this).find('td:nth-child(3) input#stepNumber'));
-		// Check Line id selected?
-		resultLineID &= validateFillSelectElement($(this).find('td:nth-child(5) select#line'));
-		// Check Line id selected?
-		resultMachineID &= validateFillSelectElement($(this).find('td:nth-child(6) select#machine'));
-		// Check Step Number require has input?
-		resultOperationTime &= validateFillInputElement($(this).find('td:nth-child(7) input#operationTime'));
-		// Check Line id selected?
-		resultSubAssemblyID &= validateFillSelectElement($(this).find('td:nth-child(8) select#subAssemble'));
-		// Check Step Number require has input?
-		resultNBSub &= validateFillInputElement($(this).find('td:nth-child(9) input#nbSub'));
+		resultOperationTime &= validateFillInputElement($(this).find('input#operationTime'));
 	});
-	
-	
-	result = (resultStepNumber && resultLineID && resultMachineID && resultOperationTime && resultSubAssemblyID && resultNBSub);
+
+	result = resultOperationTime;
 	return result;
 }
 
@@ -92,41 +71,43 @@ function deleteStepRowTable(){
 //***************************************** Set Step input fill **********************************************
 function setStepLastRowTable(dsFullStep, i) {
 	let currentTr = $('table#step.table-components tbody tr:last-child');
-	
-	currentTr.find('td:nth-child(1) input#firstStepFlag').val(dsFullStep[i].id);
-	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', ((dsFullStep[i].First_Step_Flag == 1)? true: false));
-	currentTr.find('td:nth-child(2) input#nextStepNumber').val(dsFullStep[i].Next_Step_Number);
-	currentTr.find('td:nth-child(3) input#stepNumber').val(dsFullStep[i].Number);
-	currentTr.find('td:nth-child(4) input#stepDesc').val(dsFullStep[i].DESC);
-	currentTr.find('td:nth-child(5) select#line').val(dsFullStep[i].FK_ID_Line);
-	currentTr.find('td:nth-child(6) select#machine').val(dsFullStep[i].FK_ID_Machine);
-	currentTr.find('td:nth-child(7) input#operationTime').val(dsFullStep[i].Operation_Time * 60);
-	currentTr.find('td:nth-child(8) select#subAssemble').val(dsFullStep[i].FK_ID_Sub_Assembly);
-	currentTr.find('td:nth-child(9) input#nbSub').val(dsFullStep[i].NB_Sub);
+
+	currentTr.find('input#firstStepFlag').val(dsFullStep[i].stepID);
+	currentTr.find('input#firstStepFlag').prop('checked'
+	, ((dsFullStep[i].First_Step_Flag == 1)? true: false));
+	currentTr.find('td#nextStepNumber').text(dsFullStep[i].Next_Step_Number);
+	currentTr.find('td#stepNumber').text(dsFullStep[i].Number);
+	currentTr.find('td#stepDesc').text(dsFullStep[i].DESC);
+	currentTr.find('td#lineName').text(dsFullStep[i].lineName);
+	currentTr.find('td#machineName').text(dsFullStep[i].machineName);
+
+	currentTr.find('input#stockID').val(dsFullStep[i].stockID);
+	currentTr.find('input#operationTime').val(dsFullStep[i].Operation_Time * 60);
+
+	currentTr.find('td#subAssemblyName').text(dsFullStep[i].subAssemblyName);
+	currentTr.find('td#nbSub').text(dsFullStep[i].NB_Sub);
 }
 //************************************** Reset Full Process input fill ***************************************
 //----------------------------------------- Reset Step input fill --------------------------------------------
 function resetStepLastRowTable(dsFullBom, i) {
 	let currentTr = $('table#step.table-components tbody tr:last-child');
 	
-	currentTr.find('td:nth-child(1) input#firstStepFlag').val(0);
-	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', false);
-	currentTr.find('td:nth-child(2) input#nextStepNumber').val('');
-	currentTr.find('td:nth-child(3) input#stepNumber').val('');
-	currentTr.find('td:nth-child(4) input#stepDesc').val('');
-	currentTr.find('td:nth-child(5) select#line').val(0);
-	currentTr.find('td:nth-child(6) select#machine').val(0);
-	currentTr.find('td:nth-child(7) input#operationTime').val('');
-	currentTr.find('td:nth-child(8) select#subAssemble').val(0);
-	currentTr.find('td:nth-child(9) input#nbSub').val('');
+	currentTr.find('input#firstStepFlag').val(0);
+	currentTr.find('input#firstStepFlag').prop('checked', false);
+	currentTr.find('td#nextStepNumber').text('');
+	currentTr.find('td#stepNumber').text('');
 
-	currentTr.find('td:nth-child(1) input#firstStepFlag').removeClass('bg-error');
-	currentTr.find('td:nth-child(2) select#rm').removeClass('bg-error');
-	currentTr.find('td:nth-child(3) input#qty').removeClass('bg-error');
-	currentTr.find('td:nth-child(4) input#stepDesc').removeClass('bg-error');
-	currentTr.find('td:nth-child(5) select#line').removeClass('bg-error');
-	currentTr.find('td:nth-child(6) select#machine').removeClass('bg-error');
-	currentTr.find('td:nth-child(7) input#operationTime').removeClass('bg-error');
-	currentTr.find('td:nth-child(8) select#subAssemble').removeClass('bg-error');
-	currentTr.find('td:nth-child(9) input#nbSub').removeClass('bg-error');
+	currentTr.find('td#stepDesc').text('');
+	currentTr.find('td#lineName').text('');
+	currentTr.find('td#machineName').text('');
+
+	currentTr.find('input#stockID').val('');
+	currentTr.find('input#operationTime').val('');
+
+	currentTr.find('td#subAssemblyName').text('');
+	currentTr.find('td#nbSub').text('');
+
+
+	// remove class bg-error.
+	currentTr.find('input#operationTime').removeClass('bg-error');
 }

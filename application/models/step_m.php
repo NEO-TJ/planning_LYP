@@ -69,7 +69,7 @@ class Step_m extends CI_Model {
 			." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
 			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
 			." ORDER BY s.FK_ID_Process, s.Number";
-//echo($sqlStr);exit;
+
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
 
@@ -150,36 +150,17 @@ class Step_m extends CI_Model {
 
 
 
-	public function getFullStep_have_stock($jobID=0, $processID=0) {
-		$sqlStr = "SELECT s.id, s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC" 
-			.", s.FK_ID_Line, s.FK_ID_Machine, s.FK_ID_Sub_Assembly, s.NB_Sub, k.Operation_Time"
-			." FROM job as j"
-			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)" 
-			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"
-			." WHERE j.Delete_Flag=0 AND ((j.id = ".$jobID.") && (s.FK_ID_Process = ".$processID."))"
-			." ORDER BY j.id, s.Number";
-		$query = $this->db->query($sqlStr);
-		$result = $query->result_array();
-
-		return $result;
-	}
-	public function getFullStep_have_not_stock($jobID=0, $processID=0) {
-		$sqlStr = "SELECT DISTINCT(s.id), s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC"
-			.", s.FK_ID_Line, s.FK_ID_Machine, s.FK_ID_Sub_Assembly, s.NB_Sub, NULL Operation_Time"
+	public function getFullStepStock($jobID=0, $processID=0) {
+		$sqlStr = "SELECT DISTINCT(s.id) stepID, s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC"
+			.", l.Name lineName, m.Name machineName, b.Name subAssemblyName"
+			.", k.Operation_Time, k.id stockID, s.NB_Sub"
 			." FROM step as s"
-			." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
+				." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
+				." LEFT JOIN stock as k ON s.id=k.FK_ID_Step AND k.FK_ID_Job = ".$jobID
+				." LEFT JOIN line as l ON s.FK_ID_Line=l.id"
+				." LEFT JOIN machine as m ON s.FK_ID_Machine=m.id"
+				." LEFT JOIN sub_assembly b ON s.FK_ID_Sub_Assembly=b.id"
 			." WHERE j.Delete_Flag=0 AND s.FK_ID_Process = ".$processID
-			." ORDER BY s.Number";
-		$query = $this->db->query($sqlStr);
-		$result = $query->result_array();
-
-		return $result;
-	}
-	public function getFullStep_have_not_stock_r1($processID=0) {
-		$sqlStr = "SELECT DISTINCT(s.id), s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC"
-			.", s.FK_ID_Line, s.FK_ID_Machine, s.FK_ID_Sub_Assembly, s.NB_Sub, NULL Operation_Time"
-			." FROM step as s"
-			." WHERE s.FK_ID_Process = ".$processID
 			." ORDER BY s.Number";
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
@@ -291,6 +272,31 @@ class Step_m extends CI_Model {
 
 		return $result;
 	}
+
+
+	// --------------------------------------------- Get template --------------------------------------
+	public function get_template(){
+		$result[0] = [
+			$this->col_id								=> 0,
+			$this->col_number						=> '',
+			$this->col_desc							=> '',
+			$this->col_process_id				=> 0,
+			$this->col_line_id					=> 0,
+			$this->col_machine_id				=> 0,
+			$this->col_sub_assembly_id	=> 0,
+			$this->col_nb_sub						=> 0,
+			$this->col_next_step_number	=> '',
+			$this->col_first_step_flag	=> 0,
+		];
+
+		return $result;
+	}
+
+
+
+
+
+
 
 
 
