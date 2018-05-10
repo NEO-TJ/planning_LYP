@@ -155,12 +155,11 @@ class Step_m extends CI_Model {
 			.", l.Name lineName, m.Name machineName, b.Name subAssemblyName"
 			.", k.Operation_Time, k.id stockID, s.NB_Sub"
 			." FROM step as s"
-				." INNER JOIN job j ON (s.FK_ID_Process = j.FK_ID_Process)"
 				." LEFT JOIN stock as k ON s.id=k.FK_ID_Step AND k.FK_ID_Job = ".$jobID
 				." LEFT JOIN line as l ON s.FK_ID_Line=l.id"
 				." LEFT JOIN machine as m ON s.FK_ID_Machine=m.id"
 				." LEFT JOIN sub_assembly b ON s.FK_ID_Sub_Assembly=b.id"
-			." WHERE j.Delete_Flag=0 AND s.FK_ID_Process = ".$processID
+			." WHERE s.FK_ID_Process = ".$processID
 			." ORDER BY s.Number";
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
