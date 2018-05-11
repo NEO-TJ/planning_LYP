@@ -62,6 +62,9 @@ function validateStep() {
 function addNewStepRowTable() {
 	cloneStepRowTable();
 	resetStepLastRowTable();
+
+	let $lastTr = $('table#step.table-components tbody tr:last-child');
+	$lastTr.find('input#firstStepFlag').focus();
 }
 //******************************** Clone row table with auto increment no ******************************
 function cloneStepRowTable() {

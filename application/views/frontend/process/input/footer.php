@@ -20,7 +20,7 @@
 
  			echo js_asset('frontend.js');
 			echo js_asset('my.helper.js');
-				
+
 			echo js_asset('process/process.js');
 			echo js_asset('process/step.js');
 		?>

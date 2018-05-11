@@ -33,9 +33,6 @@ $('form#form-process').submit(function(e) {
 		showDialog(dltValidate);
 	}
 });
-$('form#form-process button.btn-reset').click(function(e) {
-	resetProcessPage();
-});
 
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
@@ -125,18 +122,4 @@ function prepareProcessData(){
 	};
 	
 	return dataFullProcess;
-}
-
-
-
-
-//******************************************** Set Display Flow ****************************************
-function resetProcessPage(){
-	$('select').val(0);
-	$('input').val('');
-
-	$('input#processName').removeClass('bg-error');
-
-	deleteAllCloneStepRowTable();
-	resetStepLastRowTable();
 }

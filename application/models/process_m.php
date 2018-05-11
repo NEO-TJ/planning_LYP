@@ -279,6 +279,27 @@ class Process_m extends CI_Model {
 
 
 	// -------------------------------------------------- Get ------------------------------------------
+	public function getRowByArrayID($arrayProcessID=[]) {
+		// Prepare Criteria.
+		$this->load->model('plan_m');
+		$criteria ='';
+		if(count($arrayProcessID) > 0) { $criteria = $this->plan_m->createCriteriaIN('p.id', $arrayProcessID, $criteria); }
+		if(strlen($criteria) > 4) {
+			$criteria = substr($criteria, 4, strlen($criteria) - 4);
+			$criteria = ' WHERE '.$criteria;
+		}
+
+		$sqlStr = "SELECT *"
+			." FROM process p"
+			.$criteria
+			." ORDER BY ".$this->col_name." ASC";
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+
 	public function get_row_by_id($id=0, $arrWhere=[]){
 		$this->db->select('*');
 		$this->db->from($this->table_name);

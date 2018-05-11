@@ -104,7 +104,6 @@
 					<div class="col-md-9">
 					</div>
 					<div class="col-md-3 pull-right">
-						<button type="button" class="btn btn-danger btn-reset pull-left">Reset process</button>
 						<button type="submit" class="btn btn-primary btn-submit pull-right">Update process</button>
 					</div>
 				</div>

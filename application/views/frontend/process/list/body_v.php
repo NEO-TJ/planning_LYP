@@ -1,3 +1,4 @@
+<!-- Add New Area -->
 <div class="row top">
 	<div class="col-md-12 page-header users-header">
 		<div class="col-md-10">
@@ -16,20 +17,61 @@
 		<?php echo form_close(); ?><!-- Close formAddNew -->
 	</div>
 </div>
+<!-- End Add New Area -->
 
 
+<!-- Search Area -->
+<?php echo form_open(base_url("process"), array("id" => "form-search")); ?>
+<div class="row panel panel-primary">
+	<!-- Process -->
+	<div class="col-md-7 margin-input">
+		<div class="input-group">
+			<span class="input-group-btn">
+				<button class="btn btn-primary disabled" type="button">Process : </button>
+			</span>
+			<select class="form-control multi-select" id="processID" name="processID[]" multiple="multiple">
+				<?php 
+					foreach($dsProcess as $row) {
+						echo '<option value='.$row['id'].'>'.$row['Name'].'</option>';
+					}
+				?>
+			</select>
+		</div>
+	</div>
+	<!-- Process Status -->
+	<div class="col-md-4 margin-input"><!--
+		<div class="input-group">
+			<span class="input-group-btn">
+				<button class="btn btn-primary disabled" type="button">Status : </button>
+			</span>
+			<select class="form-control multi-select" id="processStatus" name="processStatus[]" multiple="multiple">
+				<option value='1'>Enable</option>
+				<option value='0'>Disable</option>
+			</select>
+		</div>-->
+	</div>
+	<!-- Search button -->
+	<div class="col-md-1 margin-input pull-left">
+		<button type="button" class="btn btn-primary pull-right" id="search">Go</button>
+	</div>
+</div>
+<?php echo form_close(); ?><!-- Close formSearch -->
+<!-- Search Area -->
+
+
+<!-- Table List Area -->
 <div style="overflow-x:auto; overflow-y:auto;">
 <?php echo form_open(base_url("process/edit"), array("id" => "formChoose")); ?>
 	<table class="table table-bordered table-components table-condensed table-hover table-striped table-responsive" 
 	id="view">
 		<thead class="table-header">
-<!-- Row header 1 -->
-			<tr>
+		<!-- Row header -->
+			<tr class="bg-primary">
 				<th class="text-center" width="40">No.</th>
 				<?php 
-					if(count($dsView) > 0) {
+					if(count($dsProcess) > 0) {
 						$i=0;
-						foreach($dsView[0] as $col => $value) {
+						foreach($dsProcess[0] as $col => $value) {
 							if($i++ > 0) {
 								echo ('<th class="text-center">'. $col .'</th>');
 							}
@@ -40,36 +82,14 @@
 				<th class="text-center" width="40">copy</th>
 			</tr>
 		</thead>
-		
+
 		<tbody>
-			<?php 
-				$i = 1;
-				foreach($dsView as $row) {
-					echo ('<tr>');
-						echo('<td class="text-center">' .$i++. '</td>');
-						$j=0;
-						foreach($row as $value) {
-							if($j++ > 0) {
-								echo('<td class="text-left">' .$value. '</td>');
-							}
-						}
-						echo('<td class="text-center">
-								<button type="submit" class="btn btn-success" id="rowID" name="rowID" value='.$row['id'].'>
-									<i class="fa fa-pencil-square-o"></i>
-								</button>
-							</td>');
-						echo('<td class="text-center">
-								<button type="submit" class="btn btn-danger" id="rowID" name="rowID" value='.(-1)*$row['id'].'>
-									<i class="fa fa-files-o"></i>
-								</button>
-							</td>');
-					echo ('</tr>');
-				}
-			?>
+			<?php /* $this->load->view('frontend/process/list/bodyTableProcess_v'); */?>
 		</tbody>
 	</table>
 <?php echo form_close(); ?><!-- Close formChoose -->
 </div>
+<!-- End Table List Area -->
 
 <div id="footer">
 	<hr>

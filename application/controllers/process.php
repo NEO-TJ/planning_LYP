@@ -77,6 +77,21 @@ class Process extends CI_Controller {
 		echo $result;
 	}
 
+	public function ajaxGetProcessList(){
+		if(!($this->is_logged())) {exit(0);}
+
+		if ($this->input->server('REQUEST_METHOD') === 'POST'){
+			// -------------- Save Process Part ------------------------------------------
+			//$processID = $this->input->post('processID');
+			$arrayProcessID = $this->getPostArrayHelper($this->input->post('processID'));
+
+			$dsData['dsView'] = $this->getDsProcess($arrayProcessID);
+			$htmlTableBody = $this->load->view("frontend/process/list/bodyTableProcess_v", $dsData, TRUE);
+		}
+
+		echo $htmlTableBody;
+	}
+
 
 
 
@@ -84,7 +99,7 @@ class Process extends CI_Controller {
 	// ********************************************************* Private function ****************************
 	// -------------------------------------------------------- Initial view mode ----------------------------
 	private function getDataToDisplayViewMode(){
-		$data['dsView'] = $this->getDsProcess(0);
+		$data['dsProcess'] = $this->getDsProcess();
 
 		return $data;
 	}
@@ -151,9 +166,10 @@ class Process extends CI_Controller {
 	
 	
 	// -------------------------------------------------------- Get DB to table view --------------------------
-	private function getDsProcess($id){
+	private function getDsProcess($arrayProcessID=[]){
 		$this->load->model('process_m');
-		$dsProcess = (($id === 0) ? $this->process_m->get_row() : $this->process_m->get_row_by_id($id));
+		//$dsProcess = (($id === 0) ? $this->process_m->get_row() : $this->process_m->get_row_by_id($id));
+		$dsProcess = $this->process_m->getRowByArrayID($arrayProcessID);
 
 		return $dsProcess;
 	}
