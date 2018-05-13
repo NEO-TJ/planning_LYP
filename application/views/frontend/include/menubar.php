@@ -143,9 +143,11 @@
               <li <?php if($this->uri->segment(3) == 8){echo 'class="active"';}?>>
                 <a href="<?php echo base_url(); ?>masterdata/view/8">8. Job Type</a>
               </li>
+              <!--
               <li <?php if($this->uri->segment(3) == 9){echo 'class="active"';}?>>
                 <a href="<?php echo base_url(); ?>masterdata/view/9">9. Job Status</a>
               </li>
+              -->
               <hr>
               <li <?php 
                 if(($this->uri->segment(3) == 0) && ($this->uri->segment(3) != NULL) && ($this->uri->segment(3) != '')) {
