@@ -60,7 +60,7 @@
 		</td>
 		<td class="text-center td-group">
 			<input class="form-control text-center" type="number" name="nbSub[]" id="nbSub"
-				title="Quantity of Sub_Assembly to make one step" placeholder="NB sub..." step="0.1"
+				title="Quantity of Sub_Assembly to make one step" placeholder="NB sub..." step="0.0001"
 				value="<?php echo($row['NB_Sub']);?>" />
 		</td>
 		<td class="text-center">
