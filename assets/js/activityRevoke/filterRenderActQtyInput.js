@@ -1,20 +1,29 @@
 // ************************************************ Event **********************************************
 //------------------------------------------------ Component -------------------------------------------
-$('button#search').click(getDsActQtyInput);
+$('button#search').click(function() { getDsActQtyInput(0); });
+
+//------------------------------------------------ Delegation ------------------------------------------
+function paginationChange(pageCode) {
+	getDsActQtyInput(pageCode);
+}
 
 
 // ********************************************** Method ***********************************************
 //------------------------------------------------ AJAX ------------------------------------------------
-function getDsActQtyInput() {
+function getDsActQtyInput(pageCode) {
 	let baseUrl = window.location.origin + "/" + window.location.pathname.split('/')[1] + "/";
 	let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	let arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	pageCode = ( (pageCode) ? pageCode : 0);
 
 	let data = {
-			'jobID' : arrayJobID,
-			'stepID' : arrayStepID,
-			'lineID' : arrayLineID,
+		'strDateStart'  : strDateStart,
+		'strDateEnd'    : strDateEnd,
+		'jobID' 				: arrayJobID,
+		'stepID' 				: arrayStepID,
+		'lineID' 				: arrayLineID,
+		"pageCode" 			: pageCode
 	};
 
 	// Get percent of NG report by ajax.
@@ -30,20 +39,27 @@ function getDsActQtyInput() {
 		},
 		complete: function(){
 		},
-		success: function(dsActQtyInput) {
-			let strHtml = ((dsActQtyInput.length > 0) ? genActQtyInputTable(dsActQtyInput) : '');
+		success: function(rDataResult) {
+			// pagination.
+			$('div#paginationLinks').html(rDataResult.paginationLinks);
+
+			// datatable.
+			let dsActQtyInput = rDataResult.dsActQtyInput;
+			let strHtml = ((dsActQtyInput.length > 0) 
+				? genActQtyInputTable(dsActQtyInput, (parseInt(pageCode) + 1)) 
+				: '');
 			$('table#actQtyInput > tbody').html(strHtml);
 		}
 	});
 }
 
-function genActQtyInputTable(dsActQtyInput) {
+function genActQtyInputTable(dsActQtyInput, startRowNo) {
 	let strHtml = '';
 	let cn = dsActQtyInput.length;
 	for(let i=0; i<cn; i++) {
 		let row = dsActQtyInput[i];
 		strHtml += '<tr>';
-			strHtml += '<td class="text-center td-group">' + (i + 1) + '</td>';
+			strHtml += '<td class="text-center td-group">' + (startRowNo + i) + '</td>';
 			strHtml += '<td class="text-text-left td-group">' + row['Datetime_Stamp'] + '</td>';
 			strHtml += '<td class="text-left td-group">' + row['JobName'] + '</td>';
 			strHtml += '<td class="text-left td-group">' + row['StepNumber-Desc'] + '</td>';

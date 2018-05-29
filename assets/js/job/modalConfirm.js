@@ -3,7 +3,7 @@
 $(document).on('click', 'button#remove', function(e) {
 	var tr = $(e.target).closest('tr');
 	var jobID = tr.find('td:last-child button#remove').val();
-	var jobName = tr.find('td:first-child').html();
+	var jobName = tr.find('td:nth-child(2)').html();
 	
 	swal({
 		title: "Are you sure to remove job :",
@@ -44,6 +44,7 @@ $(document).on('click', "button#submitRemove", function() {
 	else {
 		RemoveFullJob(jobID);
 		swal.close();
+		displayJobList(0);
 	}
 });
 $(document).on('click', "button#cancelRemove", function() {

@@ -84,9 +84,9 @@
 									<!-- *************************************************************** Step source Table ******************** -->
 										<div class="row">												<!-- Row of Source -->
 											<div class="col-md-12">
-												<table class="table table-sm table-bordered table-condensed table-hover"
-													. " table-components table-responsive" id="sourceStepTable">
-												<caption>Source Step</caption>
+												<h3>Source Step</h3>
+												<table class="table table-sm table-bordered table-condensed table-hover table-components table-responsive"
+												id="sourceStepTable">
 													<thead class="bg-primary">
 														<tr>
 															<th class="text-center" width="65%" rowspan="1">Source Step</th>
@@ -137,7 +137,7 @@
 			<div class="col-md-2">
 				<div class="panel panel-primary input-group">
 					<i class="fa fa-arrow-down" aria-hidden="true"></i>
-					<button type="submit" class="btn btn-success btn-submit" id="sendQtyNG">
+					<button type="button" class="btn btn-success btn-submit" id="sendQtyNG">
 						Send
 					</button>
 					<i class="fa fa-arrow-down" aria-hidden="true"></i>
@@ -157,13 +157,13 @@
 									<!-- *************************************************************** Step destination Table ******************** -->
 										<div class="row">												<!-- Row of Source -->
 											<div class="col-md-12">
-												<caption>Destination Step</caption>
+												<h3>Destination Step</h3>
 												<select class="form-control text-center textLeft" name="destinationStep" id="destinationStep">
 													<option value=0 selected>Please select destination step-description...</option>
 												</select>
 												<br>
-												<table class="table table-sm table-bordered table-condensed"
-													. " table-components table-responsive" id="destinationStepTable">
+												<table class="table table-sm table-bordered table-condensed table-components table-responsive"
+												id="destinationStepTable">
 													<thead class="bg-primary">
 														<tr>
 															<th class="text-center" width="2%" rowspan="1"></th>
@@ -173,27 +173,6 @@
 														</tr>
 													</thead>
 													<tbody>
-														<tr>
-															<td class="text-center td-group">
-																<input type="radio" class="form-control td-group" id="destinationCheck"
-																type="text" name="destinationCheck[]" value=0  />
-															</td>
-															<td class="text-center td-group">
-																<input class="form-control text-center textLeft" id="destinationStock"
-																type="text" name="destinationStock[]" value="" disabled>
-															</td>
-															<td class="text-center td-group">
-																<input class="form-control text-center textLeft" id="destinationSubAssembly"
-																type="text" name="destinationSubAssembly[]" value="" disabled>
-															</td>
-															<td class="text-center td-group">
-																<input class="form-control text-center textRight" id="receiveNgQty"
-																type="number" name="receiveNgQty[]" value="" disabled>
-
-																<input class="form-control text-center textRight hidden" id="destinationNbSub"
-																type="number" name="destinationNbSub[]" value=1>
-															</td>
-														</tr>
 													</tbody>
 												</table>
 											</div>

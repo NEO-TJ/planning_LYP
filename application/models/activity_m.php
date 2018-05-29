@@ -21,8 +21,8 @@ class Activity_m extends CI_Model {
 
 
 	// **************************************************** Join table function ***************************************
-	public function get_last_full_activity($rowNumber=10
-	, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
+	public function getDsFullActivity($limit=null, $offset=null,
+	$strDateStart, $strDateEnd, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
 		// Create criteria query.
 		$this->load->model('plan_m');
 		$criteria ='';
@@ -33,6 +33,7 @@ class Activity_m extends CI_Model {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			$criteria = ' AND '.$criteria;
 		}
+
 
 		$sqlStr = "SELECT a.id activityID, s.id stockID"
 				.", a.Datetime_Stamp, j.Name JobName, CONCAT(t.Number,' - ',t.`DESC`) 'StepNumber-Desc'"
@@ -46,15 +47,18 @@ class Activity_m extends CI_Model {
 				." LEFT JOIN user uw ON a.FK_ID_Worker=uw.id"
 				." LEFT JOIN user u ON a.FK_ID_User=u.id"
 			." WHERE a.FK_ID_Activity_Source is NULL AND j.Delete_Flag=0"
+			." AND a." . $this->col_datetime_stamp
+			." BETWEEN '" . $strDateStart . "%' AND '" . $strDateEnd . "%'"
 			.$criteria
-			." ORDER BY a.id DESC LIMIT ".$rowNumber;
+			." ORDER BY a.id DESC"
+			. createSqlLimitOffset($limit, $offset);
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
 
 		return $result;
 	}
-	public function get_last_full_recovery_NG_activity($rowNumber=10
-	, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
+	public function getDsFullRecoveryNgActivity($limit=null, $offset=null,
+	$strDateStart, $strDateEnd, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
 		// Create criteria query.
 		$this->load->model('plan_m');
 		$criteria ='';
@@ -65,6 +69,7 @@ class Activity_m extends CI_Model {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			$criteria = ' AND '.$criteria;
 		}
+
 
 		$sqlStr = "SELECT a.id activityID, s.id stockID"
 				.", a.Datetime_Stamp, j.Name JobName, CONCAT(t.Number,' - ',t.`DESC`) 'StepNumber-Desc'"
@@ -79,7 +84,9 @@ class Activity_m extends CI_Model {
 				." LEFT JOIN user u ON a.FK_ID_User=u.id"
 			." WHERE (a.FK_ID_Activity_Source is NOT NULL) && (a.Qty_NG is NOT NULL) AND j.Delete_Flag=0"
 			.$criteria
-			." ORDER BY a.id DESC LIMIT ".$rowNumber;
+			." ORDER BY a.id DESC"
+			. createSqlLimitOffset($limit, $offset);
+
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
 

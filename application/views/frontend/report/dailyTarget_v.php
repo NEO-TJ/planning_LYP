@@ -17,13 +17,14 @@
 		<div class="row">
 			<div class="col-md-6 panel panel-info">
 				<div class="col-md-1 pull-left">
-					<input type="checkbox" class="pull-left" name="ckUseDataPlan" id="ckUseDataPlan">
+					<input type="checkbox" class="pull-right" name="ckUseDataPlan" id="ckUseDataPlan">
 				</div>
 				<div class="col-md-11">
-					<div class="input-group input-daterange" id="datepicker">
-						<input type="text" class="form-control" placeholder="Start Date" id="dateStart">
-						<span class="input-group-addon">to</span>
-						<input type="text" class="form-control" placeholder="End Date" id="dateEnd">
+					<div class="input-group">
+						<span class="input-group-btn">
+							<button class="btn btn-primary disabled" type="button">ช่วงเวลา : </button>
+						</span>
+						<input id="daterange" size="400">
 					</div>
 				</div>
 			</div>
@@ -94,15 +95,15 @@
 			<thead>
 	<!-- Row header 0 -->
 				<tr>
-					<th class="text-center header-border-report"><h4><strong>Date</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Job Number</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Step</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>DESC</strong></h4></th>
-					<th class="text-center header-border-report" width="100"><h4><strong>Plan Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong></strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Next Step</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Next Step Line</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Barcode</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Date</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Job Number</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Step</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>- Description</strong></h4></th>
+					<th class="header-border-report" width="100"><h4 class="text-right"><strong>Plan Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong></strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Next Step</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Next Line</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-center"><strong>Barcode</strong></h4></th>
 				</tr>
 			</thead>
 			

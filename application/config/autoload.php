@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database','pagination','session','datecon','form
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('asset','url','file','form','login','html','date');
+$autoload['helper'] = array('asset','url','file','form','login','html','date','myExtend');
 
 
 /*

@@ -89,41 +89,41 @@
 			<thead>
 <!-- Row header 0 -->
 				<tr>
-					<th class="text-center header-border-report" rowspan="2"><h4><strong>Customer</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="2"><h4><strong>Job</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="2"><h4><strong>Line</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="2"><h4><strong>Sub Assembly</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="2"><h4><strong>Time (SEC)</strong></h4></th>
+					<th class="header-border-report" rowspan="2"><h4><strong>Customer</strong></h4></th>
+					<th class="header-border-report" rowspan="2"><h4><strong>Job</strong></h4></th>
+					<th class="header-border-report" rowspan="2"><h4><strong>Line</strong></h4></th>
+					<th class="header-border-report" rowspan="2"><h4><strong>Sub Assembly</strong></h4></th>
+					<th class="header-border-report" rowspan="2"><h4><strong>Time (SEC)</strong></h4></th>
 					
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 1</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 2</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 3</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 4</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 5</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 6</strong></h4></th>
-					<th class="text-center header-border-report" rowspan="1" colspan="2"><h4><strong>Week 7</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 1</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 2</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 3</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 4</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 5</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 6</strong></h4></th>
+					<th class="header-border-report" rowspan="1" colspan="2"><h4><strong>Week 7</strong></h4></th>
 				</tr>
 				<tr>
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 
-					<th class="text-center header-border-report"><h4><strong>Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>hr</strong></h4></th>
+					<th class="header-border-report"><h4><strong>Qty</strong></h4></th>
+					<th class="header-border-report"><h4><strong>hr</strong></h4></th>
 				</tr>
 			</thead>
 			

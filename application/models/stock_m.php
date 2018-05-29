@@ -18,7 +18,7 @@ class Stock_m extends CI_Model {
 
 
     // ******************************************* Custome function ************************************
-	public function get_row_by_multi_job_and_step_id($arrayJobID=[], $arrayStepID=[]) {
+	public function getStepStockByMultiJobAndStepId($arrayJobID=[], $arrayStepID=[], $limit=null, $offset=null) {
 		// Create criteria query.
 		$this->load->model('plan_m');
 		$criteria ='';
@@ -28,6 +28,7 @@ class Stock_m extends CI_Model {
 			$criteria = substr($criteria, 4, strlen($criteria) - 4);
 			$criteria = ' AND '.$criteria;
 		}
+
 
 		$sqlStr = "SELECT j.Name JobName, CONCAT(s.Number, ' - ', s.`DESC`) NumberAndDesc"
 					.", IF(s.First_Step_Flag=0, pb.Name, b.Name) SubAssemblyName"
@@ -45,7 +46,8 @@ class Stock_m extends CI_Model {
 				." LEFT JOIN sub_assembly pb ON ps.FK_ID_Sub_Assembly = pb.id"
 				." LEFT JOIN stock pk ON ((j.id = pk.FK_ID_Job) && (ps.id = pk.FK_ID_Step))"
 			." WHERE j.FK_ID_Job_Status = 1 AND j.Delete_Flag=0" .$criteria
-			." ORDER BY k.FK_ID_Job, k.FK_ID_Step, ps.Number";
+			." ORDER BY k.FK_ID_Job, k.FK_ID_Step, ps.Number"
+			.createSqlLimitOffset($limit, $offset);
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();

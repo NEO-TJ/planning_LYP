@@ -21,8 +21,9 @@
  			echo js_asset('ba.hashchange.js');
  			
  			echo js_asset('moment.min.js');
- 			echo js_asset('bootstrap-datepicker.js');
-
+			echo my_js_asset("plugins/jquery-daterangepicker/js/jquery.daterangepicker.min.js");
+		
+			echo js_asset('extent/initialDaterange.js');
  			echo js_asset('frontend.js');
  			echo js_asset('my.helper.js');
 		?>

@@ -3,7 +3,7 @@
 	$i = 1;
 	foreach($dsView as $row) {
 		echo ('<tr>');
-			echo('<td class="text-center">' .$i++. '</td>');
+			echo('<td class="text-center">' . ($pageCode + $i++) . '</td>');
 			$j=0;
 			foreach($row as $value) {
 				if($j++ > 0) {

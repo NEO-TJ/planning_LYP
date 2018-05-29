@@ -1,0 +1,2 @@
+.daterangepickerCss .day.first-date-selected { background-color: red !important; }
+.daterangepickerCss .day.last-date-selected { background-color: orange !important; }

@@ -20,6 +20,7 @@
 
  			echo js_asset('frontend.js');
 			echo js_asset('my.helper.js');
+			echo js_asset('extent/commonPagination.js');
 				
 			echo js_asset('report/commonJobStep.js');
 			echo js_asset('stock/modalStockQty.js');

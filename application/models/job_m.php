@@ -67,7 +67,7 @@ class Job_m extends CI_Model {
 	
 
 	// ******************************************* Custome function ************************************	
-	public function get_row_by_id_type_status($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[]) {
+	public function getJobByMultiJobIdTypeStatus($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[], $limit=null, $offset=null) {
 		// Create criteria query.
 		$this->load->model('plan_m');
 		$criteria ='';
@@ -85,7 +85,8 @@ class Job_m extends CI_Model {
 				." LEFT JOIN job_type t ON j.FK_ID_Job_Type = t.id"
 				." LEFT JOIN job_status u ON j.FK_ID_Job_Status = u.id"
 			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status = 1" .$criteria
-			." ORDER BY j.Name";
+			." ORDER BY j.Name"
+			.createSqlLimitOffset($limit, $offset);
 		
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();

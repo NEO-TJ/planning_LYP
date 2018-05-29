@@ -5,33 +5,32 @@ $(document).ready(function() {
 });
 
 //------------------------------------------------ Component -------------------------------------------
-$('button#refresh').click(displayFullJobTable);
-$('button#search').click(displayFullJobTable);
+$('button#refresh').click(function () { displayJobList(0); });
+$('button#search').click(function () { displayJobList(0); });
 
 
-
-
-
-
-//************************************************ Method **********************************************
-//------------------------------------------------ Search ----------------------------------------------
-function displayFullJobTable() {
-	getFullJob();
+//----------------------------------------------- Delegation -------------------------------------------
+function paginationChange(pageCode) {
+	displayJobList(pageCode);
 }
+
+
+
 
 
 
 //************************************************ Method **********************************************
 //------------------------------------------------ AJAX -----------------------------------------------
-function getFullJob() {
+function displayJobList(pageCode) {
 	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	var arrayJobTypeID = $('select#jobTypeID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	var arrayJobStatusID = $('select#jobStatusID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
 	var data = {
-			'jobID'			: arrayJobID,
+			'jobID'				: arrayJobID,
 			'jobTypeID'		: arrayJobTypeID,
 			'jobStatusID'	: arrayJobStatusID,
+			"pageCode"		: pageCode
 	};
 
 	// Get job for remove by ajax.
@@ -47,44 +46,12 @@ function getFullJob() {
 		},
 		complete: function(){
 		},
-		success: function(dsFullJob) {
-			$('table#jobRemove > tbody').html(genBody(dsFullJob));
+		success: function(rDataResult) {
+			// pagination.
+			$('div#paginationLinks').html(rDataResult.paginationLinks);
+			
+			// datatable.
+			$('table#jobRemove tbody').html(rDataResult.htmlTableBody);
 		}
 	});
-}
-
-
-
-
-//--------------------------------------------- Generate Html ------------------------------------------
-function genBody(dsFullJob) {
-	var htmlBody = "";
-	
-	for(var i=0; i<dsFullJob.length; i++)
-	{
-		//Data.
-		htmlBody += genOneRow(dsFullJob[i]);
-	}
-	
-	$('#headerPage').prop('title', "Total Record : " + dsFullJob.length);
-	return htmlBody;
-}
-function genOneRow(row) {
-	var htmlBody;
-	
-	htmlBody +='<tr>';
-
-	htmlBody +='<td class="text-left">' + row['JobName'] + '</td>';
-	htmlBody +='<td class="text-left">' + row['JobTypeName'] + '</td>';
-	htmlBody +='<td class="text-left">' + row['JobStatusName'] + '</td>';
-	
-	htmlBody +='<td class="text-center">';
-	htmlBody +='<button type="button" class="btn btn-danger" id="remove" value=' + row['JobID'] + '>';
-	htmlBody +='<i class="fa fa-minus"></i>';
-	htmlBody +='</button>';
-	htmlBody +='</td>';
-
-	htmlBody +='</tr>';
-	
-	return htmlBody;
 }

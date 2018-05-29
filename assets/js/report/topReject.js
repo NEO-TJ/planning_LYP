@@ -1,6 +1,7 @@
 // ************************************************ Event **********************************************
 // ----------------------------------------------- Doc Load --------------------------------------------
 $(document).ready(function() {
+	initDaterange();
 	document.title += '-Top Reject';
 });
 
@@ -8,8 +9,6 @@ $(document).ready(function() {
 //************************************************ Method **********************************************
 //------------------------------------------------ AJAX -----------------------------------------------
 function getReport() {
-	var strDateStart = $('input#dateStart').val();
-	var strDateEnd = $('input#dateEnd').val();
 	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	var arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 

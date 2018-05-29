@@ -15,7 +15,7 @@
         <!-- project menu -->
           <li <?php 
         		if(($this->uri->segment(1) == 'project') 
-            || ($this->uri->segment(1) == 'Process')
+            || ($this->uri->segment(1) == 'process')
             || ($this->uri->segment(1) == 'jobRemove')){
         			echo 'class="active dropdown"';
         		}
@@ -25,8 +25,8 @@
               <li <?php if($this->uri->segment(1) == 'project'){echo 'class="active"';}?>>
                 <a href="<?php echo base_url(); ?>project">1. Project</a>
               </li>
-              <li <?php if($this->uri->segment(1) == 'Process'){echo 'class="active"';}?>>
-                <a href="<?php echo base_url(); ?>Process">2. Process</a>
+              <li <?php if($this->uri->segment(1) == 'process'){echo 'class="active"';}?>>
+                <a href="<?php echo base_url(); ?>process">2. Process</a>
               </li>
               <hr>
               <li <?php if($this->uri->segment(1) == 'jobRemove'){echo 'class="active"';}?>>
@@ -85,7 +85,15 @@
           <li><h4>||||||</h4></li>
           <li><h4>||||||</h4></li>
         <!-- report menu -->
-          <li class="dropdownm">
+          <li <?php 
+            if(($this->uri->segment(1) == 'dailyTargetReport') 
+            || ($this->uri->segment(1) == 'achievementReport')
+            || ($this->uri->segment(1) == 'ngPercentReport')
+            || ($this->uri->segment(1) == 'topRejectReport')
+            || ($this->uri->segment(1) == 'workingCapacityReport')) {
+        			echo 'class="active dropdown"';
+        		}
+        	?>>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report<b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="<?php echo base_url(); ?>dailyTargetReport">1. Daily Target</a></li>

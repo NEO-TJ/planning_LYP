@@ -279,7 +279,7 @@ class Process_m extends CI_Model {
 
 
 	// -------------------------------------------------- Get ------------------------------------------
-	public function getRowByArrayID($arrayProcessID=[]) {
+	public function getRowByArrayID($arrayProcessID=[], $limit=null, $offset=null) {
 		// Prepare Criteria.
 		$this->load->model('plan_m');
 		$criteria ='';
@@ -289,10 +289,12 @@ class Process_m extends CI_Model {
 			$criteria = ' WHERE '.$criteria;
 		}
 
+
 		$sqlStr = "SELECT *"
-			." FROM process p"
-			.$criteria
-			." ORDER BY ".$this->col_name." ASC";
+			. " FROM process p"
+			. $criteria
+			. " ORDER BY " . $this->col_name . " ASC"
+			. createSqlLimitOffset($limit, $offset);
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();

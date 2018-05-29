@@ -1,6 +1,7 @@
 // ************************************************ Event **********************************************
 // ----------------------------------------------- Doc Load --------------------------------------------
 $(document).ready(function() {
+	initDaterange();
 	document.title += '-NG Percent';
 });
 
@@ -8,8 +9,6 @@ $(document).ready(function() {
 //************************************************ Method **********************************************
 //------------------------------------------------ AJAX ------------------------------------------------
 function getReport() {
-	var strDateStart = $('input#dateStart').val();
-	var strDateEnd = $('input#dateEnd').val();
 	var arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	var arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
@@ -118,7 +117,7 @@ function genData(row) {
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['dateStamp'] + '</td>';
-	htmlReport +='<td class="text-right">' + row['jobName'] + '</td>';
+	htmlReport +='<td class="text-left">' + row['jobName'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['Number'] + '</td>';
 	htmlReport +='<td class="text-left">  -   ' + row['DESC'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['qtyOK'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';

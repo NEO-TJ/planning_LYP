@@ -255,7 +255,9 @@ class Plan_m extends CI_Model {
 		return $result;
 	}
 	private function getDsActivityQtyOk($strDateStart, $strDateEnd, $criteria) {
-		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(a.Datetime_Stamp)) myId, l.Name lineName"
+		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(a.Datetime_Stamp)) myId"
+				.", l.Name lineName"
+				.", s.Number, s.DESC"
 				.", DATE(a.Datetime_Stamp) dateStamp"
 				.", SUM(a.Qty_OK) actualOkQty"
 				.", 0 planOkQty"
@@ -278,7 +280,9 @@ class Plan_m extends CI_Model {
 		return $result;
 	}
 	private function getDsPlanQtyOk($strDateStart, $strDateEnd, $criteria) {
-		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(p.Date_Stamp)) myId, l.Name lineName"
+		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(p.Date_Stamp)) myId"
+				.", l.Name lineName"
+				.", s.Number, s.DESC"
 				.", DATE(p.Date_Stamp) dateStamp"
 				.", 0 actualOkQty"
 				.", SUM(p.Plan_Qty_OK) planOkQty"

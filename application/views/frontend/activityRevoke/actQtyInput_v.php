@@ -10,23 +10,17 @@
 <!-- Filter. -->
 	<?php echo form_open(base_url("activityRevoke"), array("id" => "form-search")); ?>
 	<div class="row panel panel-primary">
-	<!-- Job -->
-		<div class="col-md-6 margin-input">
+	<!-- Daterange -->
+		<div class="col-xs-12 col-md-5 col-lg-5 margin-input">
 			<div class="input-group">
 				<span class="input-group-btn">
-					<button class="btn btn-primary disabled" type="button">Job : </button>
+					<button class="btn btn-primary disabled" type="button">ช่วงเวลา : </button>
 				</span>
-				<select class="form-control multi-select" id="jobID" name="jobID[]" multiple="multiple">
-					<?php 
-						foreach($dsJob as $row) {
-							echo '<option value='.$row['id'].'>'.$row['Name'].'</option>';
-						}
-					?>
-				</select>
+					<input id="daterange" size="40">
 			</div>
 		</div>
 	<!-- Line -->
-		<div class="col-md-6 margin-input">
+		<div class="col-xs-12 col-md-6 col-lg-6 margin-input">
 			<div class="input-group" id="lineID">
 				<span class="input-group-btn">
 					<button class="btn btn-primary disabled" type="button">Line : </button>
@@ -40,9 +34,27 @@
 				</select>
 			</div>
 		</div>
-
+	<!-- Button -->
+		<div class="col-xs-12 col-md-1 col-lg-1 margin-input pull-left">
+			<button type="button" class="btn btn-primary pull-right" id="search">Go</button>
+		</div>
+	<!-- Job -->
+		<div class="col-xs-12 col-md-5 col-lg-5 margin-input">
+			<div class="input-group">
+				<span class="input-group-btn">
+					<button class="btn btn-primary disabled" type="button">Job : </button>
+				</span>
+				<select class="form-control multi-select" id="jobID" name="jobID[]" multiple="multiple">
+					<?php 
+						foreach($dsJob as $row) {
+							echo '<option value='.$row['id'].'>'.$row['Name'].'</option>';
+						}
+					?>
+				</select>
+			</div>
+		</div>
 	<!-- Step -->
-		<div class="col-md-11 margin-input">
+		<div class="col-xs-12 col-md-7 col-lg-7 margin-input">
 			<div class="input-group" id="stepID">
 				<span class="input-group-btn">
 					<button class="btn btn-primary disabled" type="button">Step number : </button>
@@ -56,11 +68,6 @@
 				</select>
 			</div>
 		</div>
-	<!-- Button -->
-		<div class="col-md-1 margin-input pull-left">
-			<button type="button" class="btn btn-primary pull-right" id="search">Go</button>
-		</div>
-	<!-- End Button -->
 	</div>
 	<?php echo form_close(); ?><!-- Close form-search -->
 <!-- End Filter. -->
@@ -73,6 +80,7 @@
 				<?php echo form_open(base_url(), array("id" => "formLastActivityQtyInput")); ?>
 				<table id="actQtyInput"
 				class="table table-bordered table-components table-condensed table-hover table-striped table-responsive">
+				<!-- table head -->
 					<thead class="bg-info">
 						<tr>
 							<th class="text-center table-caption bg-info" id="activityCaption" colspan="11">
@@ -93,11 +101,16 @@
 							<th class="text-center" width="20">#</th>
 						</tr>
 					</thead>
+				<!-- table body -->
 					<tbody class="bg-warning">
 					</tbody>
 				</table>
+			<!-- pagination link -->
+				<div class="pagination pull-right" id="paginationLinks"> 
+					<p><?php echo $paginationLinks; ?></p> 
+				</div>
+			<!-- end pagination link -->
 				<?php echo form_close(); ?><!-- Close formLastActivityQtyInput -->
-				
 			</div>
 		</div><!-- End row of Last activity qty input -->
 	</div><!-- End panel of Last activity qty input -->

@@ -1,5 +1,8 @@
 <?php
 class ActivityRevoke extends CI_Controller {
+// Property.
+	private $paginationLimit = 50;
+// End Property.
 
 	public function __construct() {
 		parent::__construct();
@@ -39,13 +42,21 @@ class ActivityRevoke extends CI_Controller {
 		if(!($this->is_logged())) {exit(0);}
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST') {
+			$strDateStart = $this->input->post('strDateStart');
+			$strDateEnd = $this->input->post('strDateEnd');
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
 			$arrayStepID = $this->getPostArrayHelper($this->input->post('stepID'));
 			$arrayLineID = $this->getPostArrayHelper($this->input->post('lineID'));
+			$pageCode = $this->input->post('pageCode');
 
-			$dsActQtyInput = $this->getDsActQtyInput(1000, $arrayJobID, $arrayStepID, $arrayLineID);
 
-			echo json_encode($dsActQtyInput);
+			$totalPages = count($this->getDsActQtyInput(null, null,
+				$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID));
+			$data["dsActQtyInput"] = $this->getDsActQtyInput($this->paginationLimit, $pageCode,
+				$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID);
+			$data["paginationLinks"] = getPaginationHtml($totalPages, $this->paginationLimit, $pageCode);
+
+			echo json_encode($data);
 		}
 	}
 
@@ -53,13 +64,21 @@ class ActivityRevoke extends CI_Controller {
 		if(!($this->is_logged())) {exit(0);}
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST') {
+			$strDateStart = $this->input->post('strDateStart');
+			$strDateEnd = $this->input->post('strDateEnd');
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
 			$arrayStepID = $this->getPostArrayHelper($this->input->post('stepID'));
 			$arrayLineID = $this->getPostArrayHelper($this->input->post('lineID'));
+			$pageCode = $this->input->post('pageCode');
 
-			$dsActQtyInput = $this->getDsActRecoveryNG(1000, $arrayJobID, $arrayStepID, $arrayLineID);
 
-			echo json_encode($dsActQtyInput);
+			$totalPages = count($this->getDsActRecoveryNG(null, null,
+				$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID));
+			$data["dsActRecoveryNG"] = $this->getDsActRecoveryNG($this->paginationLimit, $pageCode,
+				$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID);
+			$data["paginationLinks"] = getPaginationHtml($totalPages, $this->paginationLimit, $pageCode);
+
+			echo json_encode($data);
 		}
 	}
 // ****************************************** End AJAX function ****************************************
@@ -73,6 +92,7 @@ class ActivityRevoke extends CI_Controller {
 		$data['dsJob'] = $this->getDsJobStatusOpen(0);
 		$data['dsStep'] = $this->getDsStep(0);
 		$data['dsLine'] = $this->getDsLine(0);
+		$data["paginationLinks"] = getPaginationHtml();
 
 		return $data;
 	}
@@ -105,20 +125,23 @@ class ActivityRevoke extends CI_Controller {
 
 
 
+
 	// -------------------------------------- Initial Last activity table ------------------------------
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Last activity Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	private function getDsActQtyInput($rowNumber=10, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
+	private function getDsActQtyInput($limit=null, $offset=null,
+	$strDateStart, $strDateEnd, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
 		$this->load->model('activity_m');
-		$dsActQtyInput = $this->activity_m->get_last_full_activity(
-			$rowNumber, $arrayJobID, $arrayStepID, $arrayLineID);
+		$dsActQtyInput = $this->activity_m->getDsFullActivity($limit, $offset,
+			$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID);
 	
 		return $dsActQtyInput;
 	}
 
-	private function getDsActRecoveryNG($rowNumber=10, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
+	private function getDsActRecoveryNG($limit=null, $offset=null,
+	$strDateStart, $strDateEnd, $arrayJobID=[], $arrayStepID=[], $arrayLineID=[]) {
 		$this->load->model('activity_m');
-		$dsActRecoveryNG = $this->activity_m->get_last_full_recovery_NG_activity(
-			$rowNumber, $arrayJobID, $arrayStepID, $arrayLineID);
+		$dsActRecoveryNG = $this->activity_m->getDsFullRecoveryNgActivity($limit, $offset,
+			$strDateStart, $strDateEnd, $arrayJobID, $arrayStepID, $arrayLineID);
 
 		return $dsActRecoveryNG;
 	}

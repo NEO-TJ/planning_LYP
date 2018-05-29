@@ -1,8 +1,9 @@
 <?php
 class Process extends CI_Controller {
-	// Variable.
+// Property.
 	private $inputModeName = [1 => 'New Process', 2 => 'Edit Process', 3 => 'Copy Process'];
-
+	private $paginationLimit = 50;
+// End Property.
 
 	// Construction.
 	public function __construct(){
@@ -82,14 +83,19 @@ class Process extends CI_Controller {
 
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			// -------------- Save Process Part ------------------------------------------
-			//$processID = $this->input->post('processID');
-			$arrayProcessID = $this->getPostArrayHelper($this->input->post('processID'));
+			$rProcessID = $this->getPostArrayHelper($this->input->post('rProcessID'));
+			$pageCode = $this->input->post('pageCode');
 
-			$dsData['dsView'] = $this->getDsProcess($arrayProcessID);
-			$htmlTableBody = $this->load->view("frontend/process/list/bodyTableProcess_v", $dsData, TRUE);
+
+			$totalPages = count($this->getDsProcess($rProcessID, null, null));
+			$rData['dsView'] = $this->getDsProcess($rProcessID, $this->paginationLimit, $pageCode);
+			$rData['pageCode'] = $pageCode;
+
+			$data['htmlTableBody'] = $this->load->view("frontend/process/list/bodyTableProcess_v", $rData, TRUE);
+			$data["paginationLinks"] = getPaginationHtml($totalPages, $this->paginationLimit, $pageCode);
+
+			echo json_encode($data);
 		}
-
-		echo $htmlTableBody;
 	}
 
 
@@ -100,6 +106,7 @@ class Process extends CI_Controller {
 	// -------------------------------------------------------- Initial view mode ----------------------------
 	private function getDataToDisplayViewMode(){
 		$data['dsProcess'] = $this->getDsProcess();
+		$data["paginationLinks"] = getPaginationHtml();
 
 		return $data;
 	}
@@ -155,7 +162,7 @@ class Process extends CI_Controller {
 
 	// --------------------------------------------------------- Initial combobox ----------------------------
 	private function getInitialDataToDisplay(){
-		$data['dsProcess'] = $this->getDsProcess(0);
+		$data['dsProcess'] = $this->getDsProcess();
 
 		$data['dsLine'] = $this->getDsLine(0);
 		$data['dsMachine'] = $this->getDsMachine(0);
@@ -166,10 +173,9 @@ class Process extends CI_Controller {
 	
 	
 	// -------------------------------------------------------- Get DB to table view --------------------------
-	private function getDsProcess($arrayProcessID=[]){
+	private function getDsProcess($rProcessID=[], $limit=null, $offset=null){
 		$this->load->model('process_m');
-		//$dsProcess = (($id === 0) ? $this->process_m->get_row() : $this->process_m->get_row_by_id($id));
-		$dsProcess = $this->process_m->getRowByArrayID($arrayProcessID);
+		$dsProcess = $this->process_m->getRowByArrayID($rProcessID, $limit, $offset);
 
 		return $dsProcess;
 	}

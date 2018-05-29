@@ -44,9 +44,7 @@ function showDialog($type){
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Quantity Input %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //************************************************ Submit & Reset **************************************
-$('form#formRecoveryNG').submit(function(e) {
-	e.preventDefault();
-	
+$('button#sendQtyNG').click(function(e) {
 	if(validateRequireFill()) {
 		if(validateEnoughStock()) {
 			saveAll();
@@ -84,7 +82,7 @@ function saveAll(){
 		'dsDestinationStep'	: dsDestinationStep,
 		'firstStepStock'		: firstStepStock,
 	};
-
+alert(JSON.stringify(dsDestinationStep));return true;
 	// Get process table one row by ajax.
 	$.ajax({
 		url: 'recoveryNG/ajaxSaveRecoveryNG',
@@ -114,8 +112,7 @@ function saveAll(){
 				}).then(function(){
 					window.location.href="recoveryNG"
 				});
-			}
-			else if(result == 1) {
+			} else if(result == 1) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Recovery NG </span> Not complete...!<p>'
@@ -124,8 +121,7 @@ function saveAll(){
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else if(result == 2) {
+			} else if(result == 2) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Recovery NG </span> Not complete...!<p>'
@@ -134,8 +130,7 @@ function saveAll(){
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else if(result == 3) {
+			} else if(result == 3) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Recovery NG </span> Not complete...!<p>'
@@ -144,8 +139,7 @@ function saveAll(){
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else {
+			} else {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Recovery NG </span> Not complete...!<p>'
@@ -187,6 +181,7 @@ function validateRequireFill(){
 	let resultDateTimeStamp = false;
 	let resultWorker = false;
 	let resultSourceQtyNG = false;
+	let resultDestinationChoose = false;
 	let resultDestinationQtyOK = false;
 	let resultQtyNGSend = false;
 	
@@ -210,10 +205,12 @@ function validateRequireFill(){
 		resultQtyNGSend = false;
 	}
 	// Check Destination Step id selected?
-	resultDestinationQtyOK = validateStepDestinationTable();
+	resultDestinationChoose = validateFillSelectElement($('select#destinationStep'));
+	// Check Destination Step Stock Table?
+	resultDestinationQtyOK = validateStepStockDestinationTable();
 	
 	result = (resultJobID && resultDateTimeStamp && resultWorker && resultSourceQtyNG
-				&& resultDestinationQtyOK && resultQtyNGSend);
+				&& resultDestinationChoose && resultDestinationQtyOK && resultQtyNGSend);
 	return result;
 }
 function validateDateTimeStamp(){
@@ -233,12 +230,12 @@ function validateDateTimeStamp(){
 
 	return result;
 }
-function validateStepDestinationTable() {
+function validateStepStockDestinationTable() {
 	let valid = 0;
 	let nonvalid = 0;
 	let receiveNgQty = 0;
 
-	$('table#destinationStepTable input:radio').each(function() {
+	$('table#destinationStepTable input:checkbox').each(function() {
 		if(this.checked) {
 			receiveNgQty = ($(this).closest("tr").find('input#receiveNgQty').val() == "")
 			? 0 : $(this).closest("tr").find('input#receiveNgQty').val();

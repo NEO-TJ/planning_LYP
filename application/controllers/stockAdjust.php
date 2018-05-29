@@ -1,5 +1,9 @@
 <?php
 class StockAdjust extends CI_Controller {
+	// Property.
+		private $paginationLimit = 50;
+	// End Property.
+
 	public function __construct(){
 		parent::__construct();
 		$this->is_logged();
@@ -27,10 +31,17 @@ class StockAdjust extends CI_Controller {
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
 			$arrayStepID = $this->getPostArrayHelper($this->input->post('stepID'));
+			$pageCode = $this->input->post('pageCode');
 
-			$dsStock = $this->getDsStock($arrayJobID, $arrayStepID);
 
-			echo json_encode($dsStock);
+			$totalPages = count($this->getDsStock($arrayJobID, $arrayStepID, null, null));
+			$rData['dsView'] = $this->getDsStock($arrayJobID, $arrayStepID, $this->paginationLimit, $pageCode);
+			$rData['pageCode'] = $pageCode;
+
+			$data['htmlTableBody'] = $this->load->view("frontend/stock/bodyTableStock_v", $rData, TRUE);
+			$data["paginationLinks"] = getPaginationHtml($totalPages, $this->paginationLimit, $pageCode);
+
+			echo json_encode($data);
 		}
 	}
 
@@ -60,6 +71,7 @@ class StockAdjust extends CI_Controller {
 	private function getInitialDataToDisplay(){
 		$data['dsJob'] = $this->getDsJobStatusOpen(0);
 		$data['dsStep'] = $this->getDsStepJobOpen(0);
+		$data["paginationLinks"] = getPaginationHtml();
 
 		return $data;
 	}
@@ -83,9 +95,9 @@ class StockAdjust extends CI_Controller {
 
 	// -------------------------------------------------------- Get DB to combobox ----------------------------
 	// -------------------------------------------------------- Get DB to table view --------------------------
-	private function getDsStock($arrayJobID=[], $arrayStepID=[]){
+	private function getDsStock($arrayJobID=[], $arrayStepID=[], $limit=null, $offset=null){
 		$this->load->model('stock_m');
-		$dsStock = $this->stock_m->get_row_by_multi_job_and_step_id($arrayJobID, $arrayStepID);
+		$dsStock = $this->stock_m->getStepStockByMultiJobAndStepId($arrayJobID, $arrayStepID, $limit, $offset);
 
 		return $dsStock;
 	}

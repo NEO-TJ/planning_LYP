@@ -1,22 +1,12 @@
 // ************************************************ Event **********************************************
 // ----------------------------------------------- Doc Load --------------------------------------------
 $(document).ready(function() {
+	initDaterange();
 	document.title += '-Daily Target';
-	
 	changeLine();
 
 	$('input#ckUseDataPlan').change(function() {
-		$('input#dateStart').prop("disabled", !this.checked);
-		$('input#dateEnd').prop("disabled", !this.checked);
-
-		let curDate = moment(new Date()).format('YYYY-MM-DD');
-		if($('input#dateStart').val() == '') {
-			$('input#dateStart').val(curDate);			
-		}
-
-		if($('input#dateEnd').val() == '') {
-			$('input#dateEnd').val(curDate);			
-		}
+		$('input#daterange').prop("disabled", !this.checked);
 	})
 	$('#ckUseDataPlan').prop('checked', true);
 });
@@ -146,8 +136,6 @@ function validateLine(){
 function getReport() {
 	if(validateLine()) {
 		let useDataPlan = ($('input#ckUseDataPlan').prop('checked') ? 1 : 0);
-		let strDateStart = $('input#dateStart').val();
-		let strDateEnd = $('input#dateEnd').val();
 		let lineID = $('select#lineID :selected').val();
 		let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 		let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
@@ -222,7 +210,8 @@ function genSummary(totalQtyPlan) {
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
-		
+	htmlReport +='<td class="text-left"></td>';
+
 	htmlReport +='<td class="text-right border-report">';
 	htmlReport +='<h5><u><mark><strong><em>';
 	htmlReport +='<abbr title="Qty Plan Summary">';
@@ -230,8 +219,7 @@ function genSummary(totalQtyPlan) {
 	htmlReport +='</abbr>';
 	htmlReport +='</em></strong></mark></u><h5>';
 	htmlReport +='</td>';
-		
-	htmlReport +='<td class="text-center"></td>';
+
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-center"></td>';

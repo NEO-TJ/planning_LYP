@@ -1,5 +1,8 @@
 <?php
 class JobRemove extends CI_Controller {
+	// Property.
+		private $paginationLimit = 50;
+	// End Property.
 
 	public function __construct(){
 		parent::__construct();
@@ -29,10 +32,17 @@ class JobRemove extends CI_Controller {
 			$arrayJobID = $this->getPostArrayHelper($this->input->post('jobID'));
 			$arrayjobTypeID = $this->getPostArrayHelper($this->input->post('jobTypeID'));
 			$arrayjobStatusID = $this->getPostArrayHelper($this->input->post('jobStatusID'));
+			$pageCode = $this->input->post('pageCode');
 
-			$dsFullJob = $this->getDsFullJob($arrayJobID, $arrayjobTypeID, $arrayjobStatusID);
 
-			echo json_encode($dsFullJob);
+			$totalPages = count($this->getDsFullJob($arrayJobID, $arrayjobTypeID, $arrayjobStatusID, null, null));
+			$rData['dsView'] = $this->getDsFullJob($arrayJobID, $arrayjobTypeID, $arrayjobStatusID, $this->paginationLimit, $pageCode);
+			$rData['pageCode'] = $pageCode;
+
+			$data['htmlTableBody'] = $this->load->view("frontend/job/bodyTableJob_v", $rData, TRUE);
+			$data["paginationLinks"] = getPaginationHtml($totalPages, $this->paginationLimit, $pageCode);
+
+			echo json_encode($data);
 		}
 	}
 
@@ -75,15 +85,16 @@ class JobRemove extends CI_Controller {
 		$data['dsJob'] = $this->getDsJobStatusOpen(0);
 		$data['dsJobType'] = $this->getDsJobType(0);
 		$data['dsJobStatus'] = $this->getDsJobStatus(0);
+		$data["paginationLinks"] = getPaginationHtml();
 
 		return $data;
 	}
 
 
 	// -------------------------------------------------------- Get DB to table view --------------------------
-	private function getDsFullJob($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[]){
+	private function getDsFullJob($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[], $limit=null, $offset=null){
 		$this->load->model('job_m');
-		$dsFullJob = $this->job_m->get_row_by_id_type_status($arrayJobID, $arrayjobTypeID, $arrayjobStatusID);
+		$dsFullJob = $this->job_m->getJobByMultiJobIdTypeStatus($arrayJobID, $arrayjobTypeID, $arrayjobStatusID, $limit, $offset);
 
 		return $dsFullJob;
 	}

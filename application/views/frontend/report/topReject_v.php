@@ -14,11 +14,12 @@
 
 
 <div class="row panel panel-primary">
-    <div class="col-md-5 margin-input">
-		<div class="input-group input-daterange" id="datepicker">
-		    <input type="text" class="form-control" placeholder="Start Date" id="dateStart">
-		    <span class="input-group-addon">to</span>
-		    <input type="text" class="form-control" placeholder="End Date" id="dateEnd">
+	<div class="col-md-5 margin-input">
+		<div class="input-group">
+			<span class="input-group-btn">
+				<button class="btn btn-primary disabled" type="button">ช่วงเวลา : </button>
+			</span>
+			<input id="daterange" size="40">
 		</div>
 	</div>
 	<div class="col-md-6 margin-input">
@@ -69,11 +70,11 @@
 			<thead>
 <!-- Row header 0 -->
 				<tr>
-					<th class="text-center header-border-report"><h4><strong>Step</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Description</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Done Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>NG Qty</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>% of NG</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Step</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Description</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Done Qty</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>NG Qty</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>% of NG</strong></h4></th>
 				</tr>
 			</thead>
 
@@ -93,9 +94,9 @@
 			<thead>
 <!-- Row header 0 -->
 				<tr>
-					<th class="text-center header-border-report"><h4><strong>No</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Defect Name</strong></h4></th>
-					<th class="text-center header-border-report"><h4><strong>Reject Quantity</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-center"><strong>No</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Defect Name</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-right"><strong>Reject Quantity</strong></h4></th>
 				</tr>
 			</thead>
 			

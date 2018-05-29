@@ -95,7 +95,7 @@ class AchievementReport extends CI_Controller {
 			$key = array_search($row["myId"], $rMyId);
 			if($key > 0) {
 				$result[$row["myId"]] = array("key" => $key, "value" => $dsResult["dsActivityOk"][$key]["actualOkQty"], "i" => $i);
-				
+
 				$dsResult["dsPlanOk"][$i]["actualOkQty"] = $dsResult["dsActivityOk"][$key]["actualOkQty"];
 				$dsResult["dsPlanOk"][$i]["achievementOkQty"] = $dsResult["dsActivityOk"][$key]["actualOkQty"]
 					/ (

@@ -1,6 +1,7 @@
 // ************************************************ Event **********************************************
 // ----------------------------------------------- Doc Load --------------------------------------------
 $(document).ready(function() {
+	initDaterange();
 	document.title += '-Achievement';
 });
 
@@ -8,8 +9,6 @@ $(document).ready(function() {
 //************************************************ Method **********************************************
 //------------------------------------------------- AJAX -----------------------------------------------
 function getReport() {
-	let strDateStart = $('input#dateStart').val();
-	let strDateEnd = $('input#dateEnd').val();
 	let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 	let arrayLineID = $('select#lineID').multiselect("getChecked").map(function() { return this.value; } ).get();
@@ -65,6 +64,8 @@ function genSummary(totalPlanOkQty, totalActualOkQty) {
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left"></td>';
+	htmlReport +='<td class="text-left"></td>';
+	htmlReport +='<td class="text-left"></td>';
 
 	htmlReport +='<td class="text-right border-report">';
 	htmlReport +='<h5><u><mark><strong><em>';
@@ -100,6 +101,8 @@ function genData(row) {
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['dateStamp'] + '</td>';
+	htmlReport +='<td class="text-right">' + row['Number'] + '</td>';
+	htmlReport +='<td class="text-left">  -   ' + row['DESC'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['planOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
 	htmlReport +='<td class="text-right">' + row['actualOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
 	htmlReport +='<td class="text-right">' + parseFloat(row['achievementOkQty'])

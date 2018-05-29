@@ -1,6 +1,8 @@
 // ************************************************ Event **********************************************
 // ---------------------------------------------- Page Load --------------------------------------------
 $(document).ready(function() {
+	initDaterange();
+
 	$('select#jobID').multiselect({
 		header: true,
 		noneSelectedText: 'Default selected all job',

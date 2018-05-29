@@ -19,7 +19,7 @@ function setNgQtySendToDest() {
 			, "warning");
 		$(this).val(parseInt($('input#sourceQtyNG').val()));
 	}
-	$('table#destinationStepTable input:radio').each(function() {
+	$('table#destinationStepTable input:checkbox').each(function() {
 		if(this.checked) {
 			$(this).closest("tr").find('input#receiveNgQty').val(
 				calcQtyWithNbSub($(this).closest("tr").find('input#destinationNbSub').val())
@@ -29,16 +29,13 @@ function setNgQtySendToDest() {
 }
 // ------------------------------------- Toggle check destination step ---------------------------------
 function toggleDestinationElement() {
-	// Element destination clear.
-	$('table#destinationStepTable > tbody > tr').removeClass("bg-info");
-	$('input#receiveNgQty').prop('disabled', true);
-	$('input#receiveNgQty').val('');
-
-	// Element receive NG Qty.
+	// Toggle attribute enable and class bg-info.
 	$(this).closest("tr").find('input#receiveNgQty').prop('disabled', !this.checked);
+	((this.checked) 
+		? $(this).closest("tr").addClass("bg-info")
+		: $(this).closest("tr").removeClass("bg-info"));
 
-	// Element radio button.
-	$(this).closest("tr").addClass("bg-info");
+	// Calculate Dest-NBSub.
 	$(this).closest("tr").find('input#receiveNgQty').val(
 		calcQtyWithNbSub($(this).closest("tr").find('input#destinationNbSub').val())
 	);
@@ -91,7 +88,10 @@ function changeSourceStep(){
 				if(Object.keys(dsSourceStepStock).length > 0) {
 					disSourceStockChoose(dsSourceStepStock);
 				} else {
-					swal("Error", "ไม่พบข้อมูล Job, Step และ  Stock ในฐานข้อมูล กรุณาแจ้งผู้ดูแลระบบ\n" + "Not found Job, Step and Stock in database", "error");
+					swal("Error", "Step ที่ท่านเลือก ไม่พบข้อมูล Stock ในฐานข้อมูล\n"
+					+ "โปรดตรวจสอบขั้นตอนต่างๆในโปรแซส\n"
+					+ " หรือแจ้งผู้ดูแลระบบ\n"
+					+ "Not found Stock of this step in database", "error");
 				}
 			}
 		});
@@ -127,7 +127,11 @@ function changeDestinationStep(){
 				if(Object.keys(dsDestinationStepStock).length > 0) {
 					disDestinationStockChoose(dsDestinationStepStock);
 				} else {
-					swal("Error", "ไม่พบข้อมูล Job, Step และ  Stock ในฐานข้อมูล กรุณาแจ้งผู้ดูแลระบบ\n" + "Not found Job, Step and Stock in database", "error");
+					resetDestinationStock();
+					swal("Error", "Step ที่ท่านเลือก ไม่พบข้อมูล Stock ในฐานข้อมูล\n"
+						+ "โปรดตรวจสอบขั้นตอนต่างๆในโปรแซส\n"
+						+ " หรือแจ้งผู้ดูแลระบบ\n"
+						+ "Not found Stock of this step in database", "error");
 				}
 			}
 		});
@@ -169,25 +173,13 @@ function disDestinationStockChoose(dsDestinationStepStock) {
 }
 
 function genHtmlTbodyDestStock(dsFullStep, i) {
-	let eleChecked = '';
-	let eleDisabled = ' disabled';
-	let valReceiveNgQty = '';
-	let eleClassBgColor = '';
+	let valReceiveNgQty = ($('input#qtyNGSend').val() == "")
+		? "" : calcQtyWithNbSub(dsFullStep.nbSub);
 
-	if(i == 0) {
-		eleChecked = ' checked';
-		eleDisabled = '';
-		eleClassBgColor = ' class="bg-info"';
-		if($('input#qtyNGSend').val() == "") {
-			valReceiveNgQty = "";
-		} else {
-			valReceiveNgQty = calcQtyWithNbSub(dsFullStep.nbSub);
-		}
-	}
-	let htmlTbody = '<tr' + eleClassBgColor + '>'
+	let htmlTbody = '<tr class="bg-info">'
 		+ '<td class="text-center td-group">'
-			+ '<input type="radio" class="form-control td-group" id="destinationCheck"'
-			+ 'type="text" name="destinationCheck[]"' + eleChecked
+			+ '<input type="checkbox" class="form-control td-group" id="destinationCheck"'
+			+ 'type="text" name="destinationCheck[]" checked'
 			+ ' value="' + dsFullStep.stepId + '" />'
 		+ '</td>'
 		+ '<td class="text-center td-group">'
@@ -200,7 +192,7 @@ function genHtmlTbodyDestStock(dsFullStep, i) {
 		+ '</td>'
 		+ '<td class="text-center td-group">'
 			+ '<input class="form-control text-center textRight" id="receiveNgQty"'
-			+ 'type="number" name="receiveNgQty[]"' + eleDisabled 
+			+ 'type="number" name="receiveNgQty[]"' 
 			+ ' value="' + valReceiveNgQty + '">'
 
 			+ '<input class="form-control text-center textRight hidden" id="destinationNbSub"'
@@ -240,6 +232,7 @@ function resetDestinationStock() {
 	$('input#destinationCheck').prop('checked', false);
 	$('input#destinationCheck').prop('disabled', true);
 	$('input#receiveNgQty').prop('disabled', true);
+	$('input#receiveNgQty').val('');
 }
 
 //**************************************** Clear warning input require ****************************************

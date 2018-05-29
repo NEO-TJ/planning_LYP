@@ -15,12 +15,13 @@
 			echo css_asset('jquery.multiselect.css');
 			echo css_asset('jquery.multiselect.filter.css');
 			echo css_asset('prettify.css');
-			echo css_asset('bootstrap/bootstrap-datepicker.min.css');
+			echo my_css_asset("plugins/jquery-daterangepicker/css/daterangepicker.min.css");
 			// My
 			echo css_asset('bootstrap.min.my.css');
 			echo css_asset('frontend.css');
 			echo css_asset('menubar.css');
 			echo css_asset('report/stylesheet.css');
+			echo css_asset("extent/my-daterangepicker.css");
  		?>
     </head>
     <body>
