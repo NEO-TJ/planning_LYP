@@ -110,19 +110,15 @@ class AchievementReport extends CI_Controller {
 		$dsAchievement = array_merge($dsResult["dsPlanOk"], $dsResult["dsActivityOk"]);
 
 		// Sort rows achievement.
-		$sortArray = array();
-		foreach($dsAchievement as $rowPlanOk) {
-			foreach($rowPlanOk as $key=>$value) {
-				if(!isset($sortArray[$key])) {
-					$sortArray[$key] = array();
-				}
-				$sortArray[$key][] = $value;
-			}
+		foreach($dsAchievement as $key=>$row) {
+			$sortJobName[] = $row['jobName'];
+			$sortStepNumber[] = $row['Number'];
+			$sortDateStamp[] = $row['dateStamp'];
 		}
-		if( (count($sortArray) > 0) && (count($dsAchievement) > 0) ) {
-			$orderby = "myId";
-			array_multisort($sortArray[$orderby], SORT_ASC, $dsAchievement);
-		}
+
+		array_multisort($sortJobName, SORT_ASC, $sortStepNumber, SORT_ASC, $sortDateStamp, SORT_ASC, $dsAchievement);
+
+
 
 		return $dsAchievement;
 	}

@@ -83,6 +83,7 @@
 <!-- Row header 0 -->
 				<tr>
 					<th class="header-border-report"><h4 class="text-left"><strong>Date</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Job</strong></h4></th>
 					<th class="header-border-report"><h4 class="text-right"><strong>Step</strong></h4></th>
 					<th class="header-border-report"><h4 class="text-left"><strong>- Description</strong></h4></th>
 					<th class="header-border-report"><h4 class="text-right"><strong>Plan Qty</strong></h4></th>

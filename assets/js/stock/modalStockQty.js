@@ -1,11 +1,11 @@
 // ************************************************ Event **********************************************
 // ------------------------------------------------ Load -----------------------------------------------
 $(document).on('click', 'td#stockQty', function(e) {
-	var tr = $(e.target).closest('tr');
-	var allID = tr.find('td:first-child input#allID').val();
+	let tr = $(e.target).closest('tr');
+	let allID = tr.find('input#allID').val();
 
-	var strStockQty = tr.find('td:last-child').html();
-	var stockQty = parseFloat(strStockQty.replace(',','').replace(' ',''));
+	let strStockQty = tr.find('td#stockQty').html();
+	let stockQty = parseFloat(strStockQty.replace(',','').replace(' ',''));
 
 	swal({
 		title: "Adjust Stock",
@@ -49,13 +49,13 @@ $(document).on('keydown', 'input#stockQty', function(e) {
 	numericFilter(e, this, true);
 });
 $(document).on('click', "button#submitAdjustStock", function() {
-	var allID = $('input#singleAllID').val();
-	var stockQty = $('input#stockQty').val();
+	let allID = $('input#singleAllID').val();
+	let stockQty = $('input#stockQty').val();
 	
-	var arrayID = allID.split(',');
-	var jobID = arrayID[0];
-	var stepID = arrayID[1];
-	var firstStepFlag = arrayID[2];
+	let arrayID = allID.split(',');
+	let jobID = arrayID[0];
+	let stepID = arrayID[1];
+	let firstStepFlag = arrayID[2];
 
 	if( (isEmpty(jobID) || (jobID < 1)) || (isEmpty(stepID) || (stepID < 1)) || (isEmpty(firstStepFlag)) ) {
 		$('span#stockValidate').text("Can't find Stock please refresh!");
@@ -77,11 +77,11 @@ $(document).on('click', "button#cancelAdjustStock", function() {
 //------------------------------------------------- AJAX -----------------------------------------------
 //__________________________________________ Adjust Stock Quantity _____________________________________
 function adjustStockQty(jobID, stepID, firstStepFlag, stockQty) {
-	var data = {
-				'jobID'			: jobID,
-				'stepID'		: stepID,
-				'firstStepFlag'	: firstStepFlag,
-				'stockQty'		: stockQty,
+	let data = {
+		'jobID'					: jobID,
+		'stepID'				: stepID,
+		'firstStepFlag'	: firstStepFlag,
+		'stockQty'			: stockQty,
 	};
 	// Shift date by dalay with offset sun.
 	$.ajax({
@@ -105,7 +105,7 @@ function adjustStockQty(jobID, stepID, firstStepFlag, stockQty) {
 					confirmButtonText: "Done",
 					confirmButtonClass: "btn btn-success",
 				}).then(function(){
-					displayFullStockTable();
+					displayStockList(gbPageCode);
 				});
 			}
 			else {

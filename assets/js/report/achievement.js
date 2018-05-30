@@ -48,7 +48,7 @@ function genLineGroup(lineName) {
 	let htmlReport;
 	
 	htmlReport +='<tr>';
-	htmlReport +='<td class="text-left" rowspan="1" colspan="4">';
+	htmlReport +='<td class="text-left" rowspan="1" colspan="6">';
 	htmlReport +='<h5><strong><u>';
 	htmlReport +=lineName;
 	htmlReport +='</us></strong></h5>';
@@ -63,6 +63,7 @@ function genSummary(totalPlanOkQty, totalActualOkQty) {
 		( ((totalPlanOkQty == 0) && (totalActualOkQty > 0)) ? 100 : totalPlanOkQty) ) * 100;
 
 	htmlReport +='<tr>';
+	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
@@ -101,6 +102,7 @@ function genData(row) {
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left">' + row['dateStamp'] + '</td>';
+	htmlReport +='<td class="text-left">' + row['jobName'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['Number'] + '</td>';
 	htmlReport +='<td class="text-left">  -   ' + row['DESC'] + '</td>';
 	htmlReport +='<td class="text-right">' + row['planOkQty'].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';

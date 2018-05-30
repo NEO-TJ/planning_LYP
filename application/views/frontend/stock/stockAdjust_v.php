@@ -65,11 +65,11 @@
 			<!-- table head -->
 				<thead>
 					<tr class="bg-primary">
-						<th class="text-center"><h4><strong>No.</strong></h4></th>
-						<th class="text-center"><h4><strong>Job</strong></h4></th>
-						<th class="text-center"><h4><strong>Step-Description</strong></h4></th>
-						<th class="text-center"><h4><strong>Sub Assembly</strong></h4></th>
-						<th class="text-center"><h4><strong>Stock Quantity</strong></h4></th>
+						<th class="text-center"><strong>No.</strong></th>
+						<th class="text-center"><strong>Job</strong></th>
+						<th class="text-center"><strong>Step-Description</strong></th>
+						<th class="text-center"><strong>Sub Assembly</strong></th>
+						<th class="text-center"><strong>Stock Quantity</strong></th>
 					</tr>
 				</thead>
 			<!-- table body -->

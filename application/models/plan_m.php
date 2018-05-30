@@ -257,6 +257,7 @@ class Plan_m extends CI_Model {
 	private function getDsActivityQtyOk($strDateStart, $strDateEnd, $criteria) {
 		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(a.Datetime_Stamp)) myId"
 				.", l.Name lineName"
+				.", j.Name jobName"
 				.", s.Number, s.DESC"
 				.", DATE(a.Datetime_Stamp) dateStamp"
 				.", SUM(a.Qty_OK) actualOkQty"
@@ -272,7 +273,7 @@ class Plan_m extends CI_Model {
 				." AND DATE(a.Datetime_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
 			." GROUP BY s.FK_ID_Line, DATE(a.Datetime_Stamp)"
-			." ORDER BY lineName, dateStamp";
+			." ORDER BY lineName, j.Name, s.Number, dateStamp";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
@@ -282,6 +283,7 @@ class Plan_m extends CI_Model {
 	private function getDsPlanQtyOk($strDateStart, $strDateEnd, $criteria) {
 		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(p.Date_Stamp)) myId"
 				.", l.Name lineName"
+				.", j.Name jobName"
 				.", s.Number, s.DESC"
 				.", DATE(p.Date_Stamp) dateStamp"
 				.", 0 actualOkQty"
@@ -297,7 +299,7 @@ class Plan_m extends CI_Model {
 				." AND DATE(p.Date_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
 			." GROUP BY s.FK_ID_Line, DATE(p.Date_Stamp)"
-			." ORDER BY lineName, dateStamp";
+			." ORDER BY lineName, j.Name, s.Number, dateStamp";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
