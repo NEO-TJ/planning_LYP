@@ -232,7 +232,7 @@ class Plan_m extends CI_Model {
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
-		
+
 		return $result;
 	}
 
@@ -255,24 +255,25 @@ class Plan_m extends CI_Model {
 		return $result;
 	}
 	private function getDsActivityQtyOk($strDateStart, $strDateEnd, $criteria) {
-		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(a.Datetime_Stamp)) myId"
+		$sqlStr = "SELECT CONCAT(s.id, '-', DATE(a.Datetime_Stamp)) myId"
 				.", l.Name lineName"
 				.", j.Name jobName"
 				.", s.Number, s.DESC"
 				.", DATE(a.Datetime_Stamp) dateStamp"
+				.", s.id"
 				.", SUM(a.Qty_OK) actualOkQty"
 				.", 0 planOkQty"
 				.", SUM(a.Qty_OK) achievementOkQty"
-			." FROM stock k"
+			." FROM activity a"
+				." INNER JOIN stock k ON a.FK_ID_Stock = k.id"
 				." INNER JOIN job j ON k.FK_ID_Job = j.id"
 				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
-				." LEFT JOIN activity a ON k.id = a.FK_ID_Stock"
 			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 				." AND a.FK_ID_Activity_Source IS NULL AND a.Qty_OK > 0"
 				." AND DATE(a.Datetime_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
-			." GROUP BY s.FK_ID_Line, DATE(a.Datetime_Stamp)"
+			." GROUP BY s.id, DATE(a.Datetime_Stamp)"
 			." ORDER BY lineName, j.Name, s.Number, dateStamp";
 
 		$query = $this->db->query($sqlStr);
@@ -281,24 +282,25 @@ class Plan_m extends CI_Model {
 		return $result;
 	}
 	private function getDsPlanQtyOk($strDateStart, $strDateEnd, $criteria) {
-		$sqlStr = "SELECT CONCAT(l.Name, '-', DATE(p.Date_Stamp)) myId"
+		$sqlStr = "SELECT CONCAT(s.id, '-', DATE(p.Date_Stamp)) myId"
 				.", l.Name lineName"
 				.", j.Name jobName"
 				.", s.Number, s.DESC"
 				.", DATE(p.Date_Stamp) dateStamp"
+				.", s.id"
 				.", 0 actualOkQty"
 				.", SUM(p.Plan_Qty_OK) planOkQty"
 				.", 0 achievementOkQty"
-			." FROM stock k"
+			." FROM plan p"
+				." INNER JOIN stock k ON p.FK_ID_Stock = k.id"
 				." INNER JOIN job j ON k.FK_ID_Job = j.id"
 				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN line l ON s.FK_ID_Line = l.id"
-				." LEFT JOIN plan p ON k.id = p.FK_ID_Stock"
 			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1"
 				." AND p.Plan_Qty_OK > 0"
 				." AND DATE(p.Date_Stamp) BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'"
 				.$criteria
-			." GROUP BY s.FK_ID_Line, DATE(p.Date_Stamp)"
+			." GROUP BY s.id, DATE(p.Date_Stamp)"
 			." ORDER BY lineName, j.Name, s.Number, dateStamp";
 
 		$query = $this->db->query($sqlStr);

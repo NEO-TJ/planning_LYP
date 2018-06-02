@@ -82,7 +82,7 @@ function saveAll(){
 		'dsDestinationStep'	: dsDestinationStep,
 		'firstStepStock'		: firstStepStock,
 	};
-alert(JSON.stringify(dsDestinationStep));return true;
+
 	// Get process table one row by ajax.
 	$.ajax({
 		url: 'recoveryNG/ajaxSaveRecoveryNG',

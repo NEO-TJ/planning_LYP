@@ -1,9 +1,10 @@
 <?php
 class Stock_m extends CI_Model {
-	// Public Property
+// Public Property
 	public $firstStepFlag = false;
-	
-	// Private Property
+// Public Property
+
+// Private Property
 	var $table_name = "stock";
 	var $col_id = "id";
 	var $col_job_id = "FK_ID_Job";
@@ -11,7 +12,8 @@ class Stock_m extends CI_Model {
 	var $col_qty_ok_first_step = "Qty_OK_First_Step";
 	var $col_qty_ok = "Qty_OK";
 	var $col_qty_ng = "Qty_NG";
-	
+// End Private Property
+
 	public function __construct() {
 		parent::__construct();
 	}
