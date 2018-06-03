@@ -12,6 +12,7 @@ class Stock_m extends CI_Model {
 	var $col_qty_ok_first_step = "Qty_OK_First_Step";
 	var $col_qty_ok = "Qty_OK";
 	var $col_qty_ng = "Qty_NG";
+	var $col_operation_time = "Operation_Time";
 // End Private Property
 
 	public function __construct() {
@@ -19,7 +20,7 @@ class Stock_m extends CI_Model {
 	}
 
 
-    // ******************************************* Custome function ************************************
+	// ******************************************* Custome function ************************************
 	public function getStepStockByMultiJobAndStepId($arrayJobID=[], $arrayStepID=[], $limit=null, $offset=null) {
 		// Create criteria query.
 		$this->load->model('plan_m');

@@ -471,7 +471,7 @@ function genHeader(diffStartCurrentDate, totalSlotDate) {
     htmlHeader += '<tr>';
     htmlHeader += '<th class="text-center" rowspan="2">Job</th>';
     htmlHeader += '<th class="text-center" rowspan="2">Next step</th>';
-    htmlHeader += '<th class="text-center nowrap" rowspan="2">Step-Description</th>';
+    htmlHeader += '<th class="text-center nowrap" rowspan="2">----------------Step-Description----------------</th>';
     htmlHeader += '<th class="text-center" rowspan="2">Line</th>';
     htmlHeader += '<th class="text-center" colspan="4">Total</th>';
     for (let i = 0; i < totalSlotDate; i++) {
@@ -551,7 +551,7 @@ function genBody(dsFullPlanning, diffStartCurrentDate, totalSlotDate) {
         if (iDuplicate == 0) {
             htmlBody += '<td class="text-left nowrap" rowspan=' + duplicateCount + '>' + rowMain.JobName + '</td>';
             htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.Next_Step_Number + '</td>';
-            htmlBody += '<td class="text-left nowrap" rowspan=' + duplicateCount + '>' + rowMain.NumberAndDESC + '</td>';
+            htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.NumberAndDESC + '</td>';
             htmlBody += '<td class="text-left" rowspan=' + duplicateCount + '>' + rowMain.LineName + '</td>';
         }
 

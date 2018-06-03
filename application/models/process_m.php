@@ -27,7 +27,7 @@ class Process_m extends CI_Model {
 		$this->db->trans_begin();
 
 		// ---------------- Save Stock Part ------------------------------------------
-		$i=0;$j=0;
+			$i=0;$j=0;
 			foreach($dsStep as $row){
 				if($row['stockID'] > 0) {
 					// Update op-time in Stock.
@@ -184,7 +184,7 @@ class Process_m extends CI_Model {
 		$result = false;
 		$resultProcess = false;
 		$resultStep = true;
-		$resultStock = false;
+		$resultStock = true;
 
 		$AddNewMode = (($processID <= 0) ? true : false);
 		$this->load->model('step_m');
@@ -194,7 +194,7 @@ class Process_m extends CI_Model {
 		$this->db->trans_begin();
 
 		// -------------- Save Process Part ------------------------------------------
-		if($processID <= 0) {
+		if($AddNewMode) {
 			// Case Add new or Clone mode of Process? (For insert process data)
 			$processID = $this->insert_row($dataProcessToStore);
 			$resultProcess = (($processID <= 0) ? false : true);
@@ -226,6 +226,26 @@ class Process_m extends CI_Model {
 					// Insert Step.
 					$stepID = $this->insertRowOtherTable($this->step_m->table_name, $dataStep_to_store);
 					$resultStep &= (($stepID == 0) ? false : true);
+
+					// Check and insert Stock.
+					if(!$AddNewMode) {
+						$dsJob = $this->getJobExcludeStock($processID, $stepID);
+						// Insert Stock.
+						foreach($dsJob as $rowJob){
+							$dataStockToStore = array(
+								'FK_ID_Job'					=> $rowJob['jobID'],
+								'FK_ID_Step'				=> $stepID,
+								'Qty_OK_First_Step'	=> $row['firstStepFlag'] * 
+																			($rowJob['Qty_Plan_Product'] 
+																			* $row['nbSub']),
+								'Qty_OK'						=> 0,
+								'Qty_NG'						=> 0,
+								'Operation_Time'		=> 0,
+							);
+							$stockID = $this->insertRowOtherTable($this->stock_m->table_name, $dataStockToStore);
+							$resultStock &= (($stockID > 0) ? true : false);
+						}
+					}
 				} else {
 					// Update Step.
 					$resultStep &= $this->updateRowFreeRole($this->step_m->table_name
@@ -248,7 +268,7 @@ class Process_m extends CI_Model {
 		// ---------------- End Save Step Part ---------------------------------------
 
 		// Check status of transaction progress.
-		if($this->db->trans_status() && ($resultProcess && $resultStep)) {
+		if($this->db->trans_status() && ($resultProcess && $resultStep && $resultStock)) {
 			$this->db->trans_commit();
 			$result = true;
 		} else {
@@ -358,6 +378,21 @@ class Process_m extends CI_Model {
 		}
 
 		$query = $this->db->get();
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	public function getJobExcludeStock($processID=0, $stepID=0) {
+		$sqlStr = "SELECT DISTINCT(j.id) jobID, j.Qty_Plan_Product"
+			. " FROM job j"
+			. " LEFT JOIN step s on j.FK_ID_Process=s.FK_ID_Process"
+			. " LEFT JOIN stock k on j.id=k.FK_ID_Job && s.id=k.FK_ID_Step"
+			. " WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1 AND k.id IS NULL"
+			. " AND j.FK_ID_Process=". $processID ." AND s.id=" . $stepID
+			. " ORDER BY j.id DESC, s.number DESC";
+
+		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
 
 		return $result;

@@ -102,7 +102,7 @@
 				<div class="col-md-12">
 					<table class="table-bordered table-condensed table-hover table-components" id="ng">
 						<thead>
-							<tr>
+							<tr class="bg-primary">
 								<th class="text-center" width="40" rowspan="1">No</th>
 								<th class="text-center" width="400" rowspan="1">Sub assembly</th>
 								<th class="text-center" width="200" rowspan="1">Defect</th>
