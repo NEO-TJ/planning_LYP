@@ -6,12 +6,7 @@ class Defect_m extends CI_Model {
 	var $col_name = "Name";
 	var $col_desc_thai = "DESC_Thai";
 	
-	/**
-    * Responsable for auto load the database
-    * @return void
-    */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -20,8 +15,7 @@ class Defect_m extends CI_Model {
 
 
     // **************************************************** Manual *************************************
-    public function save($id, $data)
-    {
+    public function save($id, $data) {
     	$result = false;
     
     	// check in database
@@ -32,27 +26,20 @@ class Defect_m extends CI_Model {
     
     	return $result;
     }
-    public function get_template()
-    {
+    public function get_template() {
     	$result = [
-    			$this->col_id			=> 0,
-    			$this->col_name			=> '',
-    			$this->col_desc_thai	=> '',
+            $this->col_id			=> 0,
+            $this->col_name			=> '',
+            $this->col_desc_thai	=> '',
     	];
     
     	return $result;
     }
-    
-    
-    
+
+
+
     // ****************************************************** Normal function *****************************************
-    /**
-    * Get product by his is
-    * @param int $product_id 
-    * @return array
-    */
-    public function get_row_by_id($id=0, $arrWhere=[])
-    {
+    public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 		$this->db->where($this->col_id, $id);
@@ -65,20 +52,8 @@ class Defect_m extends CI_Model {
 		return $query->result_array();
 	}    
 
-    /**
-    * Fetch defect data from the database
-    * possibility to mix search, filter and order
-    * @param string $search_string 
-    * @param strong $order
-    * @param string $order_type 
-    * @param int $limit_start
-    * @param int $limit_end
-    * @return array
-    */
     public function get_row($search_string=null, $order='Name', $order_type='Asc'
-    		, $limit_start=null, $limit_end=null)
-    {
-	    
+    , $limit_start=null, $limit_end=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 
@@ -106,14 +81,7 @@ class Defect_m extends CI_Model {
 		return $query->result_array(); 	
     }
 
-    /**
-    * Count the number of rows
-    * @param int $search_string
-    * @param int $order
-    * @return int
-    */
-    function count_row($search_string=null, $order=null)
-    {
+    function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 		if($search_string){
@@ -130,37 +98,22 @@ class Defect_m extends CI_Model {
 
 
     // -------------------------------------------------------- Manipulate -----------------------------------
-    function begin_trans()
-    {
+    function begin_trans() {
     	$this->db->trans_begin();
     }
-    function commit_trans()
-    {
+    function commit_trans() {
     	$this->db->trans_commit();
     }
-    function rollback_trans()
-    {
+    function rollback_trans() {
     	$this->db->trans_rollback();
     }
     
-    /**
-    * Store the new item into the database
-    * @param array $data - associative array with data to store
-    * @return boolean 
-    */
-    function insert_row($data)
-    {
+    function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 	    return $insert;
 	}
 
-    /**
-    * Update defect
-    * @param array $data - associative array with data to store
-    * @return boolean
-    */
-    function update_row($id, $data)
-    {
+    function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
 		$report = array();
@@ -173,11 +126,6 @@ class Defect_m extends CI_Model {
 		}
 	}
 
-    /**
-    * Delete defect
-    * @param int $id - defect id
-    * @return boolean
-    */
 	function delete_row($id){
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);

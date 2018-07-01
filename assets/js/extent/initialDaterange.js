@@ -25,9 +25,9 @@ function initDaterange() {
 	    {
 		    return this.value;
     	},
-    }).bind('datepicker-closed', function() {
-        //ChangeDaterange();*/
-    });
+    })/*.bind('datepicker-closed', function() {
+        //ChangeDaterange();
+    })*/;
 
     $('#daterange').data('dateRangePicker').setDateRange(
         moment().subtract(1, 'month').startOf('month').format(drpFormat),

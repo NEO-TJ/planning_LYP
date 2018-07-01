@@ -69,28 +69,6 @@ class RecoveryNG extends CI_Controller {
 			echo json_encode($dsSourceStepStock);
 		}
 	}
-	public function ajaxGetDsFullDestinationStock() {
-		if(!($this->is_logged())) {exit(0);}
-		if ($this->input->server('REQUEST_METHOD') === 'POST') {
-			$jobID = $this->input->post('jobID');
-			$stepID = $this->input->post('stepID');
-			
-			$dsDestinationStepStock = array();
-			$dsStep = $this->getDsStep($stepID);
-			if(count($dsStep) > 0) {
-				// Destination Step.
-				if($dsStep[0]['First_Step_Flag'] == 1) {
-					// ====> Get (Current or First) Stock.
-					$dsDestinationStepStock = $this->getDsCurrentStepDescStock($jobID, $stepID);
-				} else {
-					// ====> Get (Previous Step) Stock.
-					$dsDestinationStepStock = $this->getDsPreviousStepDescStock($jobID, $dsStep[0]['Number']);
-				}
-			}
-
-			echo json_encode($dsDestinationStepStock);
-		}
-	}
 
 
 	// -------------------------------- Modify stock and Delete Activity -------------------------------
@@ -416,7 +394,7 @@ class RecoveryNG extends CI_Controller {
 
 		return $dsStep;
 	}
-
+	
 	private function getDsStep($id) {
 		$this->load->model('step_m');
 		$dsStep = $this->step_m->get_row_by_id($id);
@@ -442,19 +420,6 @@ class RecoveryNG extends CI_Controller {
 		$dsFullStock = $this->step_m->getFullStockNumberDescSubAss($jobID, $stepID);
 
 		return $dsFullStock;
-	}
-
-	private function getDsCurrentStepDescStock($jobID, $stepID) {
-		$this->load->model('step_m');
-		$dsFullStock = $this->step_m->getFullStockNumberDesc($jobID, $stepID);
-
-		return $dsFullStock;
-	}
-	private function getDsPreviousStepDescStock($jobID, $stepNumber) {
-		$this->load->model('step_m');
-		$dsPreviousFullStock = $this->step_m->getPreviousFullStockNumberDesc($jobID, $stepNumber);
-
-		return $dsPreviousFullStock;
 	}
 // ***************************************** End Get function **************************************
 

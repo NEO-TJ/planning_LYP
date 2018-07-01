@@ -5,10 +5,6 @@ class SubAssembly_m extends CI_Model {
 	var $col_id = "id";
 	var $col_name = "Name";
 	
-	/**
-        * Responsable for auto load the database
-        * @return void
-    */
     public function __construct() {
         parent::__construct();
     }
@@ -18,7 +14,45 @@ class SubAssembly_m extends CI_Model {
 
 
     // **************************************************** Manual *************************************
-    public function save($id, $data) {
+	// --------------------------------------------------------- Sub assembly of previous step.
+	public function getSubAssemblyOfPreviousStep($stepId=0) {
+		$this->load->model('step_m');
+		$processId = 0;
+		$stepNumber = 0;
+		$firstStepFlag = 1;
+		
+		$dsCurrentStep = $this->step_m->get_row_by_id($stepId);
+		if(count($dsCurrentStep) > 0 ) {
+			$processId = $dsCurrentStep[0][$this->step_m->col_process_id];
+			$stepNumber = $dsCurrentStep[0][$this->step_m->col_number];
+			$firstStepFlag = $dsCurrentStep[0][$this->step_m->col_first_step_flag];
+		}
+
+		if($firstStepFlag == 0) {
+			$sqlStr = "SELECT sa.id, sa.Name"
+				." FROM step cs"
+					." LEFT JOIN step ps ON (cs.FK_ID_Process = ps.FK_ID_Process)"
+					." AND (cs.number = ps.Next_Step_Number)"
+					." LEFT JOIN sub_assembly sa ON (ps.FK_ID_Sub_Assembly = sa.id)"
+				." WHERE cs.FK_ID_Process = " . $processId
+					." AND cs.Number = " . $stepNumber
+				." ORDER BY sa.Name";
+		} else {
+			$sqlStr = "SELECT sa.id, sa.Name"
+				." FROM step cs"
+					." LEFT JOIN sub_assembly sa ON (cs.FK_ID_Sub_Assembly = sa.id)"
+				." WHERE cs.id = " . $stepId
+				." ORDER BY sa.Name";
+		}
+
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	// --------------------------------------------------------- Manipulate.
+	public function save($id, $data) {
     	$result = false;
     
     	// check in database
@@ -31,8 +65,8 @@ class SubAssembly_m extends CI_Model {
     }
     public function get_template() {
     	$result = [
-    			$this->col_id		=> 0,
-    			$this->col_name		=> '',
+            $this->col_id		=> 0,
+            $this->col_name		=> '',
     	];
     
     	return $result;
@@ -48,16 +82,11 @@ class SubAssembly_m extends CI_Model {
         $query = $this->db->query($sqlStr);
         $result = $query->result_array();
 
-    return $result;
+        return $result;
     }
     
     
     // ****************************************************** Normal function *****************************************
-    /**
-        * Get product by his is
-        * @param int $product_id 
-        * @return array
-    */
     public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -71,19 +100,8 @@ class SubAssembly_m extends CI_Model {
 		return $query->result_array(); 
     }    
 
-    /**
-        * Fetch customer data from the database
-        * possibility to mix search, filter and order
-        * @param string $search_string 
-        * @param strong $order
-        * @param string $order_type 
-        * @param int $limit_start
-        * @param int $limit_end
-        * @return array
-    */
     public function get_row($search_string=null, $order='Name', $order_type='Asc'
     , $limit_start=null, $limit_end=null) {
-	    
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 
@@ -111,12 +129,6 @@ class SubAssembly_m extends CI_Model {
 		return $query->result_array(); 	
     }
 
-    /**
-        * Count the number of rows
-        * @param int $search_string
-        * @param int $order
-        * @return int
-    */
     function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
@@ -132,21 +144,11 @@ class SubAssembly_m extends CI_Model {
 		return $query->num_rows();        
     }
 
-    /**
-        * Store the new item into the database
-        * @param array $data - associative array with data to store
-        * @return boolean 
-    */
     function insert_row($data) {
 		$insert = $this->db->insert($this->table_name, $data);
 	    return $insert;
 	}
 
-    /**
-            * Update customer
-            * @param array $data - associative array with data to store
-            * @return boolean
-    */
     function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
@@ -160,11 +162,6 @@ class SubAssembly_m extends CI_Model {
 		}
 	}
 
-    /**
-        * Delete customer
-        * @param int $id - customer id
-        * @return boolean
-    */
 	function delete_row($id){
 		$this->db->where($this->col_id, $id);
 		$result = $this->db->delete($this->table_name);

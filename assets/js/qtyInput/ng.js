@@ -6,7 +6,7 @@ $('input#qtyOK').change(function(e) {
 	$('input#totalQtyOK').val($('input#qtyOK').val());
 });
 $(document).on("change", "input#qtyNG", function() {
-	var total = 0;
+	let total = 0;
 	$("input[id='qtyNG']").each(function() {
 		total += parseInt($(this).val());
 	});
@@ -19,59 +19,59 @@ $(document).on("change", "input#qtyNG", function() {
 // ********************************************** Method ***********************************************
 //********************************************** Validation ********************************************
 function validateAllNG() {
-	var result = false;
+	let result = false;
 	
-	var resultSubAssemblyID = true;
-	var resultDefectID = true;
-	var resultQtyNG = true;
+	let resultSubAssemblyID = true;
+	let resultDefectID = true;
+	let resultQtyNG = true;
 	
 	// Check require field of step.
 	$('table#ng.table-components tbody tr').each(function(i, row) {
-		var objSubAssemblyID = $(this).find('td:nth-child(2) select#subAssembly :selected');
-		var objDefectID = $(this).find('td:nth-child(3) select#defect :selected');
-		var objQtyNG = $(this).find('td:nth-child(4) input#qtyNG');
+		let objSubAssemblyID = $(this).find('select#subAssembly :selected');
+		let objDefectID = $(this).find('select#defect :selected');
+		let objQtyNG = $(this).find('input#qtyNG');
 		
 		// Check Qty NG has input?
 		if( isEmpty(objQtyNG.val()) ) {
-			$(this).find('td:nth-child(4) input#qtyNG').addClass('bg-error');
+			$(this).find('input#qtyNG').addClass('bg-error');
 			resultQtyNG &= false;
 		}
 		else if( ($('table#ng.table-components tbody tr').length == 1) && (i == 0) && (objQtyNG.val() == 0)
 				&& (objSubAssemblyID.val() < 1) && (objDefectID.val() < 1)) {
-			$(this).find('td:nth-child(2) select#subAssembly').removeClass('bg-error');
-			$(this).find('td:nth-child(3) select#defect').removeClass('bg-error');
-			$(this).find('td:nth-child(4) input#qtyNG').removeClass('bg-error');
+			$(this).find('select#subAssembly').removeClass('bg-error');
+			$(this).find('select#defect').removeClass('bg-error');
+			$(this).find('input#qtyNG').removeClass('bg-error');
 			return true;
 		}
 		else if((objSubAssemblyID.val() > 0) || (objDefectID.val() > 0) || !(isEmpty(objQtyNG.val()))) {
 			if(!((objSubAssemblyID.val() > 0) && (objDefectID.val() > 0) 
 					&& !(isEmpty(objQtyNG.val())) && (objQtyNG.val() > 0))) {
-				$(this).find('td:nth-child(2) select#subAssembly').addClass('bg-error');
-				$(this).find('td:nth-child(3) select#defect').addClass('bg-error');
-				$(this).find('td:nth-child(4) input#qtyNG').addClass('bg-error');
+				$(this).find('select#subAssembly').addClass('bg-error');
+				$(this).find('select#defect').addClass('bg-error');
+				$(this).find('input#qtyNG').addClass('bg-error');
 				resultQtyNG &= false;
 			}
 		}
 		else {
-			$(this).find('td:nth-child(4) input#qtyNG').removeClass('bg-error');
+			$(this).find('input#qtyNG').removeClass('bg-error');
 		}
 
 		// Check Sub Assembly id?
 		if(objSubAssemblyID.val() == 0) {
-			$(this).find('td:nth-child(2) select#subAssembly').addClass('bg-error');
+			$(this).find('select#subAssembly').addClass('bg-error');
 			resultSubAssemblyID &= false;
 		}
 		else {
-			$(this).find('td:nth-child(2) select#subAssembly').removeClass('bg-error');
+			$(this).find('select#subAssembly').removeClass('bg-error');
 		}
 		
 		// Check Defect id selected?
 		if(objDefectID.val() == 0) {
-			$(this).find('td:nth-child(3) select#defect').addClass('bg-error');
+			$(this).find('select#defect').addClass('bg-error');
 			resultDefectID &= false;
 		}
 		else {
-			$(this).find('td:nth-child(3) select#defect').removeClass('bg-error');
+			$(this).find('select#defect').removeClass('bg-error');
 		}
 	});
 	
@@ -90,7 +90,7 @@ function addNewNGRowTable() {
 }
 //******************************** Clone row table with auto increment no ******************************
 function cloneNGRowTableAutoIncrementNo() {
-	var $clone = $("table#ng.table-components tbody tr:first-child");
+	let $clone = $("table#ng.table-components tbody tr:first-child");
 	
 	$clone.find('.btn').removeClass('add-elements btn-default').addClass('delete-elements btn-danger')
 		.html('<i class="fa fa-minus"></i>');
@@ -113,21 +113,21 @@ function deleteAllCloneNGRowTable() {
 function deleteNGRowTableAutoIncrementNo(){
 	$(this).closest("tr").remove();
 	
-	var n = 0;
+	let n = 0;
 	$('table#ng.table-components tbody tr').each(function(){
 		n++;
 		$(this).find('td:first-child').html(n);
 	});
 }
 //******************************************** Reset NG input fill *************************************
-function resetNGLastRowTable(dsFullBom, i) {
-	var currentTr = $('table#ng.table-components tbody tr:last-child');
+function resetNGLastRowTable() {
+	let currentTr = $('table#ng.table-components tbody tr:last-child');
 	
-	currentTr.find('td:nth-child(2) select#subAssemble').val(0);
-	currentTr.find('td:nth-child(3) select#defect').val(0);
-	currentTr.find('td:nth-child(4) input#qtyNG').val('');
+	currentTr.find('select#subAssemble').val(0);
+	currentTr.find('select#defect').val(0);
+	currentTr.find('input#qtyNG').val(0);
 
-	currentTr.find('td:nth-child(2) select#subAssemble').removeClass('bg-error');
-	currentTr.find('td:nth-child(3) select#defect').removeClass('bg-error');
-	currentTr.find('td:nth-child(4) input#qtyNG').removeClass('bg-error');
+	currentTr.find('select#subAssemble').removeClass('bg-error');
+	currentTr.find('select#defect').removeClass('bg-error');
+	currentTr.find('input#qtyNG').removeClass('bg-error');
 }

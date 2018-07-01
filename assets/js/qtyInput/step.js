@@ -5,12 +5,12 @@ $('select#step').change(changeStep);
 // *********************************************** Method **********************************************
 // ------------------------------------------ Change step mode------------------------------------------
 function changeStep(){
-	var stepID = $('select#step :selected').val();
+	let stepID = $('select#step :selected').val();
 	
 	if(stepID == 0){
 		disStepNotChoose();
 	} else {
-		var data = { 'stepID': stepID };
+		let data = { 'stepID': stepID };
 
 		// Get process table one row by ajax.
 		$.ajax({
@@ -25,15 +25,12 @@ function changeStep(){
 			},
 			complete: function(){
 			},
-			success: function(data) {
-				dsStep = data.dsStep;
-				dsSubAssembly = data.dsSubAssembly;
-
-				if(dsStep.length > 0) {
+			success: function(dsSubAssembly) {
+				if(dsSubAssembly.length === 0) {
+					swal("Error", "ไม่พบข้อมูล Job และ Step ในฐานข้อมูล กรุณาแจ้งผู้ดูแลระบบ\n"
+					+ "Not found Job and Step in database", "error");
+				} else {
 					disStepChoose(dsSubAssembly);
-				}
-				else {
-					swal("Error", "ไม่พบข้อมูล Job และ Step ในฐานข้อมูล กรุณาแจ้งผู้ดูแลระบบ\n" + "Not found Job and Step in database", "error");
 				}
 			}
 		});
@@ -78,12 +75,12 @@ function disStepChoose(dsSubAssembly) {
 }
 
 function setSubAssemblySelectElement(dataSet = []) {
-	$('select#subAssembly').empty();		// you might wanna empty it first with .empty()
-	$('select#subAssembly').append('<option value="0">Please select Sub_Assembly' + '</option>');
+	$('select#subAssembly').empty();
+	$('select#subAssembly').append('<option value="0">Please select Sub Assembly' + '</option>');
 
-	for(var i=0; i < dataSet.length; i++) {
-		$('select#subAssembly').append('<option value="' + dataSet[i].id + '">' + dataSet[i].Name + '</option>');
-	}
+	$.each(dataSet, function (key, value) {
+		$('select#subAssembly').append('<option value="' + value.id + '">' + value.Name + '</option>');
+	});
 }
 
 

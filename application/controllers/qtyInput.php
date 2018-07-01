@@ -67,11 +67,10 @@ class QtyInput extends CI_Controller {
 		if ($this->input->server('REQUEST_METHOD') === 'POST') {
 	
 			$stepID = $this->input->post('stepID');
-			$data['dsStep'] = $this->getDsStep($stepID);
-			//$data['dsSubAssembly'] = $this->getDsSubAssemblyByStep($stepID);		// Koravit.
-			$data['dsSubAssembly'] = $this->getDsSubAssemblyByStep(0);
+			//$data['dsStep'] = $this->getDsStep($stepID);
+			$dsSubAssembly = $this->getDsPreviousSubAssemblyByDsStep($stepID);		// Koravit.
 
-			echo json_encode($data);
+			echo json_encode($dsSubAssembly);
 		}
 	}
 
@@ -104,7 +103,6 @@ class QtyInput extends CI_Controller {
 		$data['dsJob'] = $this->getDsJobStatusOpen(0);
 
 		$data['dsWorker'] = $this->getDsWorker(0);
-		//$data['dsSubAssembly'] = $this->getDsSubAssembly(0);
 		$data['dsDefect'] = $this->getDsDefect(0);
 
 		return $data;
@@ -150,11 +148,11 @@ class QtyInput extends CI_Controller {
 		return $dsWorker;
 	}
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sub Assembly Get DB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	private function getDsSubAssemblyByStep($stepId) {
+	private function getDsPreviousSubAssemblyByDsStep($stepId) {
 		$this->load->model('subAssembly_m');
-		$dsSubAssembly = (($stepId == 0) 
-			? $this->subAssembly_m->get_row() 
-			: $this->subAssembly_m->getRowByStep($stepId));
+		$dsSubAssembly = (($stepId == 0)
+			? $this->subAssembly_m->get_row()
+			: $this->subAssembly_m->getSubAssemblyOfPreviousStep($stepId));
 
 		return $dsSubAssembly;
 	}

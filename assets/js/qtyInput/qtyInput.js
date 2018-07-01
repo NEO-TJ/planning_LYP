@@ -58,14 +58,14 @@ $('form#formQtyInput button#resetQtyInput').click(function(e) {
 //************************************************ Method **********************************************
 //------------------------------------------------- Save -----------------------------------------------
 function saveAll(){
-	var jobID = $('select#job :selected').val();
-	var dateTimeStamp = $('input#dateTimeStamp').val();
-	var stepID = $('select#step :selected').val();
-	var workerID = $('select#worker :selected').val();
-	var qtyOK = $('input#qtyOK').val();
-	var totalQtyNG = $('input#totalQtyNG').val();
+	let jobID = $('select#job :selected').val();
+	let dateTimeStamp = $('input#dateTimeStamp').val();
+	let stepID = $('select#step :selected').val();
+	let workerID = $('select#worker :selected').val();
+	let qtyOK = $('input#qtyOK').val();
+	let totalQtyNG = $('input#totalQtyNG').val();
 
-	var dsNG = new Array();
+	let dsNG = new Array();
 	$('table#ng.table-components tbody tr').each(function(i, row){
 		if( ($('table#ng.table-components tbody tr').length == 1)
 				&& (i == 0)
@@ -73,7 +73,7 @@ function saveAll(){
 			return true; 
 		}
 		
-		var dictNG = {
+		let dictNG = {
 					'subAssemblyID':	$(this).find('td:nth-child(2) select#subAssemble :selected').val(),
 					'defectID':		 	$(this).find('td:nth-child(3) select#defect :selected').val(),
 					'qtyNG':	 		$(this).find('td:nth-child(4) input#qtyNG').val(),
@@ -81,7 +81,7 @@ function saveAll(){
 		dsNG.push(dictNG);
 	});
 
-	var dataQtyInput = {
+	let dataQtyInput = {
 				'jobID': 			jobID,
 				'dateTimeStamp':	dateTimeStamp,
 				'stepID': 			stepID,
@@ -166,19 +166,19 @@ function saveAll(){
 }
 //********************************************** Validation *******************************************
 function validateAll(){
-	var result = false;
+	let result = false;
 	
-	var resultJob = false;
-	var resultDateTimeStamp = false;
-	var resultStep = false;
-	var resultWorker = false;
-	var resultQtyOK = false;
-	var resultTotalQtyNG = false;
-	var resultQtyNotValue = false;
-	var resultAllNG = false;
+	let resultJob = false;
+	let resultDateTimeStamp = false;
+	let resultStep = false;
+	let resultWorker = false;
+	let resultQtyOK = false;
+	let resultTotalQtyNG = false;
+	let resultQtyNotValue = false;
+	let resultAllNG = false;
 	
-	var qtyOK = $('input#qtyOK').val();
-	var totalQtyNG = $('input#totalQtyNG').val();
+	let qtyOK = $('input#qtyOK').val();
+	let totalQtyNG = $('input#totalQtyNG').val();
 	
 	// Check all require field.
 	
@@ -213,10 +213,10 @@ function validateAll(){
 	return result;
 }
 function validateDateTimeStamp(){
-    var result = false;
+    let result = false;
 
     if($('input#dateTimeStamp').length) {
-        var dateTimeStamp = $('input#dateTimeStamp').val();
+        let dateTimeStamp = $('input#dateTimeStamp').val();
         if(isEmpty(dateTimeStamp)) {
         	swal("Warning", "Please check your 'DateTime Stamp'.","warning");
         }

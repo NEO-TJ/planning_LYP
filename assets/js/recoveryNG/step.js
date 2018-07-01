@@ -105,14 +105,14 @@ function changeDestinationStep(){
 
 	if(stepID == 0){ resetDestinationStock(); }
 	else {
-		let data = { 
+		let data = {
 			'jobID'		: jobID,
 			'stepID'	: stepID,
 		};
 
 		// Get process table one row by ajax.
 		$.ajax({
-			url: 'recoveryNG/ajaxGetDsFullDestinationStock',
+			url: 'ajaxService/ajaxGetDsFullDestinationStock',
 			type: 'post',
 			data: data,
 			dataType: 'json',

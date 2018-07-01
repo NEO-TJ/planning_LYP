@@ -113,8 +113,9 @@
 						<tbody>
 							<tr>
 								<td class="text-center td-group">1</td>
+							<!-- Sub assembly. -->
 								<td class="text-center td-group">
-									<select class="form-control text-center" name="subAssembly[]" id="subAssembly">
+									<select class="form-control text-left" name="subAssembly[]" id="subAssembly">
 										<option value=0 selected>Please select Sub Assembly</option>
 										<?php 
 											foreach($dsSubAssembly as $row) {
@@ -123,8 +124,9 @@
 										?>
 									</select>
 								</td>
+							<!-- Defect. -->
 								<td class="text-center td-group">
-									<select class="form-control text-center" name="defect" id="defect">
+									<select class="form-control text-left" name="defect" id="defect">
 										<option value=0 selected>Please select Defect</option>
 										<?php 
 											foreach($dsDefect as $row) {
@@ -133,15 +135,18 @@
 										?>
 									</select>
 								</td>
+							<!-- Quantity NG. -->
 								<td class="text-center td-group">
-									<input class="form-control text-center text-uppercase" id="qtyNG"
-									type="number" name="qtyNG[]" placeholder="Quantity NG...">
+									<input class="form-control text-right text-uppercase" id="qtyNG"
+									type="number" name="qtyNG[]" placeholder="Quantity NG..." value=0>
 								</td>
+							<!-- Add Row button. -->
 								<td class="text-center">
 									<button type="button" class="btn btn-default add-elements">
 										<i class="fa fa-plus"></i>
 									</button>
 								</td>
+							<!-- End Add Row button. -->
 							</tr>
 						</tbody>
 					</table>
