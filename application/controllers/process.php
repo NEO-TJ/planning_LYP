@@ -220,7 +220,12 @@ class Process extends CI_Controller {
 			$this->logout();
 			return false;
 		} else {
-			return true;
+			if($this->session->userdata('level') == 1) {
+				return true;
+			} else {
+				$this->logout();
+				return false;
+			}
 		}
 	}
 	private function logout(){

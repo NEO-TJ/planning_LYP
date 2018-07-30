@@ -206,14 +206,17 @@ class Activity_m extends CI_Model {
 
 		$sqlStr = "SELECT a.FK_ID_Defect"
 				.", IF(!ISNULL(a.FK_ID_Defect) && ISNULL(d.Name), '', d.Name) defectName"
+				.", IF(!ISNULL(s.FK_ID_Sub_Assembly) && ISNULL(b.Name), '', b.Name) subAssemblyName"
 				.", SUM(a.Qty_NG) rejectQty"
 			." FROM activity a"
 				." INNER JOIN stock k ON a.FK_ID_Stock = k.id"
 				." INNER JOIN job j ON k.FK_ID_Job = j.id"
+				." INNER JOIN step s ON k.FK_ID_Step = s.id"
 				." LEFT JOIN defect d ON a.FK_ID_Defect = d.id"
+				." LEFT JOIN sub_assembly b ON s.FK_ID_Sub_Assembly = b.id"
 			." WHERE a.FK_ID_Activity_Source IS NULL AND a.Qty_NG IS NOT NULL AND j.Delete_Flag=0"
 				." AND a.Datetime_Stamp BETWEEN '".$strDateStart."%' AND '".$strDateEnd."%'" .$criteria
-			." GROUP BY a.FK_ID_Defect"
+			." GROUP BY a.FK_ID_Defect, s.FK_ID_Sub_Assembly"
 			." ORDER BY rejectQty DESC, a.FK_ID_Defect"
 			." LIMIT 5";
 

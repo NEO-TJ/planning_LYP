@@ -40,7 +40,8 @@ class Planning extends CI_Controller {
 
 			$data = array(
 				'dsFullPlanning'				=> $dsFullPlanning,
-				'diffStartCurrentDate'	=> $diffStartCurrentDate
+				'diffStartCurrentDate'	=> $diffStartCurrentDate,
+				'userLevel'							=> $this->session->userdata('level')
 			);
 
 			echo json_encode($data);
@@ -218,7 +219,12 @@ class Planning extends CI_Controller {
 			$this->logout();
 			return false;
 		} else {
-			return true;
+			if( ($this->session->userdata('level') == 1) or ($this->session->userdata('level') == 2) ) {
+				return true;
+			} else {
+				$this->logout();
+				return false;
+			}
 		}
 	}
 	private function logout() {

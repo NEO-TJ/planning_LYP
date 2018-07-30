@@ -201,10 +201,13 @@ function displayFullPlanningTable() {
         success: function(result) {
             let dsFullPlanning = result['dsFullPlanning'];
             let diffStartCurrentDate = result['diffStartCurrentDate'];
+            let userLevel = result['userLevel'];
 
             genTable(dsFullPlanning, diffStartCurrentDate, totalSlotDate);
             $('input#diffStartCurrentDate').val(diffStartCurrentDate);
             freezeTableHeader();
+
+            $('input.numeric').prop('disabled', ((userLevel == 1) ? false : true));
 
             uiChanged = false;
         }

@@ -158,12 +158,13 @@ class RecoveryNG extends CI_Controller {
 
 		$this->load->model('stock_m');
 		$dsDestinationStock = $this->stock_m->getRowByJobAndMultiStepId($jobID, $rStepId);
-		$stockType = (($firstStepStock) ? $this->stock_m->col_qty_ok_first_step : $this->stock_m->col_qty_ok);
+		//$stockType = (($firstStepStock) ? $this->stock_m->col_qty_ok_first_step : $this->stock_m->col_qty_ok);
 		$i = 0;
 		foreach ($dsDestinationStock as $value) {
 			$dataDestinationStock[$i] = array(
-				"DestinationStockID"	=> $value[$this->stock_m->col_id],
-				$stockType	=> $value[$stockType] + $combineIdReceiveNgQty[$value[$this->stock_m->col_step_id]],
+				"DestinationStockID"				=> $value[$this->stock_m->col_id],
+				$this->stock_m->col_qty_ok	=> $value[$this->stock_m->col_qty_ok] + $combineIdReceiveNgQty[$value[$this->stock_m->col_step_id]]
+				//$stockType	=> $value[$stockType] + $combineIdReceiveNgQty[$value[$this->stock_m->col_step_id]],
 			);
 
 			$dataDestinationStockActivity[$i] = array(
@@ -443,7 +444,12 @@ class RecoveryNG extends CI_Controller {
 			$this->logout();
 			return false;
 		} else {
-			return true;
+			if($this->session->userdata('level') == 1) {
+				return true;
+			} else {
+				$this->logout();
+				return false;
+			}
 		}
 	}
 	private function logout() {

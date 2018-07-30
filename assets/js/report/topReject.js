@@ -9,10 +9,10 @@ $(document).ready(function() {
 //************************************************ Method **********************************************
 //------------------------------------------------ AJAX -----------------------------------------------
 function getReport() {
-	var arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
-	var arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	let arrayJobID = $('select#jobID').multiselect("getChecked").map(function() { return this.value; } ).get();
+	let arrayStepID = $('select#stepID').multiselect("getChecked").map(function() { return this.value; } ).get();
 
-	var data = {
+	let data = {
 			'strDateStart': strDateStart,
 			'strDateEnd': strDateEnd,
 			'jobID' : arrayJobID,
@@ -33,8 +33,8 @@ function getReport() {
 		complete: function(){
 		},
 		success: function(dsData) {
-			var dsNGPercent = dsData['dsNGPercent'];
-			var dsTopReject = dsData['dsTopReject'];
+			let dsNGPercent = dsData['dsNGPercent'];
+			let dsTopReject = dsData['dsTopReject'];
 			
 			$('table#ngPercentByStepReport > tbody').html(genNGPercentByStepReport(dsNGPercent));
 			$('table#topRejectReport > tbody').html(genTopRejectReport(dsTopReject));
@@ -48,7 +48,7 @@ function getReport() {
 //--------------------------------------------- Generate Html ------------------------------------------
 //*************************************** NG Percent by Step Report ************************************
 function genTextColorClass(qty) {
-	var textColorClass;
+	let textColorClass;
 	if(qty < 5) {
 		textColorClass = 'text-success';
 	} else if(qty > 15) {
@@ -60,9 +60,9 @@ function genTextColorClass(qty) {
 	return textColorClass;
 }
 function genNGPercentByStepSummary(totalQtyOK, totalQtyNG) {
-	var htmlReport;
-	var totalNGPercent = ( totalQtyNG / (((totalQtyOK + totalQtyNG) == 0) ? 1 : (totalQtyOK + totalQtyNG)) ) * 100;
-	var textColorClass = genTextColorClass(totalNGPercent);
+	let htmlReport;
+	let totalNGPercent = ( totalQtyNG / (((totalQtyOK + totalQtyNG) == 0) ? 1 : (totalQtyOK + totalQtyNG)) ) * 100;
+	let textColorClass = genTextColorClass(totalNGPercent);
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-left"></td>';
@@ -98,8 +98,8 @@ function genNGPercentByStepSummary(totalQtyOK, totalQtyNG) {
 	return htmlReport;
 }
 function genNGPercentByStepData(row, no) {
-	var htmlReport;
-	var textColorClass = genTextColorClass(row['ngPercent']);
+	let htmlReport;
+	let textColorClass = genTextColorClass(row['ngPercent']);
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-right">' + row['Number'] + '</td>';
@@ -113,13 +113,13 @@ function genNGPercentByStepData(row, no) {
 	return htmlReport;
 }
 function genNGPercentByStepReport(dsNGPercent) {
-	var htmlReport = "";
+	let htmlReport = "";
 	
-	var totalQtyOK = 0;
-	var totalQtyNG = 0;
+	let totalQtyOK = 0;
+	let totalQtyNG = 0;
 	
-	var row;
-	for(var i=0; i<dsNGPercent.length; i++)
+	let row;
+	for(let i=0; i<dsNGPercent.length; i++)
 	{
 		row = dsNGPercent[i];
 		
@@ -143,11 +143,11 @@ function genNGPercentByStepReport(dsNGPercent) {
 
 //****************************************** Top Reject Report *****************************************
 function genTopRejectReport(dsTopReject) {
-	var htmlReport = "";
+	let htmlReport = "";
 	
-	var totalRejectQty = 0;
-	var row;
-	for(var i=0; i<dsTopReject.length; i++)
+	let totalRejectQty = 0;
+	let row;
+	for(let i=0; i<dsTopReject.length; i++)
 	{
 		row = dsTopReject[i];
 		
@@ -166,10 +166,11 @@ function genTopRejectReport(dsTopReject) {
 	return htmlReport;
 }
 function genTopRejectSummary(totalRejectQty) {
-	var htmlReport;
+	let htmlReport;
 
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-right"></td>';
+	htmlReport +='<td class="text-left"></td>';
 	htmlReport +='<td class="text-left"></td>';
 
 	htmlReport +='<td class="text-right border-report">';
@@ -185,12 +186,13 @@ function genTopRejectSummary(totalRejectQty) {
 	return htmlReport;
 }
 function genTopRejectData(row, no) {
-	var htmlReport;
-	var textColorClass = (isEmpty(row['defectName']) ? ' bg-danger' : '');
+	let htmlReport;
+	let textColorClass = (isEmpty(row['defectName']) ? ' bg-danger' : '');
 	
 	htmlReport +='<tr>';
 	htmlReport +='<td class="text-center'+textColorClass+'">' + no + '</td>';
 	htmlReport +='<td class="text-left'+textColorClass+'">' + row['defectName'] + '</td>';
+	htmlReport +='<td class="text-left'+textColorClass+'">' + row['subAssemblyName'] + '</td>';
 	htmlReport +='<td class="text-right'+textColorClass+'">' + row['rejectQty']
 		.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</td>';
 	htmlReport +='</tr>';

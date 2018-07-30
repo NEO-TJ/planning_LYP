@@ -53,41 +53,41 @@ class SubAssembly_m extends CI_Model {
 
 	// --------------------------------------------------------- Manipulate.
 	public function save($id, $data) {
-    	$result = false;
+		$result = false;
+
+		// check in database
+		$exist = $this->get_row_by_id($id);
+		$ce = count($exist);
+	
+		$result = (($ce > 0) ? $this->update_row($id, $data) : $this->insert_row($data));
+	
+		return $result;
+	}
+	public function get_template() {
+		$result = [
+			$this->col_id		=> 0,
+			$this->col_name		=> '',
+		];
+
+		return $result;
+	}
     
-    	// check in database
-    	$exist = $this->get_row_by_id($id);
-    	$ce = count($exist);
-    
-    	$result = (($ce > 0) ? $this->update_row($id, $data) : $this->insert_row($data));
-    
-    	return $result;
-    }
-    public function get_template() {
-    	$result = [
-            $this->col_id		=> 0,
-            $this->col_name		=> '',
-    	];
-    
-    	return $result;
-    }
-    
-    public function getRowByStep($stepId) {
+	public function getRowByStep($stepId) {
 		$sqlStr = "SELECT s.FK_ID_Sub_Assembly id, a.Name"
-            ." FROM step s"
-            ." INNER JOIN sub_assembly a on s.FK_ID_Sub_Assembly=a.id"
-            ." WHERE s.id = " . $stepId
-            ." ORDER BY a.Name";
+			." FROM step s"
+			." INNER JOIN sub_assembly a on s.FK_ID_Sub_Assembly=a.id"
+			." WHERE s.id = " . $stepId
+			." ORDER BY a.Name";
 
-        $query = $this->db->query($sqlStr);
-        $result = $query->result_array();
+		$query = $this->db->query($sqlStr);
+		$result = $query->result_array();
 
-        return $result;
-    }
+		return $result;
+	}
     
     
-    // ****************************************************** Normal function *****************************************
-    public function get_row_by_id($id=0, $arrWhere=[]) {
+	// ****************************************************** Normal function *****************************************
+	public function get_row_by_id($id=0, $arrWhere=[]) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 		$this->db->where($this->col_id, $id);
@@ -98,10 +98,10 @@ class SubAssembly_m extends CI_Model {
 		$query = $this->db->get();
 		
 		return $query->result_array(); 
-    }    
+	}    
 
-    public function get_row($search_string=null, $order='Name', $order_type='Asc'
-    , $limit_start=null, $limit_end=null) {
+	public function get_row($search_string=null, $order='Name', $order_type='Asc'
+	, $limit_start=null, $limit_end=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 
@@ -116,20 +116,20 @@ class SubAssembly_m extends CI_Model {
 		    $this->db->order_by($this->col_id, $order_type);
 		}
 
-        if($limit_start && $limit_end){
-          $this->db->limit($limit_start, $limit_end);	
-        }
+		if($limit_start && $limit_end){
+			$this->db->limit($limit_start, $limit_end);	
+		}
 
-        if($limit_start != null){
-          $this->db->limit($limit_start, $limit_end);    
-        }
-        
+		if($limit_start != null){
+			$this->db->limit($limit_start, $limit_end);    
+		}
+
 		$query = $this->db->get();
-		
-		return $query->result_array(); 	
-    }
 
-    function count_row($search_string=null, $order=null) {
+		return $query->result_array(); 	
+	}
+
+	function count_row($search_string=null, $order=null) {
 		$this->db->select('*');
 		$this->db->from($this->table_name);
 		if($search_string){
@@ -142,14 +142,14 @@ class SubAssembly_m extends CI_Model {
 		}
 		$query = $this->db->get();
 		return $query->num_rows();        
-    }
-
-    function insert_row($data) {
-		$insert = $this->db->insert($this->table_name, $data);
-	    return $insert;
 	}
 
-    function update_row($id, $data) {
+	function insert_row($data) {
+		$insert = $this->db->insert($this->table_name, $data);
+		return $insert;
+	}
+
+	function update_row($id, $data) {
 		$this->db->where($this->col_id, $id);
 		$this->db->update($this->table_name, $data);
 		$report = array();

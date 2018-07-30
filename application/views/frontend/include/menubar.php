@@ -12,6 +12,8 @@
           </li>
         <!-- end planning menu -->
           <li><h4>||||||</h4></li>
+        <?php } ?>
+        <?php if($level == 1){ ?>
         <!-- project menu -->
           <li <?php 
         		if(($this->uri->segment(1) == 'project') 
@@ -35,9 +37,8 @@
             </ul>
           </li>
         <!-- end project menu -->
+
           <li><h4>||||||</h4></li>
-        <?php } ?>
-        
         <!-- qty input menu -->
           <li <?php 
             if(($this->uri->segment(1) == 'qtyInput') 
@@ -67,8 +68,7 @@
             </ul>
           </li>
         <!-- end qty input menu -->
-        
-        <?php if(($level == 1) || ($level == 2)){ ?>
+
           <li><h4>||||||</h4></li>
         <!-- adjust stock menu -->
           <li <?php 
@@ -84,6 +84,8 @@
         <!-- end adjust stock menu -->
           <li><h4>||||||</h4></li>
           <li><h4>||||||</h4></li>
+        <?php } ?>
+        <?php if(($level == 1) || ($level == 2)){ ?>
         <!-- report menu -->
           <li <?php 
             if(($this->uri->segment(1) == 'dailyTargetReport') 

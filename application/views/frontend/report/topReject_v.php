@@ -96,6 +96,7 @@
 				<tr>
 					<th class="header-border-report"><h4 class="text-center"><strong>No</strong></h4></th>
 					<th class="header-border-report"><h4 class="text-left"><strong>Defect Name</strong></h4></th>
+					<th class="header-border-report"><h4 class="text-left"><strong>Sub Assembly Name</strong></h4></th>
 					<th class="header-border-report"><h4 class="text-right"><strong>Reject Quantity</strong></h4></th>
 				</tr>
 			</thead>
