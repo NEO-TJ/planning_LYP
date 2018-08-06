@@ -66,30 +66,49 @@ function saveAll(){
 	let totalQtyNG = $('input#totalQtyNG').val();
 
 	let dsNG = new Array();
+	let datadictNG = new Array();
+	let rNG = new Array();
 	$('table#ng.table-components tbody tr').each(function(i, row){
 		if( ($('table#ng.table-components tbody tr').length == 1)
-				&& (i == 0)
-				&& ($(this).find('td:nth-child(4) input#qtyNG').val() == 0)) {
+		&& (i == 0)
+		&& ($(this).find('td:nth-child(4) input#qtyNG').val() == 0)) {
 			return true; 
 		}
 		
 		let dictNG = {
-					'subAssemblyID':	$(this).find('td:nth-child(2) select#subAssemble :selected').val(),
-					'defectID':		 	$(this).find('td:nth-child(3) select#defect :selected').val(),
-					'qtyNG':	 		$(this).find('td:nth-child(4) input#qtyNG').val(),
-				};
+			'subAssemblyID':	$(this).find('td select#subAssembly :selected').val(),
+			'defectID':		 	$(this).find('td select#defect :selected').val(),
+			'qtyNG':	 		$(this).find('td input#qtyNG').val(),
+		};
 		dsNG.push(dictNG);
+		
+		if($(this).find('td select#subAssembly :selected').val() in datadictNG) {
+			datadictNG[$(this).find('td select#subAssembly :selected').val()]
+			+= $(this).find('td input#qtyNG').val();
+
+			let iNG = rNG.findIndex(x => x.subAssemblyID === $(this).find('td select#subAssembly :selected').val());
+			rNG[iNG]["sumQtyNG"] = parseInt(rNG[iNG]["sumQtyNG"]) + parseInt($(this).find('td input#qtyNG').val());
+		} else {
+			datadictNG[$(this).find('td select#subAssembly :selected').val()]
+			= $(this).find('td input#qtyNG').val();
+			
+			rNG.push({
+				"subAssemblyID" : $(this).find('td select#subAssembly :selected').val(),
+				"sumQtyNG" : $(this).find('td input#qtyNG').val()
+			});
+		}
 	});
 
 	let dataQtyInput = {
-				'jobID': 			jobID,
-				'dateTimeStamp':	dateTimeStamp,
-				'stepID': 			stepID,
-				'workerID': 		workerID,
-				'qtyOK': 			qtyOK,
-				'totalQtyNG': 		totalQtyNG,
-				'dsNG': 			dsNG,
-				};
+		'jobID':					jobID,
+		'dateTimeStamp':	dateTimeStamp,
+		'stepID': 				stepID,
+		'workerID': 			workerID,
+		'qtyOK': 					qtyOK,
+		'totalQtyNG': 		totalQtyNG,
+		'dsNG': 					dsNG,
+		'rNG':						rNG,
+	};
 	
 	// Get process table one row by ajax.
 	$.ajax({
@@ -120,43 +139,39 @@ function saveAll(){
 				}).then(function(){
 					window.location.href="qtyInput"
 				});
-			}
-			else if(result == 1) {
+			} else if(result == 1) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Quantity input </span> Not complete...!<p>'
-							+ 'Not enougth stock please check stock'
-							+ result,
+						+ 'Not enougth stock please check stock'
+						+ result,
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else if(result == 2) {
+			} else if(result == 2) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Quantity input </span> Not complete...!<p>'
-							+ 'Error at update stock'
-							+ result,
+						+ 'Error at update stock'
+						+ result,
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else if(result == 3) {
+			} else if(result == 3) {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Quantity input </span> Not complete...!<p>'
-							+ 'Error at insert activity'
-							+ result,
+						+ 'Error at insert activity'
+						+ result,
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
-			}
-			else {
+			} else {
 				swal({
 					title: "Warning!",
 					text: 'Save<span class="text-info"> Quantity input </span> Not complete...!<p>'
-							+ 'Error'
-							+ result,
+						+ 'Error'
+						+ result,
 					type: "error",
 					confirmButtonColor: "#DD6B55"
 				});
@@ -198,8 +213,7 @@ function validateAll(){
 	if( (qtyOK == 0) && (totalQtyNG == 0) ) {
 		$('input#qtyOK').addClass('bg-error');
 		$('input#totalQtyNG').addClass('bg-error');
-	}
-	else{
+	} else{
 		$('input#qtyOK').removeClass('bg-error');
 		$('input#totalQtyNG').removeClass('bg-error');
 		resultQtyNotValue = true;
@@ -209,29 +223,26 @@ function validateAll(){
 	resultAllNG = validateAllNG();
 	
 	result = (resultJob && resultDateTimeStamp && resultStep && resultWorker
-			&& resultQtyOK && resultTotalQtyNG && resultQtyNotValue && resultAllNG);
+		&& resultQtyOK && resultTotalQtyNG && resultQtyNotValue && resultAllNG);
 	return result;
 }
 function validateDateTimeStamp(){
-    let result = false;
+	let result = false;
 
-    if($('input#dateTimeStamp').length) {
-        let dateTimeStamp = $('input#dateTimeStamp').val();
-        if(isEmpty(dateTimeStamp)) {
-        	swal("Warning", "Please check your 'DateTime Stamp'.","warning");
-        }
-        else {
-            if(moment(dateTimeStamp, 'DD-MMM-YYYY HH:mm') > moment()) {
-            	swal("Warning", "Can't choose future DateTime.\n Please check your 'DateTime Stamp'.","warning");
-            	$('input#dateTimeStamp').val(moment().format('DD-MMM-YYYY HH:mm'))
-            }
-            else {
-            	result = true;
-            }
-        }
-    }
-    else {result = true;}
-	
+	if($('input#dateTimeStamp').length) {
+		let dateTimeStamp = $('input#dateTimeStamp').val();
+		if(isEmpty(dateTimeStamp)) {
+			swal("Warning", "Please check your 'DateTime Stamp'.","warning");
+		} else {
+			if(moment(dateTimeStamp, 'DD-MMM-YYYY HH:mm') > moment()) {
+				swal("Warning", "Can't choose future DateTime.\n Please check your 'DateTime Stamp'.","warning");
+				$('input#dateTimeStamp').val(moment().format('DD-MMM-YYYY HH:mm'))
+			} else {
+				result = true;
+			}
+		}
+	} else {result = true;}
+
 	return result;
 }
 

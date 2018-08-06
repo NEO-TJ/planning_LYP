@@ -123,11 +123,11 @@ function deleteNGRowTableAutoIncrementNo(){
 function resetNGLastRowTable() {
 	let currentTr = $('table#ng.table-components tbody tr:last-child');
 	
-	currentTr.find('select#subAssemble').val(0);
+	currentTr.find('select#subAssembly').val(0);
 	currentTr.find('select#defect').val(0);
 	currentTr.find('input#qtyNG').val(0);
 
-	currentTr.find('select#subAssemble').removeClass('bg-error');
+	currentTr.find('select#subAssembly').removeClass('bg-error');
 	currentTr.find('select#defect').removeClass('bg-error');
 	currentTr.find('input#qtyNG').removeClass('bg-error');
 }

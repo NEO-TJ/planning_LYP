@@ -10,15 +10,15 @@ function prepareStepData(){
 	let dsStep = new Array();
 	$('table#step.table-components tbody tr').each(function(i, row){
 		let dictStep = {
-			'stepID': 			$(this).find('td:nth-child(1) input#firstStepFlag').val(),
-			'firstStepFlag': 	(($(this).find('td:nth-child(1) input#firstStepFlag').prop('checked'))? 1: 0),
-			'nextStepNumber': 	$(this).find('td:nth-child(2) input#nextStepNumber').val(),
-			'stepNumber': 		$(this).find('td:nth-child(3) input#stepNumber').val(),
-			'stepDesc': 		$(this).find('td:nth-child(4) input#stepDesc').val(),
-			'lineID': 			$(this).find('td:nth-child(5) select#line :selected').val(),
-			'machineID': 		$(this).find('td:nth-child(6) select#machine :selected').val(),
-			'subAssemblyID': 	$(this).find('td:nth-child(7) select#subAssemble :selected').val(),
-			'nbSub': 			$(this).find('td:nth-child(8) input#nbSub').val(),
+			'stepID': 			$(this).find('td input#firstStepFlag').val(),
+			'firstStepFlag': 	(($(this).find('td input#firstStepFlag').prop('checked'))? 1: 0),
+			'nextStepNumber': 	$(this).find('td input#nextStepNumber').val(),
+			'stepNumber': 		$(this).find('td input#stepNumber').val(),
+			'stepDesc': 		$(this).find('td input#stepDesc').val(),
+			'lineID': 			$(this).find('td select#line :selected').val(),
+			'machineID': 		$(this).find('td select#machine :selected').val(),
+			'subAssemblyID': 	$(this).find('td select#subAssembly :selected').val(),
+			'nbSub': 			$(this).find('td input#nbSub').val(),
 		};
 		dsStep.push(dictStep);
 	});
@@ -38,15 +38,15 @@ function validateStep() {
 	// Check require field of step.
 	$('table#step.table-components tbody tr').each(function(i, row) {
 		// Check Step Number require has input?
-		resultStepNumber &= validateFillInputElement($(this).find('td:nth-child(3) input#stepNumber'));
+		resultStepNumber &= validateFillInputElement($(this).find('td input#stepNumber'));
 		// Check Line id selected?
-		resultLineID &= validateFillSelectElement($(this).find('td:nth-child(5) select#line'));
+		resultLineID &= validateFillSelectElement($(this).find('td select#line'));
 		// Check Line id selected?
-		resultMachineID &= validateFillSelectElement($(this).find('td:nth-child(6) select#machine'));
+		resultMachineID &= validateFillSelectElement($(this).find('td select#machine'));
 		// Check Line id selected?
-		resultSubAssemblyID &= validateFillSelectElement($(this).find('td:nth-child(7) select#subAssemble'));
+		resultSubAssemblyID &= validateFillSelectElement($(this).find('td select#subAssembly'));
 		// Check Step Number require has input?
-		resultNBSub &= validateFillInputElement($(this).find('td:nth-child(8) input#nbSub'));
+		resultNBSub &= validateFillInputElement($(this).find('td input#nbSub'));
 	});
 	
 	
@@ -92,37 +92,37 @@ function deleteStepRowTable(){
 function setStepLastRowTable(dsFullStep, i) {
 	let currentTr = $('table#step.table-components tbody tr:last-child');
 	
-	currentTr.find('td:nth-child(1) input#firstStepFlag').val(dsFullStep[i].id);
-	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', ((dsFullStep[i].First_Step_Flag == 1)? true: false));
-	currentTr.find('td:nth-child(2) input#nextStepNumber').val(dsFullStep[i].Next_Step_Number);
-	currentTr.find('td:nth-child(3) input#stepNumber').val(dsFullStep[i].Number);
-	currentTr.find('td:nth-child(4) input#stepDesc').val(dsFullStep[i].DESC);
-	currentTr.find('td:nth-child(5) select#line').val(dsFullStep[i].FK_ID_Line);
-	currentTr.find('td:nth-child(6) select#machine').val(dsFullStep[i].FK_ID_Machine);
-	currentTr.find('td:nth-child(7) select#subAssemble').val(dsFullStep[i].FK_ID_Sub_Assembly);
-	currentTr.find('td:nth-child(8) input#nbSub').val(dsFullStep[i].NB_Sub);
+	currentTr.find('td input#firstStepFlag').val(dsFullStep[i].id);
+	currentTr.find('td input#firstStepFlag').prop('checked', ((dsFullStep[i].First_Step_Flag == 1)? true: false));
+	currentTr.find('td input#nextStepNumber').val(dsFullStep[i].Next_Step_Number);
+	currentTr.find('td input#stepNumber').val(dsFullStep[i].Number);
+	currentTr.find('td input#stepDesc').val(dsFullStep[i].DESC);
+	currentTr.find('td select#line').val(dsFullStep[i].FK_ID_Line);
+	currentTr.find('td select#machine').val(dsFullStep[i].FK_ID_Machine);
+	currentTr.find('td select#subAssembly').val(dsFullStep[i].FK_ID_Sub_Assembly);
+	currentTr.find('td input#nbSub').val(dsFullStep[i].NB_Sub);
 }
 //************************************** Reset Full Process input fill ***************************************
 //----------------------------------------- Reset Step input fill --------------------------------------------
 function resetStepLastRowTable(dsFullBom, i) {
 	let currentTr = $('table#step.table-components tbody tr:last-child');
 	
-	currentTr.find('td:nth-child(1) input#firstStepFlag').val(0);
-	currentTr.find('td:nth-child(1) input#firstStepFlag').prop('checked', false);
-	currentTr.find('td:nth-child(2) input#nextStepNumber').val('');
-	currentTr.find('td:nth-child(3) input#stepNumber').val('');
-	currentTr.find('td:nth-child(4) input#stepDesc').val('');
-	currentTr.find('td:nth-child(5) select#line').val(0);
-	currentTr.find('td:nth-child(6) select#machine').val(0);
-	currentTr.find('td:nth-child(7) select#subAssemble').val(0);
-	currentTr.find('td:nth-child(8) input#nbSub').val('');
+	currentTr.find('td input#firstStepFlag').val(0);
+	currentTr.find('td input#firstStepFlag').prop('checked', false);
+	currentTr.find('td input#nextStepNumber').val('');
+	currentTr.find('td input#stepNumber').val('');
+	currentTr.find('td input#stepDesc').val('');
+	currentTr.find('td select#line').val(0);
+	currentTr.find('td select#machine').val(0);
+	currentTr.find('td select#subAssembly').val(0);
+	currentTr.find('td input#nbSub').val('');
 
-	currentTr.find('td:nth-child(1) input#firstStepFlag').removeClass('bg-error');
-	currentTr.find('td:nth-child(2) select#nextStepNumber').removeClass('bg-error');
-	currentTr.find('td:nth-child(3) input#stepNumber').removeClass('bg-error');
-	currentTr.find('td:nth-child(4) input#stepDesc').removeClass('bg-error');
-	currentTr.find('td:nth-child(5) select#line').removeClass('bg-error');
-	currentTr.find('td:nth-child(6) select#machine').removeClass('bg-error');
-	currentTr.find('td:nth-child(7) select#subAssemble').removeClass('bg-error');
-	currentTr.find('td:nth-child(8) input#nbSub').removeClass('bg-error');
+	currentTr.find('td input#firstStepFlag').removeClass('bg-error');
+	currentTr.find('td select#nextStepNumber').removeClass('bg-error');
+	currentTr.find('td input#stepNumber').removeClass('bg-error');
+	currentTr.find('td input#stepDesc').removeClass('bg-error');
+	currentTr.find('td select#line').removeClass('bg-error');
+	currentTr.find('td select#machine').removeClass('bg-error');
+	currentTr.find('td select#subAssembly').removeClass('bg-error');
+	currentTr.find('td input#nbSub').removeClass('bg-error');
 }

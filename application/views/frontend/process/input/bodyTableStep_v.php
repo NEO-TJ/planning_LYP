@@ -48,7 +48,7 @@
 			</select>
 		</td>
 		<td class="text-center td-group">
-			<select class="form-control text-center" name="subAssemble[]" id="subAssemble">
+			<select class="form-control text-center" name="subAssembly[]" id="subAssembly">
 				<option value="0" selected>Please select sub assemble</option>
 				<?php 
 					foreach($dsSubAssembly as $rowSubAssembly) {

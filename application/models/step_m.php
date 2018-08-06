@@ -206,7 +206,7 @@ class Step_m extends CI_Model {
 	}
 	public function get_previous_full_stock($jobID=0, $stepNumber=0) {
 		$sqlStr = "SELECT k.id, s.Number, s.Next_Step_Number, s.First_Step_Flag, s.NB_Sub"
-			.", k.Qty_OK_First_Step, k.Qty_OK, k.Qty_NG"
+			.", k.Qty_OK_First_Step, k.Qty_OK, k.Qty_NG, s.FK_ID_Sub_Assembly"
 			." FROM job as j"
 			." INNER JOIN step as s ON (j.FK_ID_Process = s.FK_ID_Process)"
 			." INNER JOIN stock as k ON ((j.id = k.FK_ID_Job) && (s.id = k.FK_ID_Step))"

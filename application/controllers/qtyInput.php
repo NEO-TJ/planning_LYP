@@ -37,8 +37,10 @@ class QtyInput extends CI_Controller {
 			$qtyOK = $this->input->post('qtyOK');
 			$totalQtyNG = $this->input->post('totalQtyNG');
 			$dsNG = $this->getPostArrayHelper($this->input->post('dsNG'));
+			$rNG = $this->getPostArrayHelper($this->input->post('rNG'));
 
-			$result = $this->fullQtyInput($jobID, $dateTimeStamp, $stepID, $workerID, $qtyOK, $totalQtyNG, $dsNG);
+			$result = $this->fullQtyInput(
+				$jobID, $dateTimeStamp, $stepID, $workerID, $qtyOK, $totalQtyNG, $dsNG, $rNG);
 		}
 		
 		echo $result;    	
@@ -171,7 +173,8 @@ class QtyInput extends CI_Controller {
 
 // ***************************************** Retrive function **************************************
 	// ************************************* Receive input quantity ************************************
-	private function fullQtyInput($jobID, $dateTimeStamp, $stepID, $workerID, $qtyOK, $totalQtyNG, $dsNG) {
+	private function fullQtyInput(
+		$jobID, $dateTimeStamp, $stepID, $workerID, $qtyOK, $totalQtyNG, $dsNG, $rNG) {
 		$result = 4;
 	
 		$resultEnoughStock = false;
@@ -179,11 +182,30 @@ class QtyInput extends CI_Controller {
 			
 		$dsFullStock = $this->getDsFullStock($jobID, $stepID);
 		if(count($dsFullStock) > 0) {
+			// Calc Total NG Qty.
+			if($dsFullStock[0]['First_Step_Flag'] == 0) {
+				$dsPreviousFullStock = $this->getDsPreviousFullStock($jobID, $dsFullStock[0]['Number']);
+				if(count($dsPreviousFullStock) > 0) {
+					$totalQtyNG = 0;
+					foreach($dsPreviousFullStock as $row){
+						$key = array_search($row['FK_ID_Sub_Assembly'], array_column($rNG, 'subAssemblyID'));
+						if(is_null($key)) {
+							$oneNGQty = 0;
+						} else {
+							$oneNGQty = ceil(($rNG[$key]["sumQtyNG"] * $dsFullStock[0]["NB_Sub"]) / $row["NB_Sub"]);
+						}
+						
+						$totalQtyNG = (($totalQtyNG > $oneNGQty) ? $totalQtyNG : $oneNGQty);
+					}
+				}
+			}
+
 			// Check enough stock.
-			$resultEnoughStock = $this->checkEnoughStock($jobID, $stepID, $qtyOK, $totalQtyNG, $dsFullStock);
+			$resultEnoughStock = $this->checkEnoughStock(
+				$jobID, $stepID, $qtyOK, $totalQtyNG, $dsFullStock, $rNG, $dsPreviousFullStock);
 			if($resultEnoughStock) {
-				$resultUpdateStock = $this->updateStock($jobID, $dateTimeStamp, $stepID, $qtyOK, $totalQtyNG
-														, $dsFullStock, $dsNG, $workerID);
+				$resultUpdateStock = $this->updateStock(
+					$jobID, $dateTimeStamp, $stepID, $qtyOK, $totalQtyNG, $dsFullStock, $dsNG, $workerID, $rNG, $dsPreviousFullStock);
 			}
 		}
 			
@@ -194,8 +216,8 @@ class QtyInput extends CI_Controller {
 	}
     
 	// -------------------------------------------- Modify stock ---------------------------------------
-	private function updateStock($jobID, $dateTimeStamp, $stepID
-	, $qtyOK, $totalQtyNG, $dsFullStock, $dsNG, $workerID) {
+	private function updateStock(
+		$jobID, $dateTimeStamp, $stepID, $qtyOK, $totalQtyNG, $dsFullStock, $dsNG, $workerID, $rNG, $dsPreviousFullStock) {
 		$result = false;
 		$this->load->model('stock_m');
 	
@@ -214,13 +236,15 @@ class QtyInput extends CI_Controller {
 		}
 		else {																	// Update previous and self stock.
 			// Cut previous stock data.
-			$dsPreviousFullStock = $this->getDsPreviousFullStock($jobID, $dsFullStock[0]['Number']);		// Get all previous step.
+			//$dsPreviousFullStock = $this->getDsPreviousFullStock($jobID, $dsFullStock[0]['Number']);		// Get all previous step.
 			if(count($dsPreviousFullStock) > 0) {
 				$i = 0;
 				foreach($dsPreviousFullStock as $row){
-					$dataPreviousStock[$i]['PreviousStockID'] = $row['id'];
-					$dataPreviousStock[$i++]['Qty_OK'] = $row['Qty_OK'] -
-					((($qtyOK + $totalQtyNG) * $row['NB_Sub']) / $dsFullStock[0]['NB_Sub']);
+					$key = array_search($row['FK_ID_Sub_Assembly'], array_column($rNG, 'subAssemblyID'));
+					if(!is_null($key)) {
+						$dataPreviousStock[$i]['PreviousStockID'] = $row['id'];
+						$dataPreviousStock[$i++]['Qty_OK'] = $row['Qty_OK'] - ($qtyOK + $rNG[$key]["sumQtyNG"]);
+					}
 				}
 			}
 		}
@@ -254,6 +278,7 @@ class QtyInput extends CI_Controller {
 					$dataActivity[$i]['FK_ID_Worker'] = $workerID;
 					$dataActivity[$i]['FK_ID_User'] = $this->session->userdata('id');
 					$dataActivity[$i]['Qty_NG'] = $row['qtyNG'];
+					$dataActivity[$i]['FK_ID_Sub_Assembly'] = $row['subAssemblyID'];
 					$dataActivity[$i]['FK_ID_Defect'] = $row['defectID'];
 					$i++;
 				}
@@ -268,7 +293,7 @@ class QtyInput extends CI_Controller {
 		return $result;
 	}
 	// ----------------------------------------- Check enough stock ------------------------------------
-	private function checkEnoughStock($jobID, $stepID, $qtyOK, $totalQtyNG, $dsFullStock) {
+	private function checkEnoughStock($jobID, $stepID, $qtyOK, $totalQtyNG, $dsFullStock, $rNG, $dsPreviousFullStock) {
 		$result = false;
 			
 		if($dsFullStock[0]['First_Step_Flag'] == 1) {
@@ -278,15 +303,17 @@ class QtyInput extends CI_Controller {
 			}
 		}
 		else {
-			// Get all previous step.
-			$dsPreviousFullStock = $this->getDsPreviousFullStock($jobID, $dsFullStock[0]['Number']);
+			// Check Previous step qty.
 			if(count($dsPreviousFullStock) > 0) {
 				$result = true;
 	
 				foreach($dsPreviousFullStock as $row){
-					if($row['Qty_OK'] < ( (($qtyOK + $totalQtyNG) * $row['NB_Sub']) / ($dsFullStock[0]['NB_Sub']) ) ) {
-						$result = false;
-						break;
+					$key = array_search($row['FK_ID_Sub_Assembly'], array_column($rNG, 'subAssemblyID'));
+					if(!is_null($key)) {
+						if($row['Qty_OK'] < ($qtyOK + $rNG[$key]["sumQtyNG"])) {
+							$result = false;
+							break;
+						}
 					}
 				}
 			}
