@@ -128,7 +128,39 @@
 									</div>
 								</div><!-- End col of job name -->
 								
-								<div class="col-md-6">				<!-- Col of job type -->
+								<div class="col-md-3">				<!-- Col of qty order -->
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-primary disabled" type="button">* Quantity order : </button>
+										</span>								
+										<input type="number" class="form-control"
+											placeholder="Quantity order..." name="qtyOrder" id="qtyOrder">
+									</div>
+								</div><!-- End col of qty order -->
+
+								<div class="col-md-3">				<!-- Col of qty plan -->
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-primary disabled" type="button">* Quantity plan : </button>
+										</span>								
+										<input type="number" class="form-control"
+											placeholder="Quantity plan..." name="qtyPlanProduct" id="qtyPlanProduct">
+									</div>
+								</div><!-- End col of qty plan -->
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">				<!-- Col of Model -->
+									<div class="input-group">
+										<span class="input-group-btn">
+											<button class="btn btn-primary disabled" type="button">Model : </button>
+										</span>
+										<input type="text" class="form-control"
+											placeholder="Model..." name="modelName" id="modelName">
+									</div>
+								</div><!-- End col of Model -->
+
+								<div class="col-md-3">				<!-- Col of job type -->
 									<div class="input-group">
 										<span class="input-group-btn">
 											<button class="btn btn-primary disabled" type="button">Job Type : </button>
@@ -143,34 +175,12 @@
 										</select>
 									</div>
 								</div><!-- End col of job type -->
-							</div>
 
-							<div class="row">
-								<div class="col-md-4">				<!-- Col of qty order -->
-									<div class="input-group">
-										<span class="input-group-btn">
-											<button class="btn btn-primary disabled" type="button">* Quantity order : </button>
-										</span>								
-										<input type="number" class="form-control"
-											placeholder="Quantity order..." name="qtyOrder" id="qtyOrder">
-									</div>
-								</div><!-- End col of qty order -->
-								
-								<div class="col-md-4">				<!-- Col of qty plan -->
-									<div class="input-group">
-										<span class="input-group-btn">
-											<button class="btn btn-primary disabled" type="button">* Quantity plan : </button>
-										</span>								
-										<input type="number" class="form-control"
-											placeholder="Quantity plan..." name="qtyPlanProduct" id="qtyPlanProduct">
-									</div>
-								</div><!-- End col of qty plan -->
-								
-								<div class="col-md-4">				<!-- Col of status -->
+								<div class="col-md-3">				<!-- Col of status -->
 									<div class="input-group">
 										<span class="input-group-btn">
 											<button class="btn btn-primary disabled" type="button">Status : </button>
-										</span>								
+										</span>
 										<select class="form-control" id="jobStatus">
 											<option value="0" selected>Please select job status</option>
 											<?php 
@@ -182,7 +192,7 @@
 									</div>
 								</div><!-- End col of status -->
 							</div>
-							
+
 							<div class="row">
 								<div class="col-md-10">
 								</div>

@@ -56,6 +56,7 @@ class Project extends CI_Controller {
 			$projectID = $this->input->post('projectID');
 			$data_to_store = array(
 				'Name' 				=> $this->input->post('jobName'),
+				'model'				=> $this->input->post('modelName'),
 				'FK_ID_Project' 	=> $projectID,
 				'FK_ID_BOM'		 	=> $this->input->post('bomID'),
 				'Qty_Order'			=> $this->input->post('qtyOrder'),

@@ -21,25 +21,27 @@ $('form#form-job button.btn-reset').click(changeJob);
 // ************************************************* Method *************************************************
 //--------------------------------------------------- Save ----------------------------------------------
 function saveJob(){
-	var jobID = $('select#job :selected').val();
-	var jobName = $('input#jobName').val();
-	var projectID = $('select#project :selected').val();
-	var bomID = $('select#bom :selected').val();
-	var qtyOrder = $('input#qtyOrder').val();
-	var qtyPlanProduct = $('input#qtyPlanProduct').val();
-	var jobTypeID = $('select#jobType :selected').val();
-	var jobStatusID = $('select#jobStatus :selected').val();
+	let jobID = $('select#job :selected').val();
+	let jobName = $('input#jobName').val();
+	let modelName = $('input#modelName').val();
+	let projectID = $('select#project :selected').val();
+	let bomID = $('select#bom :selected').val();
+	let qtyOrder = $('input#qtyOrder').val();
+	let qtyPlanProduct = $('input#qtyPlanProduct').val();
+	let jobTypeID = $('select#jobType :selected').val();
+	let jobStatusID = $('select#jobStatus :selected').val();
 
-	var data = {
-				'jobID': jobID, 
-				'jobName': jobName, 
-				'projectID': projectID,
-				'bomID': bomID,
-				'qtyOrder': qtyOrder, 
-				'qtyPlanProduct': qtyPlanProduct, 
-				'jobTypeID': jobTypeID,
-				'jobStatusID': jobStatusID
-				};
+	let data = {
+		'jobID': jobID, 
+		'jobName': jobName, 
+		'modelName': modelName,
+		'projectID': projectID,
+		'bomID': bomID,
+		'qtyOrder': qtyOrder, 
+		'qtyPlanProduct': qtyPlanProduct, 
+		'jobTypeID': jobTypeID,
+		'jobStatusID': jobStatusID
+	};
 	
 	// Get job table one row by ajax.
 	$.ajax({
@@ -87,15 +89,18 @@ function saveJob(){
 }
 //********************************************** Validation *******************************************
 function validateJob(){
-	var result = false;
+	let result = false;
 	
-	var resultJobName = false;
-	var resultProjectID = false;
-	var resultQtyOrder = false;
-	var resultQtyPlanProduct = false;
+	let resultJobName = false;
+	let resultModelName = false;
+	let resultProjectID = false;
+	let resultQtyOrder = false;
+	let resultQtyPlanProduct = false;
 	
 	// Check job name require has input?
 	resultJobName = validateFillInputElement($('input#jobName'));
+	// Check model name require has input?
+	resultModelName = validateFillInputElement($('input#modelName'));
 	// Check project id selected?
 	resultProjectID = validateFillSelectElement($('select#project'));
 	// Check quantity order require has input?
@@ -104,7 +109,7 @@ function validateJob(){
 	resultQtyPlanProduct = validateFillInputElement($('input#qtyPlanProduct'));
 	
 
-	result = (resultJobName && resultProjectID && resultQtyOrder && resultQtyPlanProduct);
+	result = (resultJobName && resultModelName && resultProjectID && resultQtyOrder && resultQtyPlanProduct);
 	return result;
 }
 
@@ -113,14 +118,14 @@ function validateJob(){
 function changeJob(){
 	setJobCaptionPanelMode();
 	resetJobInputFill();
-	var jobID = $('select#job :selected').val();
+	let jobID = $('select#job :selected').val();
 	
 	if(jobID == 0){
 		disJobNotChoose();
 	} else {
 		disJobChoose();
 
-		var data = {'jobID': jobID};
+		let data = {'jobID': jobID};
 		
 		// Get project table one row by ajax.
 		$.ajax({
@@ -136,13 +141,14 @@ function changeJob(){
 			complete: function(){
 			},
 			success: function(dsData) {
-				var dsJob = dsData['dsJob'];
-				var dsBom = dsData['dsBom'];
-				var dsProcess = dsData['dsProcess'];
+				let dsJob = dsData['dsJob'];
+				let dsBom = dsData['dsBom'];
+				let dsProcess = dsData['dsProcess'];
 				
 				// Job Part.
 				if((dsJob.length) > 0){
 					$('input#jobName').val(dsJob[0].Name);
+					$('input#modelName').val(dsJob[0].Model);
 					$('select#jobType').val(dsJob[0].FK_ID_Job_Type);
 					$('input#qtyOrder').val(dsJob[0].Qty_Order);
 					$('input#qtyPlanProduct').val(dsJob[0].Qty_Plan_Product);
@@ -179,12 +185,14 @@ function changeJob(){
 //******************************************** Reset input fill **********************************************
 function resetJobInputFill(){
 	$('input#jobName').val('');
+	$('input#modelName').val('');
 	$('select#jobType').val(0);
 	$('input#qtyOrder').val('');
 	$('input#qtyPlanProduct').val('');
 	$('select#jobStatus').val(0);
 	
 	$('input#jobName').removeClass('bg-error');
+	$('input#modelName').removeClass('bg-error');
 	$('select#jobType').removeClass('bg-error');
 	$('input#qtyOrder').removeClass('bg-error');
 	$('input#qtyPlanProduct').removeClass('bg-error');
@@ -192,7 +200,7 @@ function resetJobInputFill(){
 }
 //***************************************** Set caption panel mode *******************************************
 function setJobCaptionPanelMode(){
-	var caption = '';
+	let caption = '';
 	
 	caption = ($('select#job :selected').val() == 0)? 'New job' : 'Edit job';
 	$('#panel-caption-job').html('<span class="text-info"><h1>' + caption + '</h1></span>');
