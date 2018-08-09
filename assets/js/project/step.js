@@ -100,6 +100,7 @@ function resetStepLastRowTable(dsFullBom, i) {
 	currentTr.find('td#stepDesc').text('');
 	currentTr.find('td#lineName').text('');
 	currentTr.find('td#machineName').text('');
+	currentTr.find('input#operationTime').val(0);
 
 	currentTr.find('input#stockID').val('');
 	currentTr.find('input#operationTime').val('');

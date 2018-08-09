@@ -215,11 +215,13 @@ class Process_m extends CI_Model {
 					'FK_ID_Process'		=> $processID,
 					'FK_ID_Line'		=> $row['lineID'],
 					'FK_ID_Machine'		=> $row['machineID'],
+					'Operation_Time'		=> $row['operationTime'],
 					'FK_ID_Sub_Assembly'=> $row['subAssemblyID'],
 					'NB_Sub'			=> $row['nbSub'],
 					'Next_Step_Number'	=> $row['nextStepNumber'],
 					'First_Step_Flag'	=> $row['firstStepFlag'],
 				);
+
 				// Step part.
 				$stepID = ($AddNewMode ? 0 : $row['stepID']);		// Check Clone mode? (For insert insert new step)
 				if($stepID <= 0) {

@@ -28,8 +28,8 @@ class Project extends CI_Controller {
 		if ($this->input->server('REQUEST_METHOD') === 'POST'){
 			$projectID = $this->input->post('projectID');
 			$data_to_store = array(
-					'Name' 				=> $this->input->post('projectName'),
-					'FK_ID_Customer' 	=> $this->input->post('customerID'),
+				'Name' 				=> $this->input->post('projectName'),
+				'FK_ID_Customer' 	=> $this->input->post('customerID'),
 			);
 
 			$this->load->model('project_m');

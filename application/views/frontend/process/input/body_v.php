@@ -72,11 +72,10 @@
 					<thead class="bg-info">
 						<tr>
 							<th class="text-center table-caption bg-info" 
-							id="step-caption" colspan="9">
+							id="step-caption" colspan="10">
 								<div class="panel-heading" style="text-align: center;">
 									<h1 id="panel-caption-process">
-										<b style="color:<?=$inputModeTheme?>">STEP
-										</b>
+										<b style="color:<?=$inputModeTheme?>">STEP</b>
 									</h1>
 								</div>
 							</th>
@@ -86,10 +85,11 @@
 							<th class="text-center" width="100">Next Step</th>
 							<th class="text-center" width="100">* Step</th>
 							<th class="text-center" width="420">Description</th>
-							<th class="text-center" width="230">* Line</th>
-							<th class="text-center" width="230">* Machine</th>
-							<th class="text-center" width="230">* Sub assembly</th>
-							<th class="text-center" width="110">* NB sub</th>
+							<th class="text-center" width="200">* Line</th>
+							<th class="text-center" width="200">* Machine</th>
+							<th class="text-center" width="100">(Sec)</th>
+							<th class="text-center" width="200">* Sub assembly</th>
+							<th class="text-center" width="100">* NB sub</th>
 							<th class="text-center" width="36">#</th>
 						</tr>
 					</thead>

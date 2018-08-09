@@ -42,29 +42,29 @@ class Job_m extends CI_Model {
 		}
 		
 		$sqlStr = "SELECT s.FK_ID_Line, l.Name lineCurrent"	//, p.Date_Stamp"
-					.", j.Name `Job Number`, s.Number, s.`DESC`, '-' AS Plan_Qty_OK"
-					.", s.Next_Step_Number nextStepNumber, nl.Name lineNext, CONCAT(j.id,'-',s.id) jsBarcode"
-					." FROM stock k"
-					." INNER JOIN job j ON k.FK_ID_Job = j.id"
-					." INNER JOIN step s ON k.FK_ID_Step = s.id"
-					." LEFT JOIN line l ON s.FK_ID_Line = l.id"
-					." LEFT JOIN step ns ON s.Next_Step_Number = ns.Number AND j.FK_ID_Process = ns.FK_ID_Process"
-					." LEFT JOIN line nl ON ns.FK_ID_Line = nl.id"
-					." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
-					." ORDER BY s.FK_ID_Line, j.Name, s.Number";
+			.", j.Name `Job Number`, s.Number, s.`DESC`, '-' AS Plan_Qty_OK"
+			.", s.Next_Step_Number nextStepNumber, nl.Name lineNext, CONCAT(j.id,'-',s.id) jsBarcode"
+			." FROM stock k"
+			." INNER JOIN job j ON k.FK_ID_Job = j.id"
+			." INNER JOIN step s ON k.FK_ID_Step = s.id"
+			." LEFT JOIN line l ON s.FK_ID_Line = l.id"
+			." LEFT JOIN step ns ON s.Next_Step_Number = ns.Number AND j.FK_ID_Process = ns.FK_ID_Process"
+			." LEFT JOIN line nl ON ns.FK_ID_Line = nl.id"
+			." WHERE j.Delete_Flag=0 AND j.FK_ID_Job_Status=1" .$criteria
+			." ORDER BY s.FK_ID_Line, j.Name, s.Number";
 
 		$query = $this->db->query($sqlStr);
 		$result = $query->result_array();
-		
+
 		return $result;
 	}
 
 
 
 
-    
-	
-	
+
+
+
 
 	// ******************************************* Custome function ************************************	
 	public function getJobByMultiJobIdTypeStatus($arrayJobID=[], $arrayjobTypeID=[], $arrayjobStatusID=[], $limit=null, $offset=null) {
@@ -93,8 +93,8 @@ class Job_m extends CI_Model {
 			
 		return $result;
 	}
-    
-    
+
+
 	public function get_row_by_type_status($arrayjobTypeID=[], $arrayjobStatusID=[]) {
 		// Create criteria query.
 		$this->load->model('plan_m');
@@ -115,7 +115,7 @@ class Job_m extends CI_Model {
 		return $result;
 	}
 
-    // **************************************************** Join table function ***************************************
+	// **************************************************** Join table function ***************************************
 	public function getJob_Customer_ID($arrayCustomerID=[]) {
 		// Prepare Criteria.
 		$this->load->model('plan_m');

@@ -8,6 +8,7 @@ class Step_m extends CI_Model {
 	var $col_process_id = "FK_ID_Process";
 	var $col_line_id = "FK_ID_Line";
 	var $col_machine_id = "FK_ID_Machine";
+	var $col_operation_time = "Operation_Time";
 	var $col_sub_assembly_id = "FK_ID_Sub_Assembly";
 	var $col_nb_sub = "NB_Sub";
 	var $col_next_step_number = "Next_Step_Number";
@@ -282,6 +283,7 @@ class Step_m extends CI_Model {
 			$this->col_process_id				=> 0,
 			$this->col_line_id					=> 0,
 			$this->col_machine_id				=> 0,
+			$this->col_operation_time		=> 0,
 			$this->col_sub_assembly_id	=> 0,
 			$this->col_nb_sub						=> 0,
 			$this->col_next_step_number	=> '',

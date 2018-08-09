@@ -48,6 +48,10 @@
 			</select>
 		</td>
 		<td class="text-center td-group">
+			<input class="form-control text-center" type="number" name="operationTime[]" id="operationTime"
+			placeholder="Time operation..." value="<?php echo($row['Operation_Time']);?>">
+		</td>
+		<td class="text-center td-group">
 			<select class="form-control text-center" name="subAssembly[]" id="subAssembly">
 				<option value="0" selected>Please select sub assemble</option>
 				<?php 

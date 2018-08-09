@@ -17,12 +17,13 @@ function prepareStepData(){
 			'stepDesc': 		$(this).find('td input#stepDesc').val(),
 			'lineID': 			$(this).find('td select#line :selected').val(),
 			'machineID': 		$(this).find('td select#machine :selected').val(),
+			'operationTime'	:	( ($(this).find('input#operationTime').val() ) / 60),
 			'subAssemblyID': 	$(this).find('td select#subAssembly :selected').val(),
 			'nbSub': 			$(this).find('td input#nbSub').val(),
 		};
 		dsStep.push(dictStep);
 	});
-	
+
 	return dsStep;
 }
 //********************************************** Validation ********************************************
@@ -99,6 +100,7 @@ function setStepLastRowTable(dsFullStep, i) {
 	currentTr.find('td input#stepDesc').val(dsFullStep[i].DESC);
 	currentTr.find('td select#line').val(dsFullStep[i].FK_ID_Line);
 	currentTr.find('td select#machine').val(dsFullStep[i].FK_ID_Machine);
+	currentTr.find('input#operationTime').val(dsFullStep[i].Operation_Time * 60);
 	currentTr.find('td select#subAssembly').val(dsFullStep[i].FK_ID_Sub_Assembly);
 	currentTr.find('td input#nbSub').val(dsFullStep[i].NB_Sub);
 }
@@ -114,6 +116,7 @@ function resetStepLastRowTable(dsFullBom, i) {
 	currentTr.find('td input#stepDesc').val('');
 	currentTr.find('td select#line').val(0);
 	currentTr.find('td select#machine').val(0);
+	currentTr.find('td select#operationTime').val(0);
 	currentTr.find('td select#subAssembly').val(0);
 	currentTr.find('td input#nbSub').val('');
 
@@ -123,6 +126,7 @@ function resetStepLastRowTable(dsFullBom, i) {
 	currentTr.find('td input#stepDesc').removeClass('bg-error');
 	currentTr.find('td select#line').removeClass('bg-error');
 	currentTr.find('td select#machine').removeClass('bg-error');
+	currentTr.find('td input#operationTime').removeClass('bg-error');
 	currentTr.find('td select#subAssembly').removeClass('bg-error');
 	currentTr.find('td input#nbSub').removeClass('bg-error');
 }
