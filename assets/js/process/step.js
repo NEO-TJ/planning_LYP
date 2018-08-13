@@ -17,7 +17,7 @@ function prepareStepData(){
 			'stepDesc': 		$(this).find('td input#stepDesc').val(),
 			'lineID': 			$(this).find('td select#line :selected').val(),
 			'machineID': 		$(this).find('td select#machine :selected').val(),
-			'operationTime'	:	( ($(this).find('input#operationTime').val() ) / 60),
+			'operationTime'	:	$(this).find('input#operationTime').val(),
 			'subAssemblyID': 	$(this).find('td select#subAssembly :selected').val(),
 			'nbSub': 			$(this).find('td input#nbSub').val(),
 		};
@@ -80,29 +80,8 @@ function cloneStepRowTable() {
 		.html('<i class="fa fa-plus"></i>');
 }
 // *********************************** Delete row table and reset auto increment no *************************
-function deleteAllCloneStepRowTable() {
-	$('table#step.table-components tbody > tr:not(:first-child)').remove();
-	$('table#step.table-components tbody > tr').removeClass('bg-error');
-	
-	resetStepLastRowTable();
-}
 function deleteStepRowTable(){
 	$(this).closest("tr").remove();
-}
-//***************************************** Set Step input fill **********************************************
-function setStepLastRowTable(dsFullStep, i) {
-	let currentTr = $('table#step.table-components tbody tr:last-child');
-	
-	currentTr.find('td input#firstStepFlag').val(dsFullStep[i].id);
-	currentTr.find('td input#firstStepFlag').prop('checked', ((dsFullStep[i].First_Step_Flag == 1)? true: false));
-	currentTr.find('td input#nextStepNumber').val(dsFullStep[i].Next_Step_Number);
-	currentTr.find('td input#stepNumber').val(dsFullStep[i].Number);
-	currentTr.find('td input#stepDesc').val(dsFullStep[i].DESC);
-	currentTr.find('td select#line').val(dsFullStep[i].FK_ID_Line);
-	currentTr.find('td select#machine').val(dsFullStep[i].FK_ID_Machine);
-	currentTr.find('input#operationTime').val(dsFullStep[i].Operation_Time * 60);
-	currentTr.find('td select#subAssembly').val(dsFullStep[i].FK_ID_Sub_Assembly);
-	currentTr.find('td input#nbSub').val(dsFullStep[i].NB_Sub);
 }
 //************************************** Reset Full Process input fill ***************************************
 //----------------------------------------- Reset Step input fill --------------------------------------------

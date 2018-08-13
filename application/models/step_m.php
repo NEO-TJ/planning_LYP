@@ -154,7 +154,8 @@ class Step_m extends CI_Model {
 	public function getFullStepStock($jobID=0, $processID=0) {
 		$sqlStr = "SELECT DISTINCT(s.id) stepID, s.First_Step_Flag, s.Next_Step_Number, s.Number, s.DESC"
 			.", l.Name lineName, m.Name machineName, b.Name subAssemblyName"
-			.", k.Operation_Time, k.id stockID, s.NB_Sub"
+			.", IFNULL(k.Operation_Time, s.Operation_Time) Operation_Time"
+			.", k.id stockID, s.NB_Sub"
 			." FROM step as s"
 				." LEFT JOIN stock as k ON s.id=k.FK_ID_Step AND k.FK_ID_Job = ".$jobID
 				." LEFT JOIN line as l ON s.FK_ID_Line=l.id"

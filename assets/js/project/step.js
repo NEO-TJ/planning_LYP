@@ -13,7 +13,7 @@ function prepareStepData(){
 			'stepID'				: $(this).find('input#firstStepFlag').val(),
 			'stockID'				:	(isEmpty($(this).find('input#stockID').val()) 
 												? 0 : $(this).find('input#stockID').val()),
-			'operationTime'	:	( ($(this).find('input#operationTime').val() ) / 60),
+			'operationTime'	:	$(this).find('input#operationTime').val(),
 			'firstStepFlag'	:	(($(this).find('input#firstStepFlag').prop('checked'))? 1: 0),
 			'nbSub'					:	$(this).find('td#nbSub').text(),
 		};
@@ -82,7 +82,7 @@ function setStepLastRowTable(dsFullStep, i) {
 	currentTr.find('td#machineName').text(dsFullStep[i].machineName);
 
 	currentTr.find('input#stockID').val(dsFullStep[i].stockID);
-	currentTr.find('input#operationTime').val(dsFullStep[i].Operation_Time * 60);
+	currentTr.find('input#operationTime').val(dsFullStep[i].Operation_Time);
 
 	currentTr.find('td#subAssemblyName').text(dsFullStep[i].subAssemblyName);
 	currentTr.find('td#nbSub').text(dsFullStep[i].NB_Sub);

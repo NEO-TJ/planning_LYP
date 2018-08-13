@@ -165,11 +165,11 @@ function changeJob(){
 				
 				// Process Part.
 				if((dsProcess.length) == 1) {
-					disFix(dsProcess, 'process', dsProcess[0].id);
 					permanentProcess = true;
+					disFix(dsProcess, 'process', dsProcess[0].id);
 				} else {
-					disFree(dsProcess, 'process');
 					permanentProcess = false;
+					disFree(dsProcess, 'process');
 				}
 			}
 		});
