@@ -235,22 +235,21 @@ class QtyInput extends CI_Controller {
 		}
 		else {																	// Update previous and self stock.
 			// Cut previous stock data.
-			//$dsPreviousFullStock = $this->getDsPreviousFullStock($jobID, $dsFullStock[0]['Number']);		// Get all previous step.
 			if(count($dsPreviousFullStock) > 0) {
 				$i = 0;
 				foreach($dsPreviousFullStock as $row){
-					$key = ( ($rNG != []) 
-					? array_search($row['FK_ID_Sub_Assembly'], array_column($rNG, 'subAssemblyID'))
-					: null);
+					if($rNG != []) {
+						$keyResult = array_search($row['FK_ID_Sub_Assembly'], array_column($rNG, 'subAssemblyID'));
+						$key = ($keyResult === FALSE) ? -1 : $keyResult;
+					}
 
-					if(!is_null($key)) {
+					if($key >= 0) {
 						$dataPreviousStock[$i]['PreviousStockID'] = $row['id'];
 						$dataPreviousStock[$i++]['Qty_OK'] = $row['Qty_OK'] - ($qtyOK + $rNG[$key]["sumQtyNG"]);
 					}
 				}
 			}
 		}
-
 
 		// Increase current stock data (OK|NG).
 		if($qtyOK > 0) {
